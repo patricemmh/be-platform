@@ -28,7 +28,7 @@
   --green-soft: #eceef6;
   --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --ease: cubic-bezier(.4, 0, .2, 1);
-  --profile: 380px;
+  --profile: 475px;
   --ai: 0px;
 }
 * { box-sizing: border-box; }
@@ -106,7 +106,7 @@ img { display: block; max-width: 100%; }
   min-height: 0;
   overflow: hidden;
 }
-body.is-profile-wide { --profile: 500px; }
+body.is-profile-wide { --profile: 625px; }
 .col > .panel { flex: 1; }
 .col {
   min-height: 0;
@@ -325,7 +325,7 @@ img { display: block; max-width: 100%; }
   min-height: 0;
   overflow: hidden;
 }
-body.is-profile-wide { --profile: 520px; }
+body.is-profile-wide { --profile: 650px; }
 .col > .panel { flex: 1; }
 .col {
   min-height: 0;
@@ -872,7 +872,7 @@ body.is-profile-wide { --profile: 520px; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 @media (max-width: 1180px) {
-  :root { --profile: 360px; }
+  :root { --profile: 450px; }
 }
 @media (max-width: 980px) {
   body { overflow: auto; }
@@ -913,7 +913,7 @@ body.is-profile-wide { --profile: 520px; }
   box-shadow: none;
   animation: none;
 }
-.room { gap: 0; padding: 0; background: var(--page); }
+.room { gap: 0; padding: 0; height: 100%; min-height: 0; background: var(--page); }
 .panel,
 .profile-sticky,
 .transcript,
@@ -1149,7 +1149,7 @@ body.is-profile-wide { --profile: 520px; }
   left: auto;
   right: auto;
   bottom: auto;
-  margin: 0 80px 20px 72px;
+  margin: 0 80px 40px 72px;
   align-items: center;
   padding: 0;
   gap: 28px;
@@ -1471,7 +1471,6 @@ body.is-ai-open .ai-col { display: flex; }
   font-weight: 650;
   color: var(--brand);
 }
-.room { padding-bottom: 24px; }
 .top-right { gap: 16px; }
 .dock {
   position: static;
@@ -2550,7 +2549,7 @@ document.getElementById("trToggle").addEventListener("click", () => toggle("capt
   const room = document.querySelector(".room");
   const split = document.getElementById("split");
   const saved = Number(localStorage.getItem("be-profile-width"));
-  if (saved) document.documentElement.style.setProperty("--profile", `${saved}px`);
+  if (saved >= 475) document.documentElement.style.setProperty("--profile", `${saved}px`);
   let dragging = false;
   split.addEventListener("pointerdown", (e) => {
     dragging = true;
