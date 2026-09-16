@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BetterEngineer · Live interview · Marcelo Dosko</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --page: #f6f6f3;
+  --white: #f6f6f3;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --subtle: #9a9a96;
+  --line: #c8c8c2;
+  --line-strong: #b8b8b2;
+  --blue: #4C60B2;
+  --blue-deep: #3a4b94;
+  --blue-soft: #eceef6;
+  --brand: #4C60B2;
+  --brand-soft: #eceef6;
+  --navy: #001062;
+  --stage: #161925;
+  --red: #c4473a;
+  --green: #4C60B2;
+  --green-soft: #eceef6;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --profile: 380px;
+  --ai: 0px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+button, textarea, input { font-family: inherit; }
+button { cursor: pointer; }
+img { display: block; max-width: 100%; }
+.hidden { display: none !important; }
+
+.app {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 52px 1fr;
+}
+
+.topbar {
+  background: transparent;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px 0 20px;
+  gap: 16px;
+}
+.brand {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none; color: inherit; min-width: 0;
+}
+.brand img { height: 16px; width: auto; }
+.live {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 22px; padding: 0 8px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px; font-weight: 650; letter-spacing: .04em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+}
+.live i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red);
+}
+@keyframes pulse {
+  70% { box-shadow: 0 0 0 7px rgba(196, 71, 58, 0); }
+}
+.who-now { min-width: 0; text-align: center; }
+.who-now b { display: inline; font-size: 14px; font-weight: 650; letter-spacing: -0.02em; }
+.who-now span { font-size: 13px; color: var(--muted); font-weight: 400; }
+.top-right { display: flex; align-items: center; gap: 14px; }
+.clock {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px; font-weight: 500; color: var(--muted);
+}
+.btn-end {
+  height: 30px; padding: 0 12px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: transparent; color: var(--muted);
+  font-size: 12px; font-weight: 650;
+}
+.btn-end:hover { color: var(--red); border-color: #e8c7c3; }
+
+.room {
+  display: grid;
+  grid-template-columns: var(--profile) 10px minmax(0, 1fr) var(--ai);
+  gap: 0;
+  padding: 0 0 72px;
+  min-height: 0;
+  overflow: hidden;
+}
+body.is-profile-wide { --profile: 500px; }
+.col > .panel { flex: 1; }
+.col {
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.split {
+  cursor: col-resize;
+  position: relative;
+  z-index: 6;
+  align-self: stretch;
+  touch-action: none;
+}
+.split::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--line);
+}
+.split:hover::after,
+body.is-resizing .split::after {
+  width: 2px;
+  background: var(--text);
+}
+body.is-resizing { cursor: col-resize; user-select: none; }
+body.is-resizing iframe,
+body.is-resizing img,
+body.is-resizing textarea { pointer-events: none; }
+.panel {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.panel-scroll { overflow: auto; flex: 1; }
+.q-panel { overflow: visible; }
+
+.profile { padding: 0 0 28px; }
+.profile-sticky {
+  position: sticky; top: 0; z-index: 4;
+  background: var(--page);
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.call { position: relative; margin-bottom: 12px; display: grid; gap: 8px; }
+.profile-hero h1 {
+  margin: 0 0 2px; font-size: 16px; font-weight: 650; letter-spacing: -0.03em; line-height: 1.25;
+}
+.profile-hero .title { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
+.profile-tools {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-top: 8px;
+}
+.pool {
+  display: inline-flex;
+  font-size: 12px; font-weight: 650; color: var(--muted);
+  padding: 0;
+  background: none;
+}
+.widen {
+  height: auto; padding: 0;
+  border: 0; background: none; color: var(--subtle);
+  font-size: 12px; font-weight: 650;
+}
+.widen:hover, body.is-profile-wide .widen { color: var(--text); }
+.jump {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  padding: 12px 20px 0;
+}
+.jump a {
+  height: auto; padding: 0;
+  background: none; color: var(--subtle);
+  font-size: 12px; font-weight: 650;
+}
+.jump a:hover { color: var(--text); }
+.profile-body { padding: 4px 20px 0; }
+.stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px 16px; margin: 14px 0 8px;
+}
+.stat {
+  background: none; padding: 0;
+}
+.stat span { display: block; font-size: 11px; color: var(--subtle); font-weight: 650; letter-spacing: .04em; text-transform: uppercase; }
+.stat b { font-size: 13px; font-weight: 600; letter-spacing: -0.02em; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.chip {
+  height: auto; padding: 0;
+  background: none; color: var(--muted);
+  font-size: 12px; font-weight: 500;
+}
+.section { margin-top: 22px; scroll-margin-top: 340px; }
+.section h4 {
+  margin: 0 0 8px; font-size: 11px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--subtle);
+}
+.section p { margin: 0 0 10px; font-size: 13px; line-height: 1.55; color: #333; }
+.skill-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.skill-row:last-child { border-bottom: 0; }
+.skill-row span { color: var(--muted); font-weight: 600; font-size: 12px; flex: 0 0 auto; }
+.job {
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  padding: 0;
+  margin-top: 0;
+  background: none;
+}
+.job summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+}
+.job summary::-webkit-details-marker { display: none; }
+.job summary b { font-size: 13px; line-height: 1.3; font-weight: 650; }
+.job .co { font-size: 12px; color: var(--muted); }
+.job .when { font-size: 11px; font-weight: 650; color: var(--subtle); align-self: start; padding-top: 2px; }
+.job .job-body { padding: 0 0 14px; }
+.job .job-body p { margin: 0 0 8px; font-size: 13px; line-height: 1.5; color: #333; }
+.job ul { margin: 0 0 10px; padding-left: 16px; }
+.job li { font-size: 13px; line-height: 1.45; margin: 0 0 5px; color: #333; }
+.lang { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; }
+.lang span { color: var(--muted); }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+button, textarea, input { font-family: inherit; }
+button { cursor: pointer; }
+img { display: block; max-width: 100%; }
+.hidden { display: none !important; }
+
+.app {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 56px 1fr;
+}
+
+/* ===== Top bar ===== */
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--line-strong);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px 0 16px;
+  gap: 16px;
+}
+.brand {
+  display: flex; align-items: center; gap: 14px;
+  text-decoration: none; color: inherit; min-width: 0;
+}
+.brand img { height: 18px; width: auto; }
+.live {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 26px; padding: 0 10px 0 8px;
+  border-radius: 999px;
+  background: #fdecec;
+  color: var(--red);
+  font-size: 11px; font-weight: 750; letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.live i {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 0 rgba(229, 57, 53, .55);
+  animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+  70% { box-shadow: 0 0 0 7px rgba(229, 57, 53, 0); }
+}
+.who-now { min-width: 0; text-align: center; }
+.who-now b { display: block; font-size: 14px; letter-spacing: -0.02em; }
+.who-now span { font-size: 12px; color: var(--muted); }
+.top-right { display: flex; align-items: center; gap: 10px; }
+.clock {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px; font-weight: 650; color: var(--muted);
+  padding: 0 6px;
+}
+.btn-end {
+  height: 34px; padding: 0 14px;
+  border: 0; border-radius: 9px;
+  background: var(--red); color: #fff;
+  font-size: 13px; font-weight: 700;
+}
+.btn-end:hover { filter: brightness(.96); }
+
+/* ===== Workspace ===== */
+.room {
+  display: grid;
+  grid-template-columns: var(--profile) 10px minmax(0, 1fr) var(--ai);
+  gap: 12px;
+  padding: 12px 12px 88px;
+  min-height: 0;
+  overflow: hidden;
+}
+body.is-profile-wide { --profile: 520px; }
+.col > .panel { flex: 1; }
+.col {
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.panel {
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.panel-scroll { overflow: auto; flex: 1; }
+.q-panel { overflow: visible; }
+.q-panel .panel-scroll { border-radius: 0 0 16px 16px; }
+
+/* ===== Profile ===== */
+.profile { padding: 0 0 28px; }
+.profile-sticky {
+  position: sticky; top: 0; z-index: 4;
+  background: #fff;
+  padding: 12px 12px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.call { position: relative; margin-bottom: 12px; display: grid; gap: 8px; }
+.profile-hero { display: flex; gap: 12px; align-items: flex-start; }
+.profile-hero h1 {
+  margin: 0 0 2px; font-size: 18px; letter-spacing: -0.03em; line-height: 1.2;
+}
+.profile-hero .title { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.35; }
+.profile-tools {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-top: 10px;
+}
+.pool {
+  display: inline-flex;
+  height: 26px; padding: 0 10px;
+  border-radius: 999px;
+  background: var(--brand-soft); color: var(--brand);
+  font-size: 12px; font-weight: 750;
+}
+.widen {
+  height: 26px; padding: 0 10px;
+  border-radius: 8px; border: 1px solid var(--line-strong);
+  background: #fff; color: var(--muted);
+  font-size: 12px; font-weight: 700;
+}
+.widen:hover, body.is-profile-wide .widen {
+  border-color: transparent; background: var(--brand-soft); color: var(--brand);
+}
+.jump {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 10px 16px 0;
+}
+.jump a {
+  height: 24px; padding: 0 8px; border-radius: 999px;
+  background: #f3f4fb; color: #3d4460;
+  font-size: 11px; font-weight: 700;
+  display: inline-flex; align-items: center;
+}
+.jump a:hover { background: var(--brand-soft); color: var(--brand); }
+.profile-body { padding: 4px 16px 0; }
+.stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin: 12px 0 4px;
+}
+.stat {
+  background: #f6f7fb; border-radius: 10px; padding: 9px 10px;
+}
+.stat span { display: block; font-size: 11px; color: var(--muted); font-weight: 650; }
+.stat b { font-size: 13px; letter-spacing: -0.02em; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  height: 24px; padding: 0 9px; border-radius: 999px;
+  background: #f3f4fb; color: #3d4460;
+  font-size: 12px; font-weight: 650;
+  display: inline-flex; align-items: center;
+}
+.section { margin-top: 18px; scroll-margin-top: 340px; }
+.section h4 {
+  margin: 0 0 8px; font-size: 11px; font-weight: 750;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--subtle);
+}
+.section p { margin: 0 0 10px; font-size: 13px; line-height: 1.5; color: #333; }
+.skill-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.skill-row:last-child { border-bottom: 0; }
+.skill-row span { color: var(--muted); font-weight: 700; font-size: 12px; flex: 0 0 auto; }
+.job {
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  padding: 0;
+  margin-top: 8px;
+  background: #fff;
+}
+.job summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 11px 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+}
+.job summary::-webkit-details-marker { display: none; }
+.job summary b { font-size: 13px; line-height: 1.3; }
+.job .co { font-size: 12px; color: var(--muted); }
+.job .when { font-size: 11px; font-weight: 700; color: var(--subtle); align-self: start; padding-top: 2px; }
+.job .job-body { padding: 0 12px 12px; }
+.job .job-body p { margin: 0 0 8px; font-size: 12.5px; line-height: 1.5; color: #333; }
+.job ul { margin: 0 0 10px; padding-left: 16px; }
+.job li { font-size: 12.5px; line-height: 1.45; margin: 0 0 5px; color: #333; }
+.lang { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; }
+.lang span { color: var(--muted); }
+
+/* ===== Questions ===== */
+.q-head {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.q-head h2 { margin: 0; font-size: 16px; letter-spacing: -0.02em; }
+.q-head .progress { font-size: 12px; color: var(--muted); font-weight: 650; margin-top: 3px; }
+.hint-live {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--green); font-weight: 700;
+  background: var(--green-soft); padding: 6px 10px; border-radius: 999px;
+  white-space: nowrap;
+}
+.hint-live i {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+}
+.packs {
+  padding: 12px 18px 4px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+  align-items: center;
+}
+.pack, .job-trigger {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 32px; padding: 0 12px 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--muted);
+  font-size: 13px; font-weight: 700;
+}
+.pack:hover, .job-trigger:hover { border-color: #cfd3e4; color: var(--text); }
+.pack.is-on, .job-trigger.has-job {
+  background: var(--brand-soft);
+  border-color: transparent;
+  color: var(--brand);
+}
+.dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #eceef4; color: #5b6178;
+  flex: 0 0 18px;
+}
+.pack.is-on .dot, .job-trigger.has-job .dot {
+  background: var(--brand); color: #fff;
+}
+.job-wrap { position: relative; }
+.job-trigger { padding-right: 10px; }
+.job-trigger .chev { opacity: .7; }
+.job-menu {
+  position: absolute; top: calc(100% + 8px); left: 0;
+  width: 320px; z-index: 20;
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 8px;
+}
+.job-menu p {
+  margin: 0; padding: 8px 10px 6px;
+  font-size: 11px; font-weight: 750; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--subtle);
+}
+.job-opt {
+  width: 100%; text-align: left;
+  border: 0; background: transparent;
+  padding: 10px 10px; border-radius: 10px;
+  display: grid; gap: 2px;
+}
+.job-opt:hover, .job-opt.is-on { background: #f4f5fb; }
+.job-opt b { font-size: 13px; }
+.job-opt span { font-size: 12px; color: var(--muted); }
+.job-clear {
+  width: 100%; border: 0; background: none;
+  padding: 8px 10px; text-align: left;
+  font-size: 12px; font-weight: 700; color: var(--muted);
+}
+.job-clear:hover { color: var(--red); }
+
+.q-list { padding: 8px 18px 28px; }
+.q-panel { position: relative; overflow: hidden; }
+.q-head {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px 16px;
+  flex: 0 0 auto;
+}
+.q-head h2 { margin: 0 0 8px; font-size: 13px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; color: var(--subtle); }
+.q-head a, .script-link {
+  font-size: 12px; font-weight: 700; color: var(--brand);
+  border: 0; background: none; padding: 0; cursor: pointer;
+}
+.q-head-actions {
+  display: flex; align-items: center; gap: 16px;
+  justify-self: end;
+}
+.script-list {
+  flex: 1; min-height: 0; overflow: auto;
+  padding: 8px 48px 40px;
+  display: grid; gap: 0;
+  justify-content: center;
+}
+.script-item {
+  width: min(720px, 100%);
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  padding: 22px 0;
+  cursor: pointer;
+  color: inherit;
+}
+.script-item:hover { background: transparent; }
+.script-item.is-now .script-n { color: var(--green); }
+.script-n {
+  font-size: 11px; font-weight: 650; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--subtle);
+  margin-bottom: 6px;
+}
+.script-item h3 {
+  margin: 0 0 8px; font-size: 18px; font-weight: 600;
+  letter-spacing: -0.03em; line-height: 1.3;
+}
+.script-item p {
+  margin: 0; font-size: 15px; line-height: 1.55; color: var(--muted);
+}
+.script-item p.is-empty { color: #c4c4be; }
+.remain {
+  display: flex; align-items: center; gap: 10px;
+}
+.remain b {
+  font-size: 13px; font-weight: 750; color: var(--text);
+  white-space: nowrap;
+}
+.pips {
+  display: flex; gap: 3px; flex: 1; min-width: 0; align-items: center;
+}
+.pips i {
+  flex: 1; height: 6px; border-radius: 99px;
+  background: #e4e6ef;
+  min-width: 4px;
+}
+.pips i.is-done { background: var(--green); }
+.pips i.is-now { background: var(--brand); height: 8px; }
+.q-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 40px 96px;
+}
+.q-kicker {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-bottom: 14px;
+  font-size: 12px; font-weight: 750; color: var(--brand);
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.q-prompt {
+  margin: 0 auto;
+  max-width: 640px;
+  text-align: center;
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1.22;
+}
+.q-more {
+  display: block;
+  margin: 14px auto 0;
+  border: 0; background: none;
+  color: var(--muted); font-size: 13px; font-weight: 700;
+}
+.q-more:hover { color: var(--brand); }
+.q-detail {
+  max-width: 560px;
+  margin: 12px auto 0;
+  padding: 14px 16px;
+  background: #f6f7fb;
+  border-radius: 12px;
+  text-align: left;
+}
+.q-detail p { margin: 0 0 8px; font-size: 13px; line-height: 1.5; color: #333; }
+.q-detail p:last-child { margin: 0; }
+.q-detail b { color: var(--brand); }
+.q-answer {
+  max-width: 560px;
+  width: 100%;
+  margin: 22px auto 0;
+  border: 0;
+  border-radius: 0;
+  min-height: 4.5em;
+  padding: 0;
+  font-size: 16.5px;
+  line-height: 1.55;
+  font-weight: 400;
+  outline: none;
+  background: transparent;
+  display: block;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.q-answer:empty::before {
+  content: attr(data-placeholder);
+  color: #b8b8b2;
+}
+.cov {
+  max-width: 560px;
+  width: 100%;
+  margin: 28px auto 0;
+}
+.cov-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+.cov-top span {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+}
+.cov-top b {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text);
+}
+.cov-bar {
+  height: 10px; border-radius: 99px;
+  background: #eceef4;
+  overflow: hidden;
+}
+.cov-bar i {
+  display: block; height: 100%; width: 0;
+  border-radius: 99px;
+  background: #d5d8e6;
+  transition: width .35s var(--ease), background .25s var(--ease);
+}
+.cov[data-level="1"] .cov-bar i { background: #e6a23c; }
+.cov[data-level="2"] .cov-bar i { background: var(--green); }
+.cov[data-level="3"] .cov-bar i { background: var(--blue-deep); }
+.next-peek {
+  position: absolute; left: 16px; right: 16px; bottom: 14px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: rgba(255,255,255,.96);
+  color: inherit;
+}
+.next-peek .copy { min-width: 0; text-align: left; }
+.next-peek .k { font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; color: var(--subtle); }
+.next-peek b { display: block; margin-top: 3px; font-size: 13.5px; font-weight: 650; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.next-peek .q-step {
+  height: 34px; padding: 0 14px; border-radius: 9px;
+  border: 1px solid var(--line-strong);
+  background: #fff; font-size: 13px; font-weight: 700; color: var(--text);
+}
+.next-peek .q-step:disabled { opacity: .35; cursor: default; }
+.next-peek .q-step.next {
+  background: var(--brand); color: #fff; border-color: transparent;
+}
+.empty-q {
+  margin: 40px 8px; text-align: center; color: var(--muted);
+}
+.empty-q b { display: block; color: var(--text); margin-bottom: 6px; }
+
+/* ===== Stage ===== */
+.tile {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #2a2e3d;
+  aspect-ratio: 16 / 9;
+  color: #fff;
+}
+.tile img, .tile video {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.tile .ph {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  color: #8b90a3;
+}
+.tile .label {
+  position: absolute; left: 8px; bottom: 8px;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding: 0 8px;
+  border-radius: 7px;
+  background: rgba(10, 12, 18, .72);
+  font-size: 11px; font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+.tile .label .mic {
+  width: 14px; height: 14px; display: grid; place-items: center;
+}
+.tile.is-talking { outline: 2px solid var(--blue); outline-offset: -2px; }
+.self {
+  position: absolute; right: 8px; bottom: 8px;
+  width: 96px; aspect-ratio: 4 / 3;
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.12);
+  z-index: 2;
+}
+.self img { width: 100%; height: 100%; object-fit: cover; }
+.self .label { left: 6px; bottom: 6px; height: 20px; font-size: 10px; }
+.share-board {
+  aspect-ratio: 16 / 11;
+  border-radius: 12px;
+  background: #0e1118;
+  border: 1px solid rgba(255,255,255,.06);
+  overflow: hidden;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.share-bar {
+  height: 28px; background: #1b2030;
+  display: flex; align-items: center; gap: 6px; padding: 0 10px;
+  color: #9aa3b8; font-size: 11px; font-family: var(--font);
+}
+.share-bar s { width: 8px; height: 8px; border-radius: 50%; background: #ff5f57; text-decoration: none; display: block; }
+.share-bar s + s { background: #febc2e; }
+.share-bar s + s + s { background: #28c840; }
+.share-code {
+  padding: 12px 14px; font-size: 11px; line-height: 1.55; color: #c9d1e0;
+}
+.share-code .k { color: #79c0ff; }
+.share-code .s { color: #a5d6ff; }
+.share-code .c { color: #8b949e; }
+.people-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.people-row .tile { aspect-ratio: 16 / 9; }
+
+.transcript {
+  flex: 0 0 auto;
+  min-height: 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+  background: #fff;
+}
+.transcript:not(.is-collapsed) {
+  flex: 0 0 240px;
+  display: flex;
+  flex-direction: column;
+}
+.transcript.is-collapsed {
+  flex: 0 0 auto;
+}
+.tr-head {
+  width: 100%;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 8px;
+  border: 0; background: transparent; color: inherit; text-align: left;
+}
+.tr-head:hover { background: #f7f8fc; }
+.tr-head h3 { margin: 0; margin-right: auto; font-size: 13px; font-weight: 750; }
+.tr-head .tr-meta { font-size: 11px; color: var(--muted); font-weight: 650; }
+.tr-head .chev {
+  color: var(--muted);
+  transition: transform .2s var(--ease);
+}
+.transcript.is-collapsed .tr-head .chev { transform: rotate(-90deg); }
+.tr-body { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.transcript.is-collapsed .tr-body { display: none; }
+.tr-feed { padding: 0 14px 16px; display: grid; gap: 10px; }
+.line { font-size: 13px; line-height: 1.45; }
+.line b { display: block; font-size: 12px; margin-bottom: 2px; }
+.line.you b { color: var(--brand); }
+.line.them b { color: var(--blue-deep); }
+.line p { margin: 0; color: #2a2d38; }
+
+/* ===== Dock ===== */
+.dock {
+  position: fixed; left: 50%; bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex; align-items: center; gap: 8px;
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 12px 40px rgba(16, 24, 40, .14);
+  padding: 8px;
+  border-radius: 16px;
+}
+.dock button {
+  width: 42px; height: 42px; border-radius: 12px;
+  border: 0; background: #f4f5fb; color: #2b3144;
+  display: grid; place-items: center;
+}
+.dock button:hover { background: #eceef6; }
+.dock button.is-off { background: #fdecec; color: var(--red); }
+.dock button.is-on { background: var(--blue-soft); color: var(--blue-deep); }
+.dock .hang {
+  width: auto; padding: 0 16px;
+  background: var(--red); color: #fff; font-weight: 750; font-size: 13px;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.dock .hang:hover { filter: brightness(.96); background: var(--red); }
+
+.toast {
+  position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%) translateY(8px);
+  background: #111827; color: #fff;
+  padding: 10px 14px; border-radius: 10px;
+  font-size: 13px; font-weight: 650;
+  opacity: 0; pointer-events: none;
+  transition: .2s var(--ease); z-index: 40;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 1180px) {
+  :root { --profile: 360px; }
+}
+@media (max-width: 980px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100vh; }
+  .room {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .split { display: none; }
+  .col { min-height: auto; }
+  .profile-sticky { position: relative; }
+}
+
+.app { grid-template-rows: 68px 1fr; }
+.topbar {
+  background: #fff;
+  height: 68px;
+  min-height: 68px;
+  padding-left: 32px;
+  padding-right: 28px;
+}
+.live {
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--subtle);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.live i {
+  width: 5px;
+  height: 5px;
+  background: #c9a3a0;
+  box-shadow: none;
+  animation: none;
+}
+.room { gap: 0; padding: 0; background: var(--page); }
+.panel,
+.profile-sticky,
+.transcript,
+.next-peek,
+.job {
+  background: var(--page);
+  border-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+.panel { border: 0; }
+.job { border: 0; border-top: 1px solid var(--line); }
+.job:first-of-type { border-top: 0; }
+.job-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+  padding: 16px 0 8px;
+}
+.job-head b {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 750;
+  line-height: 1.25;
+  color: var(--text);
+}
+.job .co {
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.3;
+  color: var(--muted);
+}
+.job .when {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--subtle);
+  padding-top: 1px;
+  align-self: auto;
+}
+.job .job-body { padding: 0 0 18px; }
+.next-peek { border: 0; padding: 0 0 4px; background: transparent; }
+.next-peek .q-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 1px 22px 0;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1;
+  color: var(--text);
+}
+.next-peek .q-step:hover { background: #f3f3ef; }
+.next-peek .q-step:disabled { opacity: .35; cursor: default; }
+.next-peek .q-step.next {
+  background: var(--green);
+  color: #fff;
+  border-color: transparent;
+}
+.next-peek .q-step.next:hover { filter: brightness(.96); background: var(--green); }
+.stat, .chip, .jump a { background: none; border-radius: 0; padding: 0; height: auto; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 16px 0 10px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.stats .stat {
+  padding: 12px 10px 12px 0;
+  border-bottom: 0;
+}
+.stats .stat + .stat {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+.stats .stat span {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  color: var(--muted);
+}
+.stats .stat:nth-child(even) {
+  padding-left: 12px;
+  padding-right: 0;
+}
+.profile-sticky { background: var(--page); }
+.section {
+  margin-top: 0;
+  padding-top: 24px;
+  scroll-margin-top: 0;
+}
+.section + .section {
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.skill-row {
+  border-bottom-color: #e8e8e4;
+}
+.section h4 {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.profile-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 26px;
+}
+.pools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.widen { flex: 0 0 auto; }
+.pool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  padding: 0 10px;
+  line-height: 1;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 750;
+}
+.widen {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--subtle);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+}
+.widen:hover, body.is-profile-wide .widen {
+  background: none;
+  border: 0;
+  color: var(--text);
+}
+.transcript {
+  background: var(--page);
+  border-top: 1px solid var(--line);
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.transcript:not(.is-collapsed) {
+  flex: 0 0 50%;
+  height: 50%;
+}
+.tr-head {
+  flex: 0 0 auto;
+  padding: 12px 72px;
+}
+.tr-feed { padding: 0 72px 20px; }
+.tr-head:hover { background: transparent; }
+.q-panel { background: var(--page); }
+.q-head {
+  padding: 40px 80px 0 72px;
+  border-bottom: 0;
+}
+.q-stage {
+  align-items: flex-start;
+  padding: 28px 80px 28px 72px;
+}
+.q-kicker {
+  justify-content: flex-start;
+  margin: 0 0 14px;
+  max-width: 720px;
+  width: 100%;
+}
+.q-prompt {
+  margin: 0;
+  max-width: 720px;
+  width: 100%;
+  text-align: left;
+}
+.q-answer,
+.cov {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 720px;
+}
+.cov {
+  margin-top: 36px;
+  max-width: 280px;
+}
+.cov-top {
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.cov-top span,
+.cov-top b {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--subtle);
+}
+.cov-bar {
+  height: 2px;
+  border-radius: 0;
+  background: #ecece8;
+}
+.cov-bar i {
+  border-radius: 0;
+  background: #c8c8c2;
+}
+.cov[data-level="1"] .cov-bar i { background: #d4c4a0; }
+.cov[data-level="2"] .cov-bar i { background: #9aa6d4; }
+.cov[data-level="3"] .cov-bar i { background: var(--blue-deep); }
+.next-peek {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  margin: 0 80px 20px 72px;
+  align-items: center;
+  padding: 0;
+  gap: 28px;
+}
+.next-peek .copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 44px;
+}
+.next-peek .k { line-height: 1.15; }
+.next-peek b { margin-top: 2px; line-height: 1.25; }
+.ai-fab {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.ai-fab:hover { filter: brightness(.96); }
+.ai-fab.is-open { background: #1a1a1a; }
+body.is-ai-open { --ai: 380px; }
+.ai-col {
+  display: none;
+  min-height: 0;
+  min-width: 0;
+  flex-direction: column;
+  border-left: 1px solid var(--line);
+  background: #fbfbfa;
+}
+body.is-ai-open .ai-col { display: flex; }
+.ai-chat {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  height: auto;
+}
+.ai-chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 12px 0;
+}
+.ai-chat-head button {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+}
+.ai-chat-head button:hover { color: var(--text); }
+.ai-thread {
+  overflow: auto;
+  padding: 8px 18px 16px;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+.ai-msg .who {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+  margin-bottom: 4px;
+}
+.ai-msg.you .who { color: var(--brand); }
+.ai-msg p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.ai-composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--line);
+}
+.ai-composer input {
+  width: 100%;
+  height: 36px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: var(--text);
+}
+.ai-composer input::placeholder { color: #c4c4be; }
+.ai-composer input:focus { border-bottom-color: var(--brand); }
+.ai-composer button {
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 650;
+}
+.q-stage:has(.wrap-up),
+.q-stage:has(.script-list) {
+  justify-content: flex-start;
+  overflow: auto;
+}
+.q-stage:has(.wrap-up) {
+  align-items: center;
+}
+.script-list {
+  width: 100%;
+  flex: none;
+  overflow: visible;
+  padding: min(32vh, 260px) 80px min(32vh, 260px) 0;
+  justify-content: start;
+}
+.script-item.is-now h3 {
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1.22;
+}
+.script-item.is-now p {
+  font-size: 16.5px;
+  color: var(--text);
+}
+.wrap-block {
+  margin-top: 20px;
+  padding-top: 0;
+  border-top: 0;
+}
+.wrap-block + .wrap-block {
+  margin-top: 28px;
+  padding-top: 8px;
+  border-top: 0;
+}
+.wrap-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 0;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.wrap-head:last-child { border-bottom: 0; }
+.wrap-head h4 { margin: 0; }
+.wrap-rate-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+.wrap-rate-kicker {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.wrap-rate-label {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+.stars .star {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #d5d5ce;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  transition: color .15s var(--ease), transform .15s var(--ease);
+}
+.stars .star svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+.stars .star .fill {
+  opacity: 0;
+}
+.stars .star.is-on { color: var(--brand); }
+.stars .star.is-on .fill { opacity: 1; }
+.stars:hover .star { color: #d5d5ce; }
+.stars:hover .star .fill { opacity: 0; }
+.stars:hover .star:hover,
+.stars:hover .star:has(~ .star:hover) { color: var(--brand); }
+.stars:hover .star:hover .fill,
+.stars:hover .star:has(~ .star:hover) .fill { opacity: 1; }
+.stars .star:hover { transform: translateY(-1px); }
+.stars-score {
+  margin-left: 10px;
+  min-width: 2.8ch;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.wrap-copy p {
+  margin: 0 0 14px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: #2a2a2a;
+}
+.wrap-copy p:last-child { margin-bottom: 0; }
+.wrap-up {
+  width: 100%;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.wrap-up .script-list {
+  width: 100%;
+  padding: 0 0 48px;
+  overflow: visible;
+  flex: none;
+  justify-content: start;
+}
+.wrap-up .script-item {
+  width: 100%;
+  cursor: default;
+}
+.wrap-block {
+  margin-top: 16px;
+  padding-top: 0;
+  border-top: 0;
+}
+.wrap-block:first-of-type { margin-top: 16px; }
+.wrap-block + .wrap-block {
+  margin-top: 28px;
+  padding-top: 8px;
+  border-top: 0;
+}
+.eng {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.eng-opt {
+  height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text);
+}
+.eng-opt:last-child { border-right: 0; }
+.eng-opt:hover { background: #f3f3ef; }
+.eng-opt.is-on {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.eng-opt.is-on:hover { background: var(--brand-soft); }
+.wrap-block h4 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+.wrap-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.wrap-label span { font-weight: 500; letter-spacing: 0; text-transform: none; }
+.wrap-block .stars { margin: 0; }
+.wrap-copy:focus { outline: none; }
+.wrap-meta {
+  margin: 28px 0 0;
+  font-size: 13px;
+  color: var(--subtle);
+}
+.wrap-review {
+  margin-top: 36px;
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--brand);
+}
+.room { padding-bottom: 24px; }
+.top-right { gap: 16px; }
+.dock {
+  position: static;
+  transform: none;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+  gap: 4px;
+}
+.dock button {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: #5a5a56;
+}
+.dock button:hover { background: #f3f3ef; }
+.dock button.is-off { background: #f7eceb; color: var(--red); }
+.dock button.is-on { background: var(--brand-soft); color: var(--green); }
+.dock .hang {
+  width: auto;
+  height: 34px;
+  padding: 0 12px;
+  margin-left: 6px;
+  background: var(--red);
+  color: #fff;
+  font-weight: 650;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 8px;
+}
+.dock .hang:hover { filter: brightness(.96); background: var(--red); }
+.toast { bottom: 24px; }
+
+.call-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+.call-wrap .call { margin-bottom: 0; }
+.call-dock {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(18, 18, 16, .72);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .28);
+  transform: translate(-50%, -42%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .18s var(--ease), transform .18s var(--ease), visibility .18s var(--ease);
+}
+.call-wrap:hover .call-dock,
+.tile:hover .call-dock,
+.share-board:hover .call-dock {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+.call-dock button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  display: grid;
+  place-items: center;
+}
+.call-dock button:hover { background: rgba(255, 255, 255, .22); }
+.call-dock button.is-off { background: #c4473a; color: #fff; }
+.call-dock button.is-on { background: var(--brand); color: #fff; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.svg" alt="BetterEngineer">
+      <span class="live"><i></i> Live · <span id="clock">12:18</span></span>
+    </a>
+    <div class="top-right">
+      <nav class="dock" aria-label="Meeting controls">
+        <button type="button" id="btnMic" data-call="mic" title="Microphone" aria-pressed="true" onclick="toggle('mic')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3"/></svg>
+        </button>
+        <button type="button" id="btnCam" data-call="cam" title="Camera" aria-pressed="true" onclick="toggle('cam')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>
+        </button>
+        <button type="button" id="btnShare" data-call="share" title="Share screen" aria-pressed="false" onclick="toggle('share')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </button>
+        <button type="button" id="btnCaps" data-call="captions" title="Live transcript" aria-pressed="false" onclick="toggle('captions')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 14c.4-1.6 1.6-2.4 3.2-2.4 1.4 0 2.3.6 2.3 1.7 0 2.4-5.5 1.4-5.5 4.1h5.6M15.2 14c.3-1.5 1.3-2.3 2.8-2.3"/></svg>
+        </button>
+        <button class="hang" type="button" id="btnHang">End interview</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="room">
+    <section class="col" aria-label="Candidate profile">
+      <article class="panel">
+        <div class="panel-scroll profile">
+          <div class="profile-sticky">
+            <div class="call-wrap">
+              <div class="call" id="stageInner"></div>
+              <nav class="call-dock" aria-hidden="true">
+                <button type="button" data-call="mic" title="Microphone" aria-pressed="true" onclick="toggle('mic')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v3"/></svg>
+                </button>
+                <button type="button" data-call="cam" title="Camera" aria-pressed="true" onclick="toggle('cam')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>
+                </button>
+                <button type="button" data-call="share" title="Share screen" aria-pressed="false" onclick="toggle('share')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                </button>
+                <button type="button" data-call="captions" title="Live transcript" aria-pressed="false" onclick="toggle('captions')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 14c.4-1.6 1.6-2.4 3.2-2.4 1.4 0 2.3.6 2.3 1.7 0 2.4-5.5 1.4-5.5 4.1h5.6M15.2 14c.3-1.5 1.3-2.3 2.8-2.3"/></svg>
+                </button>
+              </nav>
+            </div>
+          </div>
+          <div class="profile-body">
+            <div class="profile-hero">
+              <div>
+                <h1>Marcelo Dosko</h1>
+                <p class="title">Córdoba, Argentina · GMT-3</p>
+              </div>
+            </div>
+            <div class="profile-tools">
+              <div class="pools">
+                <span class="pool">.NET Software Engineer</span>
+                <span class="pool">Backend Engineer</span>
+              </div>
+            </div>
+            <div class="stats">
+              <div class="stat"><span>Desired Hr. Pay</span><b>$12</b></div>
+              <div class="stat"><span>Desired Mo. Pay</span><b>$122</b></div>
+              <div class="stat"><span>Notice Period</span><b>Available now</b></div>
+              <div class="stat"><span>Open to</span><b>Full-time</b></div>
+            </div>
+
+            <div class="section" id="skills">
+              <h4>Skills</h4>
+              <div class="skill-row">C#</div>
+              <div class="skill-row">.NET / ASP.NET Core</div>
+              <div class="skill-row">SQL Server</div>
+              <div class="skill-row">Azure</div>
+              <div class="skill-row">Entity Framework Core</div>
+              <div class="skill-row">Azure Service Bus</div>
+              <div class="skill-row">REST APIs</div>
+              <div class="skill-row">Redis</div>
+              <div class="skill-row">CI / GitHub Actions</div>
+            </div>
+
+            <div class="section" id="work">
+              <h4>Work experience</h4>
+
+              <article class="job">
+                <div class="job-head">
+                  <b>Senior .NET Engineer</b>
+                  <span class="co">Harbor Payments</span>
+                  <span class="when">Aug 2023 - Present (3 years, 1 month)</span>
+                </div>
+                <div class="job-body">
+                  <p>Owns the reserve/capture path and the Service Bus consumers that keep settlement in sync. Hired into a squad that was still fighting duplicate payouts.</p>
+                  <ul>
+                    <li>Designed an idempotent capture API so client retries cannot double-charge.</li>
+                    <li>Introduced an outbox + Service Bus for ledger events; duplicate settlement tickets dropped sharply.</li>
+                    <li>On-call for payouts; wrote the runbooks for stuck transactions.</li>
+                    <li>Mentored two mid-level engineers on EF Core and SQL performance.</li>
+                  </ul>
+                  <div class="chips">
+                    <span class="chip">C#</span>
+                    <span class="chip">.NET 8</span>
+                    <span class="chip">Azure Functions</span>
+                    <span class="chip">Service Bus</span>
+                    <span class="chip">SQL Server</span>
+                    <span class="chip">EF Core</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="job">
+                <div class="job-head">
+                  <b>Software Engineer</b>
+                  <span class="co">Andes Logistics</span>
+                  <span class="when">Mar 2018 - Jul 2023 (5 years, 4 months)</span>
+                </div>
+                <div class="job-body">
+                  <p>Dispatch and tracking backend for a regional logistics product used by 200+ operators. Started as the junior on a monolith and left owning the live-map service.</p>
+                  <ul>
+                    <li>Shipped the first tracking API and the worker that ingested GPS events.</li>
+                    <li>Cut live-map query time from ~1.2s to ~180ms (indexes + a Redis read path).</li>
+                    <li>Helped lift a monolith module onto a .NET service without a big-bang rewrite.</li>
+                    <li>Paired with ops on the first on-call rotation for the tracking stack.</li>
+                  </ul>
+                  <div class="chips">
+                    <span class="chip">C#</span>
+                    <span class="chip">.NET</span>
+                    <span class="chip">SQL Server</span>
+                    <span class="chip">Azure</span>
+                    <span class="chip">Redis</span>
+                    <span class="chip">REST</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="job">
+                <div class="job-head">
+                  <b>Junior Developer</b>
+                  <span class="co">Nexo Digital</span>
+                  <span class="when">Feb 2016 - Feb 2018 (2 years)</span>
+                </div>
+                <div class="job-body">
+                  <p>Line-of-business web apps for local clients. Where he learned C# for real: CRMs, reporting, and the unglamorous SQL that keeps a shop running.</p>
+                  <ul>
+                    <li>Built and maintained ASP.NET MVC apps against SQL Server.</li>
+                    <li>Took support tickets through to production fixes, including data repairs.</li>
+                  </ul>
+                  <div class="chips">
+                    <span class="chip">C#</span>
+                    <span class="chip">ASP.NET MVC</span>
+                    <span class="chip">SQL Server</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div class="section" id="education">
+              <h4>Education</h4>
+              <article class="job">
+                <div class="job-head">
+                  <b>B.S. Computer Science</b>
+                  <span class="co">Universidad Nacional de Córdoba</span>
+                  <span class="when">2014 - 2018</span>
+                </div>
+                <div class="job-body">
+                  <p>Coursework in algorithms, databases, and distributed systems. Thesis on messaging patterns for unreliable networks, still the mental model he uses for Service Bus work.</p>
+                </div>
+              </article>
+            </div>
+
+            <div class="section" id="languages">
+              <h4>Languages</h4>
+              <div class="lang"><b>English</b><span>Fluent · written and spoken</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="split" id="split" role="separator" aria-orientation="vertical" aria-label="Resize columns"></div>
+
+    <section class="col" aria-label="Interview questions">
+      <article class="panel q-panel">
+        <div class="q-head">
+          <div class="remain">
+              <b id="progress">3 left</b>
+            <div class="pips" id="pips" aria-hidden="true"></div>
+          </div>
+          <div class="q-head-actions">
+            <a href="prep.html">Edit set</a>
+            <button type="button" class="script-link" id="scriptToggle">See all</button>
+            <button class="ai-fab" type="button" id="aiToggle" title="Instruct the AI" aria-label="Instruct the AI">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2 13.4 8.8 20 10.2 13.4 11.6 12 18.2 10.6 11.6 4 10.2 10.6 8.8 12 2.2ZM19 15.2l.7 3.1 3.1.7-3.1.7-.7 3.1-.7-3.1-3.1-.7 3.1-.7.7-3.1ZM5.2 14.5l.5 2.2 2.2.5-2.2.5-.5 2.2-.5-2.2-2.2-.5 2.2-.5.5-2.2Z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="q-stage" id="qStage"></div>
+        <div class="next-peek" id="nextPeek"></div>
+        <div class="transcript is-collapsed" id="transcriptPanel">
+          <button type="button" class="tr-head" id="trToggle" aria-expanded="false" aria-controls="trBody">
+            <h3>Live transcript</h3>
+            <span class="tr-meta" id="trMeta">Show</span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="tr-body" id="trBody">
+            <div class="panel-scroll">
+              <div class="tr-feed" id="trFeed"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="col ai-col" aria-label="AI instructions">
+      <aside class="ai-chat" id="aiChat" aria-hidden="true">
+        <div class="ai-chat-head">
+          <button type="button" id="aiClose" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <div class="ai-thread" id="aiThread"></div>
+        <form class="ai-composer" id="aiChatForm">
+          <input id="aiChatInput" type="text" autocomplete="off" placeholder="Send an instruction…">
+          <button type="submit">Send</button>
+        </form>
+      </aside>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CULTURAL = {
+  label: "Cultural",
+  questions: [
+    { id: "c1", prompt: "How much overall experience do you have, and how much of that is in this role?" },
+    { id: "c2", prompt: "What would motivate you to explore a new career opportunity?" },
+    { id: "c3", prompt: "What kind of team environment helps you do your best work?" },
+    { id: "c4", prompt: "How do you like to get feedback, and how do you give it?" },
+    { id: "c5", prompt: "What does a good week look like for you, hours and communication included?" },
+    { id: "c6", prompt: "Where do you want to be in this role a year from now?" }
+  ]
+};
+
+const POOLS = [
+  {
+    id: "dotnet",
+    label: ".NET Software Engineer",
+    questions: [
+      { id: "t1", prompt: "Walk me through a production .NET system you owned end to end." },
+      { id: "t2", prompt: "How do you debug a failing service in production, and what do you look at first?" },
+      { id: "t3", prompt: "Where have you used Azure, Service Bus, or similar messaging in anger?" },
+      { id: "t7", prompt: "How do you test a .NET service that talks to the bus or a database?" },
+      { id: "t8", prompt: "Tell me about an EF Core or data-model decision you later regretted." },
+      { id: "t9", prompt: "How have you handled configuration, secrets, and environment differences in Azure?" }
+    ]
+  },
+  {
+    id: "backend",
+    label: "Backend Engineer",
+    questions: [
+      { id: "t4", prompt: "Walk me through an API other teams depended on. What broke in production?" },
+      { id: "t5", prompt: "How do you keep two writers from corrupting the same record?" },
+      { id: "t6", prompt: "A dependency starts timing out in production. What do you look at first?" },
+      { id: "t10", prompt: "How do you version an API other teams already depend on?" },
+      { id: "t11", prompt: "Walk me through how you add observability to a service you didn’t write." },
+      { id: "t12", prompt: "When do you choose a queue over a synchronous call?" }
+    ]
+  }
+];
+
+const JOBS = [
+  {
+    id: "wedge-devops",
+    role: "DevOps Engineer",
+    company: "Wedge",
+    questions: [
+      { id: "j-wd1", prompt: "Walk me through how you ship a service from laptop to production here. What do you own versus what the platform team owns?" },
+      { id: "j-wd2", prompt: "A deploy looks green and users still see the old version. Where do you look first?" },
+      { id: "j-wd3", prompt: "How do you handle secrets and environment config across staging and prod?" },
+      { id: "j-wd4", prompt: "On-call pages at 2am. What does a good first fifteen minutes look like for you?" },
+      { id: "j-wd5", prompt: "When do you choose Terraform or a pipeline change versus a one-off fix in the cluster?" }
+    ]
+  },
+  {
+    id: "reliacare",
+    role: "BackEnd Engineer",
+    company: "ReliaCare Solutions",
+    questions: [
+      { id: "j-ff1", prompt: "This seat owns inventory consistency. How would you keep two requests from double-booking the same unit?" },
+      { id: "j-ff2", prompt: "The client asked us to confirm morning overlap with US hours. What does a typical day look like for you?" },
+      { id: "j-ff3", prompt: "Have you worked on marketplace or booking systems before? What broke in production?" },
+      { id: "j-ff4", prompt: "Search and availability get out of sync. How would you find the source of truth?" },
+      { id: "j-ff5", prompt: "Owners and guests dispute a booking. What belongs in the API versus an ops tool?" }
+    ]
+  },
+  {
+    id: "hackerai",
+    role: "Staff Engineer",
+    company: "Hackerai.co",
+    questions: [
+      { id: "j-hk1", prompt: "What does staff-level ownership look like for you on a team that already has seniors?" },
+      { id: "j-hk2", prompt: "Walk me through a technical decision you made that other teams had to live with." },
+      { id: "j-hk3", prompt: "How do you raise the quality bar without becoming the bottleneck?" },
+      { id: "j-hk4", prompt: "A vague product brief lands on your desk. How do you turn it into something the team can ship?" },
+      { id: "j-hk5", prompt: "Tell me about a time you disagreed with a manager or peer on architecture. How did it land?" }
+    ]
+  },
+  {
+    id: "wedge-staff",
+    role: "Staff Engineer",
+    company: "Wedge",
+    questions: [
+      { id: "j-ws1", prompt: "This seat is expected to set direction, not only ship tickets. How have you done that?" },
+      { id: "j-ws2", prompt: "How do you split time between writing code and unblocking other engineers?" },
+      { id: "j-ws3", prompt: "Walk me through a migration you led across more than one team." },
+      { id: "j-ws4", prompt: "What do you refuse to build until the constraints are clear?" },
+      { id: "j-ws5", prompt: "How do you mentor without becoming the only person who understands the system?" }
+    ]
+  },
+  {
+    id: "connective-cloud",
+    role: "Cloud Operations & Observability Engineer",
+    company: "Connective Talent",
+    questions: [
+      { id: "j-ah1", prompt: "Client wants HIPAA-aware logging. How have you kept PII out of logs without going blind in prod?" },
+      { id: "j-ah2", prompt: "They run Azure Functions + Service Bus. Where have you used that shape of system?" },
+      { id: "j-ah3", prompt: "How would you design an audit trail for who accessed a patient-adjacent record?" },
+      { id: "j-ah4", prompt: "A Function starts failing after a deploy with no code change in that Function. Where do you look?" },
+      { id: "j-ah5", prompt: "How do you keep PHI out of exception emails and APM traces?" }
+    ]
+  },
+  {
+    id: "connective-cyber",
+    role: "Cybersecurity Platform Engineer",
+    company: "Connective Talent",
+    questions: [
+      { id: "j-cy1", prompt: "How do you keep secrets out of logs, CI, and exception traces?" },
+      { id: "j-cy2", prompt: "Where does identity stop and the app start in systems you’ve built?" },
+      { id: "j-cy3", prompt: "A dependency CVE drops on Friday. What do you do first?" },
+      { id: "j-cy4", prompt: "How would you design an audit trail for who accessed a production secret?" },
+      { id: "j-cy5", prompt: "An API key leaks. What does a good first hour look like?" }
+    ]
+  }
+];
+
+const SCRIPT = [
+  { wait: 900, who: "you", name: "Patrick", text: "How much overall experience do you have?", talking: "you" },
+  { wait: 1600, who: "them", name: "Marcelo Dosko", text: "I have 8 years of experience.", talking: "them", fillId: "c1", fill: "Candidate has 8 years of experience overall." },
+  { wait: 1400, who: "you", name: "Patrick", text: "How much in this role?", talking: "you" },
+  { wait: 1800, who: "them", name: "Marcelo Dosko", text: "In this role, about 3 years. I spent more of my career on other stacks before moving fully into .NET.", talking: "them", fillId: "c1", fill: "Candidate has 8 years of experience overall, about 3 years in this role. He spent more of his career on other technologies before moving fully into .NET." },
+  { wait: 1600, who: "you", name: "Patrick", text: "What would motivate you to explore a new career opportunity?", talking: "you" },
+  { wait: 2200, who: "them", name: "Marcelo Dosko", text: "I want clearer ownership of a product area, and a team where I can mentor without being the only senior in the room.", talking: "them", fillId: "c2", fill: "Wants clearer ownership of a product area, and a team where he can mentor without being the only senior in the room." }
+];
+
+const DETAILS = {
+  c1: { why: "Calibrate seniority before we get into the stack.", listen: "Years total vs years in this role, and whether titles are inflated.", good: "A clear split, e.g. 8 years overall, about 3 in this seat, and honesty about other stacks.", follow: "What changed in those last three years? What did you actually own?" },
+  c2: { why: "Motivation tells us if this is a real search or a fishing trip.", listen: "Push vs pull: manager, money, boredom, ownership, growth.", good: "A concrete gap in the current seat, not a generic “new challenges.”", follow: "What would make you stay where you are?" },
+  c3: { why: "Culture fit is the thing clients still bounce on after a strong technical pass.", listen: "Collaboration vs hero mode, feedback, timezone overlap.", good: "Specifics about pairing, ownership, and the kind of team they want to join.", follow: "When has a team environment gotten in your way?" },
+  c4: { why: "Feedback style shows whether they will land on a US team.", listen: "Direct vs buffered, written vs live, how they handle being wrong.", good: "A real example of giving and getting hard notes.", follow: "What feedback did you ignore that you shouldn’t have?" },
+  c5: { why: "Hours and communication are how overlap actually works.", listen: "Calendar honesty, async habits, meeting load.", good: "A week that could exist here, not a heroic one.", follow: "What happens to that week when production is on fire?" },
+  c6: { why: "Trajectory tells us if this seat is a stretch or a parking spot.", listen: "Ownership, scope, mentoring, not a title chase.", good: "A year from now that maps to this role.", follow: "What would make you feel stuck?" },
+  t1: { why: "We need to hear a system, not a résumé line.", listen: "Boundaries, data, failure modes, what they personally owned.", good: "Can walk the request path and name what broke in production.", follow: "If you had to rebuild one piece, what would you change?" },
+  t2: { why: "Debugging is the job more often than design.", listen: "Metrics first vs logs vs guesswork; how they involve others.", good: "A repeatable path: symptom → signal → hypothesis → fix → prevention.", follow: "Tell me about a time that path was wrong." },
+  t3: { why: "This pool is .NET / Azure. We should hear it used under load.", listen: "Service Bus, Functions, retries, poison messages, idempotency.", good: "A real consumer they owned, including the ugly parts.", follow: "How did you handle duplicate messages?" },
+  t4: { why: "We need a service other people actually used.", listen: "Contract, failure modes, who they paged.", good: "A production story with a clear owner.", follow: "What would you change about that API now?" },
+  t5: { why: "Concurrency is the backend bar.", listen: "Transactions, uniqueness, the race they actually hit.", good: "A concrete approach, not “we’d just use a lock.”", follow: "What happens if the lock times out?" },
+  t6: { why: "Timeouts are the job more often than design.", listen: "Metrics first vs logs vs guesswork; how they involve others.", good: "A repeatable path: symptom → signal → hypothesis → fix.", follow: "Tell me about a time that path was wrong." },
+  t7: { why: "Tests against the bus are where .NET seniors separate.", listen: "What they mock, what they don’t, how CI looks.", good: "A test they actually run, not a theory.", follow: "What broke in prod that tests missed?" },
+  t8: { why: "Data-model regret is a senior signal.", listen: "Migrations, coupling, what they would do now.", good: "A specific schema choice and the cost.", follow: "How did you live with it in the meantime?" },
+  t9: { why: "Config and secrets are how Azure services actually ship.", listen: "Key Vault, slots, what leaked, what they rotated.", good: "A boring, repeatable path across environments.", follow: "How do you keep local from lying to you?" },
+  t10: { why: "Versioning is how they treat other teams.", listen: "Compatibility, deprecation, who they told.", good: "A change they shipped without breaking callers.", follow: "When did you have to break someone?" },
+  t11: { why: "Observability on a inherited service is the real job.", listen: "Metrics, traces, logs, what they added first.", good: "A concrete add, not “we’d put Datadog on it.”", follow: "What did you still not know after that?" },
+  t12: { why: "Sync vs queue is the design bar.", listen: "Latency, retries, user-facing vs background.", good: "A time they picked one and why the other was wrong.", follow: "What happens when the queue lags?" },
+  "j-ff1": { why: "Client asked us to probe double-booking / inventory consistency.", listen: "Transactions, locks, uniqueness, the race they actually hit.", good: "A concrete approach, not “we’d just use a lock.”", follow: "What happens if the lock times out?" },
+  "j-ff2": { why: "Client wants morning overlap with US hours.", listen: "Real schedule, not a hopeful one.", good: "A typical day that actually overlaps ET mornings.", follow: "How do you handle a 7am incident?" },
+  "j-ff3": { why: "Marketplace / booking experience is the closest analog.", listen: "What broke: inventory, payments, search, ops tools.", good: "A production story, not a side project.", follow: "What would you refuse to rebuild the same way?" },
+  "j-ff4": { why: "Search vs availability drift is their actual pain.", listen: "Source of truth, rebuild vs live write, who they page.", good: "A way to find which store is lying.", follow: "How long can search be wrong before it is a customer bug?" },
+  "j-ff5": { why: "Disputes show product judgment, not just schema.", listen: "What is system of record vs an ops override.", good: "A clear line: API holds facts, tools hold exceptions.", follow: "Who is allowed to break the invariant by hand?" },
+  "j-ah1": { why: "HIPAA-aware logging is a client must-have.", listen: "PII redaction, what they still need in prod, audit trails.", good: "They’ve thought about the tradeoff, not just “don’t log PII.”", follow: "How do you debug when the useful field is redacted?" },
+  "j-ah2": { why: "Their stack is Azure Functions + Service Bus.", listen: "Cold starts, retries, poison queues, coupling.", good: "Lived in that shape of system, not just read the docs.", follow: "How do you test a function that talks to the bus?" },
+  "j-ah3": { why: "Audit trails are a HIPAA conversation they will have.", listen: "Who, what, when, how long, who can see the log.", good: "A design that is useful in an audit, not just “we log it.”", follow: "What do you do if the audit store is down?" },
+  "j-ah4": { why: "The break is often config, not code.", listen: "App settings, slots, Key Vault, dependency versions.", good: "They don’t start in the Function body.", follow: "How do you prove it was the deploy and not traffic?" },
+  "j-ah5": { why: "PHI leaks in traces are how health teams get burned.", listen: "Exception filters, PII scrubbers, what still gets through.", good: "A path they have actually locked down.", follow: "How do you debug when the useful field is gone?" },
+  "j-np1": { why: "Idempotent capture is the payments bar.", listen: "Idempotency keys, at-least-once consumers, exactly-once illusions.", good: "They can design a retry that cannot charge twice.", follow: "Where does the key live, and for how long?" },
+  "j-np2": { why: "Client asked us to probe the PCI boundary.", listen: "Where card data stops, tokenization, who is in scope.", good: "A clear line: this service never sees PAN.", follow: "What happens if a log accidentally captures a card?" },
+  "j-np3": { why: "Duplicate webhooks are the processor’s default.", listen: "Idempotency, ordering, what they persist first.", good: "A retry that cannot double-apply.", follow: "How do you know which one was first?" },
+  "j-np4": { why: "Reconciliation is the payments job after capture.", listen: "Ledger vs processor, diffs, who they tell.", good: "A daily path they have run, not a hope.", follow: "What does a $3 miss look like at 6pm?" },
+  "j-np5": { why: "Split-brain after capture is the scary case.", listen: "Outbox, retry, compensating action, customer state.", good: "They protect the guest from a second charge.", follow: "How long do you keep trying before you page?" }
+};
+
+const COV = ["Not yet", "Partial", "Covered", "Strong"];
+const ENGLISH = ["Novice", "Limited", "Professional", "Proficient", "Fluent"];
+
+const state = {
+  jobId: null,
+  jobIds: [],
+  poolId: "dotnet",
+  answers: {},
+  filled: {},
+  coverage: {},
+  mic: true,
+  cam: true,
+  share: false,
+  captions: false,
+  talking: "them",
+  elapsed: 12 * 60 + 18,
+  queue: [],
+  qIndex: 0,
+  detailsOpen: false,
+  scriptOpen: false,
+  done: false,
+  aiOpen: false,
+  aiRoom: "Capture evidence, not slogans. Flag it if US-hours overlap is vague.",
+  aiQ: {},
+  aiChat: [],
+  rating: 0,
+  ratings: {},
+  summaries: {},
+  english: "Fluent",
+  endedEarly: false
+};
+
+function catalogById() {
+  const map = {};
+  CULTURAL.questions.forEach(q => { map[q.id] = { ...q, group: CULTURAL.label, ...(DETAILS[q.id] || {}) }; });
+  POOLS.forEach(p => {
+    p.questions.forEach(q => { map[q.id] = { ...q, group: p.label, ...(DETAILS[q.id] || {}) }; });
+  });
+  JOBS.forEach(j => {
+    j.questions.forEach(q => { map[q.id] = { ...q, group: j.company, ...(DETAILS[q.id] || {}) }; });
+  });
+  return map;
+}
+
+function loadQueue() {
+  const byId = catalogById();
+  let ids = CULTURAL.questions.map(q => q.id).concat(POOLS[0].questions.map(q => q.id));
+  try {
+    const saved = JSON.parse(localStorage.getItem("be-interview-set") || "null");
+    if (saved?.ids?.length) ids = saved.ids;
+    state.jobId = saved?.jobId || null;
+    state.jobIds = Array.isArray(saved?.jobIds) ? saved.jobIds : (state.jobId ? [state.jobId] : []);
+    state.poolId = saved?.poolId || state.poolId;
+  } catch (e) {}
+  if (!state.poolId) {
+    const hit = POOLS.find(p => p.questions.some(q => ids.includes(q.id)));
+    if (hit) state.poolId = hit.id;
+  }
+  state.queue = ids.map(id => {
+    const q = byId[id];
+    return q ? { ...q } : null;
+  }).filter(Boolean);
+  if (!state.jobIds.length) {
+    const hits = JOBS.filter(j => j.questions.some(q => ids.includes(q.id)));
+    state.jobIds = hits.map(j => j.id);
+    if (!state.jobId && hits[0]) state.jobId = hits[0].id;
+  }
+  state.qIndex = 0;
+  state.queue.forEach(q => {
+    const base = q.id.replace(/-\d+$/, "");
+    if (!state.aiQ[q.id] && DETAILS[base]?.listen) state.aiQ[q.id] = DETAILS[base].listen;
+  });
+}
+
+function currentQ() { return state.queue[state.qIndex] || null; }
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+function coverageFromAnswer(text) {
+  const n = (text || "").trim().length;
+  if (!n) return 0;
+  if (n < 80) return 1;
+  if (n < 180) return 2;
+  return 3;
+}
+
+function covLevel(id) {
+  if (state.coverage[id] != null) return state.coverage[id];
+  return coverageFromAnswer(state.answers[id]);
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+}
+
+function questionBucket(q) {
+  const id = String(q.id || q).replace(/-\d+$/, "");
+  if (id.startsWith("c")) return "cultural";
+  if (id.startsWith("t")) return "technical";
+  if (id.startsWith("b")) return "behavioral";
+  if (id.startsWith("e")) return "education";
+  if (id.startsWith("j-")) return "job";
+  return "other";
+}
+
+function feedbackSections() {
+  const present = new Set(state.queue.map(questionBucket));
+  const jobs = (state.jobIds.length ? state.jobIds : [state.jobId]).map(id => JOBS.find(j => j.id === id)).filter(Boolean);
+  const pool = POOLS.find(p => p.id === state.poolId);
+  const sections = [];
+  if (present.has("cultural")) sections.push({ key: "cultural", title: "Cultural", kicker: "General feedback" });
+  if (present.has("technical") && pool) sections.push({ key: "pool", title: pool.label, kicker: "Talent pool" });
+  jobs.forEach(job => sections.push({ key: "job:" + job.id, title: job.company, kicker: job.role }));
+  return sections;
+}
+
+function wrapStats() {
+  let answered = 0, covered = 0;
+  state.queue.forEach(q => {
+    const level = covLevel(q.id);
+    if ((state.answers[q.id] || "").trim()) answered += 1;
+    if (level >= 2) covered += 1;
+  });
+  return { total: state.queue.length, answered, covered, open: state.queue.length - answered };
+}
+
+function callSummary() {
+  const s = wrapStats();
+  const pool = POOLS.find(p => p.id === state.poolId);
+  const jobs = (state.jobIds.length ? state.jobIds : [state.jobId]).map(id => JOBS.find(j => j.id === id)).filter(Boolean);
+  const ratings = feedbackSections().map(sec => state.ratings[sec.key] || 0).filter(n => n > 0);
+  const avg = ratings.length ? ratings.reduce((a, n) => a + n, 0) / ratings.length : 0;
+  const strip = (key) => defaultSummary(key).replace(/^This screen was ended early because it was already clear Marcelo was not a fit for this seat.\n\n/, "");
+  const paras = [];
+  if (state.endedEarly) {
+    paras.push(`The call was ended early after ${s.answered} of ${s.total} questions. Enough was on the table to score what had been heard.`);
+  } else {
+    paras.push(`Marcelo answered ${s.answered} of ${s.total} questions${pool ? ` on the ${pool.label} set` : ""}${jobs.length ? `, including client questions for ${jobs.map(j => j.company).join(", ")}` : ""}. English on the call was marked ${state.english}.`);
+  }
+  paras.push(strip("cultural"));
+  paras.push(strip("pool"));
+  if (avg >= 4) {
+    paras.push("Overall he performed at a level we would advance: calm on the call, specific about production, and not selling a slogan.");
+  } else if (avg >= 3) {
+    paras.push("Overall a mixed screen. Worth sending to the right client if the gaps in this set are called out, not a default yes.");
+  } else if (ratings.length) {
+    paras.push("Overall a weak screen for the seats on this set. Do not advance unless the client is hiring below the bar these questions implied.");
+  } else {
+    paras.push("Rate the sections above to lock a recommendation. From the conversation itself he is strongest as the person who takes a messy production path and makes it boring.");
+  }
+  return paras.filter(Boolean).join("\n\n");
+}
+
+function defaultSummary(key) {
+  const early = state.endedEarly
+    ? "This screen was ended early because it was already clear Marcelo was not a fit for this seat.\n\n"
+    : "";
+  if (key === "cultural") {
+    const c1 = (state.answers.c1 || "").trim();
+    const c2 = (state.answers.c2 || "").trim();
+    return early + (c1 || c2
+      ? [c1, c2].filter(Boolean).join(" ") + " He is calm on a call and answers with the system, not a slogan. Looking for clearer ownership of a product area, and a team where he can mentor without being the only senior in the room."
+      : "Marcelo is a senior .NET engineer from Córdoba with 8 years in production systems. Culture conversation was light: he wants ownership of a product area and a team where he is not the only senior.");
+  }
+  if (key === "pool" || key === "technical") {
+    const pool = POOLS.find(p => p.id === state.poolId);
+    const name = pool ? pool.label : ".NET Software Engineer";
+    if (state.poolId === "backend") {
+      return early + `On the ${name} talent-pool bar, Marcelo talks like someone who has owned APIs other teams depend on, including the races and timeouts. Strongest as the person who takes a messy production path and makes it boring. Recommend advancing for senior backend seats that need that kind of production ownership.`;
+    }
+    return early + `On the ${name} talent-pool bar, Marcelo shows 8 years overall and about 3 fully on C#, .NET, and Azure. He talks like someone who has owned Service Bus consumers, retries, and the on-call habits around them, not someone who has only read the docs. Strongest as the person who takes a messy production path and makes it boring. Recommend advancing for senior .NET / Azure seats that need that kind of production ownership.`;
+  }
+  if (key === "job" || String(key).startsWith("job:")) {
+    const id = String(key).startsWith("job:") ? key.slice(4) : state.jobId;
+    const job = JOBS.find(j => j.id === id) || JOBS.find(j => j.id === state.jobId);
+    return early + (job
+      ? `Client questions for ${job.company} (${job.role}) were on this set. Score him on whether he could walk the client’s actual constraints, not a generic architecture answer.`
+      : "Client-specific questions were part of this screen. Score against what that seat actually needs.");
+  }
+  return early + "Notes from this screen.";
+}
+
+function starSvg() {
+  const d = "M12 2.8 14.65 8.7l6.45.84-4.74 4.4 1.22 6.36L12 17.18l-5.58 3.12 1.22-6.36-4.74-4.4 6.45-.84L12 2.8z";
+  return `<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path class="fill" fill="currentColor" d="${d}"/><path fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round" d="${d}"/></svg>`;
+}
+
+function renderAiChat() {
+  const panel = document.getElementById("aiChat");
+  const thread = document.getElementById("aiThread");
+  const fab = document.getElementById("aiToggle");
+  if (!panel || !thread) return;
+  panel.classList.toggle("is-open", state.aiOpen);
+  panel.setAttribute("aria-hidden", String(!state.aiOpen));
+  if (fab) {
+    fab.classList.toggle("is-open", state.aiOpen);
+    fab.setAttribute("aria-pressed", String(state.aiOpen));
+  }
+  thread.innerHTML = state.aiChat.map(m => `
+    <div class="ai-msg ${m.who}">
+      <div class="who">${m.who === "you" ? "You" : "AI"}</div>
+      <p>${esc(m.text)}</p>
+    </div>
+  `).join("");
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function setAiOpen(open) {
+  state.aiOpen = open;
+  document.body.classList.toggle("is-ai-open", open);
+  renderAiChat();
+  if (open) {
+    const input = document.getElementById("aiChatInput");
+    if (input) input.focus();
+  }
+}
+
+function aiReply(text) {
+  state.aiRoom = text;
+  return "I’ll keep that as a standing note for the whole interview.";
+}
+
+function renderQuestions() {
+  const q = currentQ();
+  const root = document.getElementById("qStage");
+  const peek = document.getElementById("nextPeek");
+  const scriptBtn = document.getElementById("scriptToggle");
+  const remain = document.querySelector(".q-head .remain");
+  if (remain) remain.classList.toggle("hidden", !!state.done);
+  if (scriptBtn) {
+    scriptBtn.textContent = state.scriptOpen
+      ? (state.done ? "Back to summary" : "Back to question")
+      : "See all";
+  }
+  if (!q) {
+    root.innerHTML = `<div class="empty-q"><b>No questions in this set</b><a href="prep.html">Build a set first</a></div>`;
+    peek.classList.add("hidden");
+    document.getElementById("progress").textContent = "0 of 0";
+    return;
+  }
+  const total = state.queue.length;
+  const pips = document.getElementById("pips");
+
+  if (state.scriptOpen) {
+    peek.classList.add("hidden");
+    root.innerHTML = `<div class="script-list">${state.queue.map((item, i) => {
+      const ans = (state.answers[item.id] || "").trim();
+      const n = i + 1;
+      return `<button type="button" class="script-item${i === state.qIndex && !state.done ? " is-now" : ""}" data-jump="${i}">
+        <div class="script-n">${String(n).padStart(2, "0")} · ${item.group}</div>
+        <h3>${item.prompt}</h3>
+        <p class="${ans ? "" : "is-empty"}">${ans ? esc(ans) : "No answer yet"}</p>
+      </button>`;
+    }).join("")}</div>`;
+    document.getElementById("progress").textContent = state.done ? "Complete" : (Math.max(0, total - state.qIndex - 1) === 0 ? "Last question" : `${Math.max(0, total - state.qIndex - 1)} left`);
+    requestAnimationFrame(() => {
+      const now = root.querySelector(".script-item.is-now") || root.querySelector(".script-item");
+      if (now) now.scrollIntoView({ block: "center", inline: "nearest" });
+    });
+    return;
+  }
+
+  if (state.done) {
+    const sections = feedbackSections();
+    peek.classList.add("hidden");
+    root.innerHTML = `
+      <div class="wrap-up">
+        <h3 class="q-prompt">Call Summary</h3>
+        <section class="wrap-block">
+          ${sections.map(sec => {
+            const rating = state.ratings[sec.key] || 0;
+            return `<div class="wrap-head">
+              <div class="wrap-rate-copy">
+                <span class="wrap-rate-kicker">${sec.kicker}</span>
+                <b class="wrap-rate-label">${sec.title}</b>
+              </div>
+              <div class="stars" role="radiogroup" aria-label="${sec.title} rating">
+                ${[1,2,3,4,5].map(n => `<button type="button" class="star${n <= rating ? " is-on" : ""}" data-star="${n}" data-rate="${sec.key}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-checked="${n === rating}">${starSvg()}</button>`).join("")}
+                <span class="stars-score">${rating ? rating + " / 5" : ""}</span>
+              </div>
+            </div>`;
+          }).join("")}
+        </section>
+        <section class="wrap-block">
+          <h4>English proficiency</h4>
+          <div class="eng" role="radiogroup" aria-label="English proficiency">
+            ${ENGLISH.map(tier => `<button type="button" class="eng-opt${state.english === tier ? " is-on" : ""}" data-english="${tier}" aria-checked="${state.english === tier}">${tier}</button>`).join("")}
+          </div>
+        </section>
+        <section class="wrap-block">
+          <h4>How they did</h4>
+          <div class="wrap-copy">${String(callSummary()).split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("")}</div>
+        </section>
+        <section class="wrap-block">
+          <h4>Questions and answers</h4>
+          <div class="script-list">${state.queue.map((item, i) => {
+            const ans = (state.answers[item.id] || "").trim();
+            return `<article class="script-item">
+              <div class="script-n">${String(i + 1).padStart(2, "0")} · ${item.group}</div>
+              <h3>${item.prompt}</h3>
+              <p class="${ans ? "" : "is-empty"}">${ans ? esc(ans) : "No answer yet"}</p>
+            </article>`;
+          }).join("")}</div>
+        </section>
+      </div>
+    `;
+    document.getElementById("progress").textContent = state.endedEarly ? "Ended early" : "Complete";
+    if (pips) {
+      pips.innerHTML = Array.from({ length: total }, (_, i) => {
+        const cls = state.endedEarly ? (i <= state.qIndex ? "is-done" : "") : "is-done";
+        return `<i class="${cls}"></i>`;
+      }).join("");
+    }
+    return;
+  }
+  const level = covLevel(q.id);
+  const val = state.answers[q.id] || "";
+  const pct = [0, 33, 66, 100][level];
+  root.innerHTML = `
+    <div class="q-kicker">${q.group}</div>
+    <h3 class="q-prompt">${q.prompt}</h3>
+    <div class="q-answer" data-answer="${q.id}" contenteditable="true" data-placeholder="Answer will land here from the live transcript. You can edit anytime.">${esc(val)}</div>
+    <div class="cov" data-level="${level}">
+      <div class="cov-top"><span>Answer coverage</span><b>${COV[level]}</b></div>
+      <div class="cov-bar"><i style="width:${pct}%"></i></div>
+    </div>
+  `;
+  const next = state.queue[state.qIndex + 1];
+  peek.classList.remove("hidden");
+  peek.innerHTML = `
+    <button type="button" class="q-step" id="qPrev" ${state.qIndex === 0 ? "disabled" : ""}>Previous</button>
+    <div class="copy">${next
+      ? `<span class="k">Up next · ${next.group}</span><b>${next.prompt}</b>`
+      : `<span class="k">End of set</span><b>That’s the last question in this interview.</b>`}</div>
+    <button type="button" class="q-step next" id="qNext">${next ? "Next" : "Finish"}</button>
+  `;
+  const left = Math.max(0, total - state.qIndex - 1);
+  document.getElementById("progress").textContent = left === 0 ? "Last question" : `${left} left`;
+  if (pips) {
+    pips.innerHTML = Array.from({ length: total }, (_, i) => {
+      const cls = i < state.qIndex ? "is-done" : i === state.qIndex ? "is-now" : "";
+      return `<i class="${cls}"></i>`;
+    }).join("");
+  }
+}
+
+function goQuestion(i) {
+  if (i < 0 || i >= state.queue.length) return;
+  state.qIndex = i;
+  state.detailsOpen = false;
+  state.done = false;
+  state.endedEarly = false;
+  renderQuestions();
+}
+
+function endInterview(early) {
+  state.done = true;
+  state.endedEarly = !!early;
+  state.scriptOpen = false;
+  state.aiOpen = false;
+  renderAiChat();
+  renderQuestions();
+}
+
+function updateProgress() { renderQuestions(); }
+
+function renderStage() {
+  const cam = state.cam;
+  const talkingThem = state.talking === "them";
+  const talkingYou = state.talking === "you";
+  const cand = `<div class="tile ${talkingThem ? "is-talking" : ""}">
+    ${cam ? `<img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=900&h=600&fit=crop&crop=faces" alt="Marcelo Dosko">` : `<div class="ph"><svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
+    <span class="label"><span class="mic">${state.mic && talkingThem ? "●" : "○"}</span> Marcelo Dosko</span>
+  </div>`;
+  const self = `<div class="self ${talkingYou ? "is-talking" : ""}">
+    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=320&h=240&fit=crop&crop=faces" alt="You">
+    <span class="label">You</span>
+  </div>`;
+  const share = `<div class="share-board">
+    <div class="share-bar"><s></s><s></s><s></s> InventoryService.cs · Marcelo’s screen</div>
+    <div class="share-code">
+      <div><span class="k">public async Task</span>&lt;<span class="k">Result</span>&gt; <span class="s">ReserveAsync</span>(Guid unitId) {</div>
+      <div>&nbsp;&nbsp;<span class="c">// client asked about double-booking</span></div>
+      <div>&nbsp;&nbsp;<span class="k">await using var</span> tx = <span class="k">await</span> _db.BeginTransactionAsync();</div>
+      <div>&nbsp;&nbsp;<span class="k">var</span> taken = <span class="k">await</span> _db.Units.AnyAsync(u =&gt; u.Id == unitId &amp;&amp; u.Held);</div>
+      <div>&nbsp;&nbsp;<span class="k">if</span> (taken) <span class="k">return</span> Result.Conflict();</div>
+      <div>&nbsp;&nbsp;...</div>
+      <div>}</div>
+    </div>
+  </div>`;
+
+  const stage = document.getElementById("stageInner");
+  const wrap = stage.closest(".call-wrap");
+  const dock = wrap.querySelector(".call-dock");
+  if (dock) wrap.appendChild(dock);
+  stage.innerHTML = state.share
+    ? `${share}<div class="people-row">${cand}${self.replace("self", "tile")}</div>`
+    : `${cand}${self}`;
+  const host = stage.querySelector(".share-board") || stage.querySelector(".tile");
+  if (dock && host) host.appendChild(dock);
+}
+
+function addLine(entry) {
+  const feed = document.getElementById("trFeed");
+  const div = document.createElement("div");
+  div.className = `line ${entry.who}`;
+  div.innerHTML = `<b>${entry.name}</b><p>${entry.text}</p>`;
+  feed.appendChild(div);
+  feed.parentElement.scrollTop = feed.parentElement.scrollHeight;
+  const n = transcriptCount();
+  document.getElementById("trMeta").textContent = state.captions ? "Hide" : `${n} lines · Show`;
+}
+
+function typeInto(id, text) {
+  const idx = state.queue.findIndex(q => q.id === id);
+  if (idx >= 0) { state.qIndex = idx; state.detailsOpen = false; }
+  renderQuestions();
+  const box = document.querySelector(`[data-answer="${id}"]`);
+  if (!box) return;
+  box.textContent = "";
+  let i = 0;
+  clearInterval(typeInto._t);
+  typeInto._t = setInterval(() => {
+    i += 2;
+    box.textContent = text.slice(0, i);
+    state.answers[id] = box.textContent;
+    if (i >= text.length) {
+      clearInterval(typeInto._t);
+      state.filled[id] = true;
+      state.coverage[id] = coverageFromAnswer(text);
+      renderQuestions();
+    }
+  }, 16);
+}
+
+function syncCallButtons() {
+  document.querySelectorAll("[data-call]").forEach(btn => {
+    const kind = btn.dataset.call;
+    const on = !!state[kind];
+    btn.classList.toggle("is-off", (kind === "mic" || kind === "cam") && !on);
+    btn.classList.toggle("is-on", (kind === "share" || kind === "captions") && on);
+    btn.setAttribute("aria-pressed", String(on));
+  });
+}
+
+function toggle(kind) {
+  state[kind] = !state[kind];
+  syncCallButtons();
+  if (kind === "share") {
+    renderStage();
+    toast(state.share ? "Screenshare is on: Marcelo’s window" : "Screenshare stopped");
+  }
+  if (kind === "cam") renderStage();
+  if (kind === "mic") toast(state.mic ? "Mic on" : "You are muted");
+  if (kind === "captions") syncTranscript();
+}
+
+function transcriptCount() {
+  return document.getElementById("trFeed").children.length;
+}
+
+function syncTranscript() {
+  const open = state.captions;
+  const panel = document.getElementById("transcriptPanel");
+  const toggleBtn = document.getElementById("trToggle");
+  panel.classList.toggle("is-collapsed", !open);
+  toggleBtn.setAttribute("aria-expanded", String(open));
+  const n = transcriptCount();
+  document.getElementById("trMeta").textContent = open ? "Hide" : (n ? `${n} lines · Show` : "Show");
+  syncCallButtons();
+}
+
+document.getElementById("qStage").addEventListener("input", (e) => {
+  const box = e.target.closest("[data-answer]");
+  if (box) state.answers[box.dataset.answer] = box.textContent;
+  const summary = e.target.closest("[data-summary]");
+  if (summary) {
+    const key = summary.dataset.summary;
+    state.summaries[key] = [...summary.querySelectorAll("p")].map(p => p.textContent.trim()).filter(Boolean).join("\n\n");
+  }
+});
+
+document.getElementById("qStage").addEventListener("click", (e) => {
+  const star = e.target.closest("[data-star]");
+  if (star) {
+    const key = star.dataset.rate || "overall";
+    state.ratings[key] = Number(star.dataset.star);
+    renderQuestions();
+    return;
+  }
+  const eng = e.target.closest("[data-english]");
+  if (eng) {
+    state.english = eng.dataset.english;
+    const stat = document.getElementById("englishStat");
+    if (stat) stat.textContent = state.english;
+    renderQuestions();
+    return;
+  }
+  const item = e.target.closest("[data-jump]");
+  if (item) {
+    state.scriptOpen = false;
+    goQuestion(Number(item.dataset.jump));
+    return;
+  }
+  if (e.target.id === "reviewScript") {
+    return;
+  }
+});
+
+document.getElementById("scriptToggle").addEventListener("click", () => {
+  state.scriptOpen = !state.scriptOpen;
+  renderQuestions();
+});
+
+document.getElementById("aiToggle").addEventListener("click", () => setAiOpen(!state.aiOpen));
+document.getElementById("aiClose").addEventListener("click", () => setAiOpen(false));
+
+document.getElementById("aiChatForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const input = document.getElementById("aiChatInput");
+  const text = (input.value || "").trim();
+  if (!text) return;
+  state.aiChat.push({ who: "you", text });
+  input.value = "";
+  renderAiChat();
+  setTimeout(() => {
+    state.aiChat.push({ who: "ai", text: aiReply(text) });
+    renderAiChat();
+  }, 280);
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (state.aiOpen) { setAiOpen(false); return; }
+  if (state.scriptOpen) {
+    state.scriptOpen = false;
+    renderQuestions();
+  }
+});
+
+document.getElementById("nextPeek").addEventListener("click", (e) => {
+  if (e.target.id === "qPrev") {
+    if (state.done) {
+      state.done = false;
+      renderQuestions();
+      return;
+    }
+    goQuestion(state.qIndex - 1);
+    return;
+  }
+  if (e.target.id === "qEnd") { location.href = "index.html"; return; }
+  if (e.target.id === "qNext") {
+    if (state.qIndex >= state.queue.length - 1) {
+      endInterview(false);
+      return;
+    }
+    goQuestion(state.qIndex + 1);
+  }
+});
+
+document.getElementById("btnHang").addEventListener("click", () => {
+  if (state.done) location.href = "index.html";
+  else endInterview(true);
+});
+
+function tickClock() {
+  state.elapsed += 1;
+  const m = String(Math.floor(state.elapsed / 60)).padStart(2, "0");
+  const s = String(state.elapsed % 60).padStart(2, "0");
+  document.getElementById("clock").textContent = `${m}:${s}`;
+}
+setInterval(tickClock, 1000);
+
+async function playScript() {
+  for (const step of SCRIPT) {
+    await new Promise(r => setTimeout(r, step.wait));
+    state.talking = step.talking;
+    renderStage();
+    addLine(step);
+    if (step.fillId && state.queue.some(q => q.id === step.fillId)) typeInto(step.fillId, step.fill);
+  }
+  state.talking = "them";
+  renderStage();
+}
+
+document.getElementById("trToggle").addEventListener("click", () => toggle("captions"));
+
+(function initSplit() {
+  const room = document.querySelector(".room");
+  const split = document.getElementById("split");
+  const saved = Number(localStorage.getItem("be-profile-width"));
+  if (saved) document.documentElement.style.setProperty("--profile", `${saved}px`);
+  let dragging = false;
+  split.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    split.setPointerCapture(e.pointerId);
+    document.body.classList.add("is-resizing");
+  });
+  split.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const rect = room.getBoundingClientRect();
+    const max = Math.min(720, rect.width * 0.62);
+    const w = Math.max(260, Math.min(max, e.clientX - rect.left));
+    document.documentElement.style.setProperty("--profile", `${Math.round(w)}px`);
+  });
+  const end = () => {
+    if (!dragging) return;
+    dragging = false;
+    document.body.classList.remove("is-resizing");
+    const w = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--profile"), 10);
+    if (w) localStorage.setItem("be-profile-width", String(w));
+  };
+  split.addEventListener("pointerup", end);
+  split.addEventListener("pointercancel", end);
+})();
+
+loadQueue();
+renderQuestions();
+renderStage();
+syncTranscript();
+playScript();
+</script>
+</body>
+</html>

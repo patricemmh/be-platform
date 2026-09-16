@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BetterEngineer · Prepare interview · Marcelo Dosko</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --page: #f6f6f3;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --subtle: #9a9a96;
+  --line: #d4d4ce;
+  --brand: #4C60B2;
+  --brand-soft: #eceef6;
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+}
+button, select { font-family: inherit; }
+button { cursor: pointer; }
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+.topbar {
+  height: 68px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px 0 32px;
+}
+.brand { display: flex; align-items: center; }
+.brand img { height: 18px; width: auto; }
+.topbar span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--subtle);
+}
+
+.wrap {
+  width: min(720px, calc(100% - 80px));
+  margin: 48px auto 96px;
+}
+.who { margin-bottom: 28px; }
+.who-main { display: flex; align-items: center; gap: 16px; }
+.who img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex: 0 0 72px; }
+.who h1 { margin: 0 0 2px; font-size: 22px; font-weight: 650; letter-spacing: -0.03em; line-height: 1.15; }
+.who .title { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.35; }
+.meet {
+  margin-top: 18px;
+}
+.meet b {
+  display: block;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.meet span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.field { padding: 22px 0; border-top: 1px solid var(--line); }
+.field h2 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.field .hint { margin: 0 0 14px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+.field .hint.warn { color: var(--text); }
+.field .hint b { font-weight: 650; }
+
+.pills { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  border: 1.5px solid #c8c8c2;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+}
+.pill svg { flex: 0 0 auto; }
+.pill:hover { background: #ecece8; }
+.pill.is-on {
+  background: var(--brand-soft);
+  border-color: #c5cbe0;
+  color: #3a4b94;
+}
+.pill.is-on:hover { background: #e4e7f2; }
+.job-pills { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 0; }
+.job-pill {
+  padding-right: 10px;
+}
+.job-pill .x {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  border-radius: 50%;
+  background: rgba(58, 75, 148, .12);
+}
+
+.job-dd { position: relative; }
+.job-dd-btn {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  border: 1px solid #d8d8d2;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  text-align: left;
+}
+.job-dd-btn.is-empty { color: var(--subtle); font-weight: 400; }
+.job-dd-btn:disabled { opacity: .45; cursor: default; }
+.job-dd-btn svg { flex: 0 0 auto; color: var(--muted); }
+.job-dd.is-open .job-dd-btn { border-color: var(--brand); }
+.job-dd-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 8;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(26, 26, 26, .08);
+  max-height: 380px;
+  overflow: auto;
+}
+.job-opt {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  padding: 12px 16px;
+  border: 0;
+  background: #fff;
+  text-align: left;
+}
+.job-opt + .job-opt { border-top: 1px solid var(--line); }
+.job-opt:hover,
+.job-opt.is-on { background: #f7f7f4; }
+.job-opt b { display: block; font-size: 14px; font-weight: 650; letter-spacing: -0.02em; }
+.job-opt .when { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+.job-opt .co { display: block; font-size: 13px; font-weight: 500; color: var(--muted); text-align: right; }
+.job-opt .st {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 650;
+  color: #2f9e5f;
+}
+.job-opt .st i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+.job-none {
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.job-none:hover { background: #f7f7f4; color: var(--text); }
+
+.start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 52px;
+  margin-top: 28px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 650;
+}
+.start:hover { filter: brightness(.96); }
+.start:disabled { background: #d8d8d2; color: #fff; cursor: not-allowed; filter: none; }
+
+@media (max-width: 700px) {
+  .wrap { width: min(720px, calc(100% - 48px)); }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><img src="assets/logo.svg" alt="BetterEngineer"></a>
+  <span>Prepare the set before you join</span>
+</header>
+
+<main class="wrap">
+  <div class="who">
+    <div class="who-main">
+      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop&crop=faces" alt="Marcelo Dosko">
+      <div>
+        <h1>Marcelo Dosko</h1>
+        <p class="title">Córdoba, Argentina · GMT-3</p>
+      </div>
+    </div>
+    <div class="meet">
+      <b>Cultural / Technical</b>
+      <span>Tue, Sep 15, 2026 · 1:00 pm–2:00 pm (America/Chicago)</span>
+    </div>
+  </div>
+  <div id="builder"></div>
+</main>
+
+<script>
+const CULTURAL = [
+  { id: "c1", prompt: "How much overall experience do you have, and how much of that is in this role?" },
+  { id: "c2", prompt: "What would motivate you to explore a new career opportunity?" },
+  { id: "c3", prompt: "What kind of team environment helps you do your best work?" },
+  { id: "c4", prompt: "How do you like to get feedback, and how do you give it?" },
+  { id: "c5", prompt: "What does a good week look like for you, hours and communication included?" },
+  { id: "c6", prompt: "Where do you want to be in this role a year from now?" }
+];
+
+const POOLS = [
+  {
+    id: "dotnet",
+    label: ".NET Software Engineer",
+    questions: [
+      { id: "t1", prompt: "Walk me through a production .NET system you owned end to end." },
+      { id: "t2", prompt: "How do you debug a failing service in production, and what do you look at first?" },
+      { id: "t3", prompt: "Where have you used Azure, Service Bus, or similar messaging in anger?" },
+      { id: "t7", prompt: "How do you test a .NET service that talks to the bus or a database?" },
+      { id: "t8", prompt: "Tell me about an EF Core or data-model decision you later regretted." },
+      { id: "t9", prompt: "How have you handled configuration, secrets, and environment differences in Azure?" }
+    ]
+  },
+  {
+    id: "backend",
+    label: "Backend Engineer",
+    questions: [
+      { id: "t4", prompt: "Walk me through an API other teams depended on. What broke in production?" },
+      { id: "t5", prompt: "How do you keep two writers from corrupting the same record?" },
+      { id: "t6", prompt: "A dependency starts timing out in production. What do you look at first?" },
+      { id: "t10", prompt: "How do you version an API other teams already depend on?" },
+      { id: "t11", prompt: "Walk me through how you add observability to a service you didn’t write." },
+      { id: "t12", prompt: "When do you choose a queue over a synchronous call?" }
+    ]
+  }
+];
+
+const JOBS = [
+  {
+    id: "wedge-devops",
+    role: "DevOps Engineer",
+    company: "Wedge",
+    posted: "Sep 10, 2026",
+    questions: [
+      { id: "j-wd1", prompt: "Walk me through how you ship a service from laptop to production here. What do you own versus what the platform team owns?" },
+      { id: "j-wd2", prompt: "A deploy looks green and users still see the old version. Where do you look first?" },
+      { id: "j-wd3", prompt: "How do you handle secrets and environment config across staging and prod?" },
+      { id: "j-wd4", prompt: "On-call pages at 2am. What does a good first fifteen minutes look like for you?" },
+      { id: "j-wd5", prompt: "When do you choose Terraform or a pipeline change versus a one-off fix in the cluster?" }
+    ]
+  },
+  {
+    id: "reliacare",
+    role: "BackEnd Engineer",
+    company: "ReliaCare Solutions",
+    posted: "Sep 9, 2026",
+    questions: [
+      { id: "j-ff1", prompt: "This seat owns inventory consistency. How would you keep two requests from double-booking the same unit?" },
+      { id: "j-ff2", prompt: "The client asked us to confirm morning overlap with US hours. What does a typical day look like for you?" },
+      { id: "j-ff3", prompt: "Have you worked on marketplace or booking systems before? What broke in production?" },
+      { id: "j-ff4", prompt: "Search and availability get out of sync. How would you find the source of truth?" },
+      { id: "j-ff5", prompt: "Owners and guests dispute a booking. What belongs in the API versus an ops tool?" }
+    ]
+  },
+  {
+    id: "hackerai",
+    role: "Staff Engineer",
+    company: "Hackerai.co",
+    posted: "Sep 3, 2026",
+    questions: [
+      { id: "j-hk1", prompt: "What does staff-level ownership look like for you on a team that already has seniors?" },
+      { id: "j-hk2", prompt: "Walk me through a technical decision you made that other teams had to live with." },
+      { id: "j-hk3", prompt: "How do you raise the quality bar without becoming the bottleneck?" },
+      { id: "j-hk4", prompt: "A vague product brief lands on your desk. How do you turn it into something the team can ship?" },
+      { id: "j-hk5", prompt: "Tell me about a time you disagreed with a manager or peer on architecture. How did it land?" }
+    ]
+  },
+  {
+    id: "wedge-staff",
+    role: "Staff Engineer",
+    company: "Wedge",
+    posted: "Sep 2, 2026",
+    questions: [
+      { id: "j-ws1", prompt: "This seat is expected to set direction, not only ship tickets. How have you done that?" },
+      { id: "j-ws2", prompt: "How do you split time between writing code and unblocking other engineers?" },
+      { id: "j-ws3", prompt: "Walk me through a migration you led across more than one team." },
+      { id: "j-ws4", prompt: "What do you refuse to build until the constraints are clear?" },
+      { id: "j-ws5", prompt: "How do you mentor without becoming the only person who understands the system?" }
+    ]
+  },
+  {
+    id: "connective-cloud",
+    role: "Cloud Operations & Observability Engineer",
+    company: "Connective Talent",
+    posted: "Aug 28, 2026",
+    questions: [
+      { id: "j-ah1", prompt: "Client wants HIPAA-aware logging. How have you kept PII out of logs without going blind in prod?" },
+      { id: "j-ah2", prompt: "They run Azure Functions + Service Bus. Where have you used that shape of system?" },
+      { id: "j-ah3", prompt: "How would you design an audit trail for who accessed a patient-adjacent record?" },
+      { id: "j-ah4", prompt: "A Function starts failing after a deploy with no code change in that Function. Where do you look?" },
+      { id: "j-ah5", prompt: "How do you keep PHI out of exception emails and APM traces?" }
+    ]
+  },
+  {
+    id: "connective-cyber",
+    role: "Cybersecurity Platform Engineer",
+    company: "Connective Talent",
+    posted: "Aug 26, 2026",
+    questions: [
+      { id: "j-cy1", prompt: "How do you keep secrets out of logs, CI, and exception traces?" },
+      { id: "j-cy2", prompt: "Where does identity stop and the app start in systems you’ve built?" },
+      { id: "j-cy3", prompt: "A dependency CVE drops on Friday. What do you do first?" },
+      { id: "j-cy4", prompt: "How would you design an audit trail for who accessed a production secret?" },
+      { id: "j-cy5", prompt: "An API key leaks. What does a good first hour look like?" }
+    ]
+  }
+];
+
+const PLUS = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>`;
+const CHECK = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 12 5 5 9-10"/></svg>`;
+const X = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 6l12 12M18 6 6 18"/></svg>`;
+
+const state = {
+  cultural: true,
+  technical: false,
+  poolId: "",
+  jobIds: [],
+  jobOpen: false
+};
+
+try {
+  const saved = JSON.parse(localStorage.getItem("be-interview-set") || "null");
+  if (saved) {
+    if (typeof saved.cultural === "boolean") state.cultural = saved.cultural;
+    if (typeof saved.technical === "boolean") state.technical = saved.technical;
+    state.poolId = saved.poolId || "";
+    state.jobIds = Array.isArray(saved.jobIds) ? saved.jobIds.filter(id => JOBS.some(j => j.id === id)) : [];
+    if (!state.jobIds.length && saved.jobId && JOBS.some(j => j.id === saved.jobId)) state.jobIds = [saved.jobId];
+    if (!state.poolId && saved.ids?.length) {
+      const hit = POOLS.find(p => p.questions.some(q => saved.ids.includes(q.id)));
+      if (hit) {
+        state.poolId = hit.id;
+        state.technical = true;
+      }
+    }
+  }
+} catch (e) {}
+
+function currentPool() { return POOLS.find(p => p.id === state.poolId) || null; }
+function selectedJobs() { return state.jobIds.map(id => JOBS.find(j => j.id === id)).filter(Boolean); }
+
+function needsPool() { return state.cultural || state.technical; }
+function missingPool() { return needsPool() && !state.poolId; }
+
+function orderedIds() {
+  const ids = [];
+  if (state.cultural) CULTURAL.forEach(q => ids.push(q.id));
+  const pool = currentPool();
+  if (state.technical && pool) pool.questions.forEach(q => ids.push(q.id));
+  selectedJobs().forEach(job => job.questions.forEach(q => ids.push(q.id)));
+  return ids;
+}
+
+function canStart() {
+  if (missingPool()) return false;
+  return state.cultural || state.technical || state.jobIds.length > 0;
+}
+
+function pill(on, label, attrs) {
+  return `<button type="button" class="pill${on ? " is-on" : ""}" ${attrs}>${on ? CHECK : PLUS}${label}</button>`;
+}
+
+function jobRow(j) {
+  return `<button type="button" class="job-opt" data-job="${j.id}">
+    <span><b>${j.role}</b><span class="when">${j.posted}</span></span>
+    <span><span class="co">${j.company}</span><span class="st"><i></i>Active</span></span>
+  </button>`;
+}
+
+function render() {
+  const jobs = selectedJobs();
+  const available = JOBS.filter(j => !state.jobIds.includes(j.id));
+  const chevron = `<svg width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" stroke="currentColor" stroke-width="1.6"/></svg>`;
+  document.getElementById("builder").innerHTML = `
+    <section class="field">
+      <h2>Choose question categories</h2>
+      <p class="hint${missingPool() ? " warn" : ""}">${missingPool()
+        ? "You must select a talent pool to include cultural or technical."
+        : "Cultural and technical need a talent pool Marcelo is already in. A job is optional."}</p>
+      <div class="pills">
+        ${pill(state.cultural, "Cultural", `data-act="cultural"`)}
+        ${pill(state.technical, "Technical", `data-act="technical"`)}
+        ${POOLS.map(p => pill(p.id === state.poolId, p.label, `data-pool="${p.id}"`)).join("")}
+      </div>
+    </section>
+    <section class="field">
+      <h2>Select job</h2>
+      <p class="hint">Optional. Add the opening this screen is for.</p>
+      <div class="job-dd${state.jobOpen ? " is-open" : ""}">
+        <button type="button" class="job-dd-btn is-empty" data-job-toggle="1" aria-expanded="${state.jobOpen}" ${available.length ? "" : "disabled"}>
+          <span>Select job</span>
+          ${chevron}
+        </button>
+        ${state.jobOpen && available.length ? `<div class="job-dd-menu" role="listbox">
+          ${available.map(j => jobRow(j)).join("")}
+        </div>` : ""}
+      </div>
+      ${jobs.length ? `<div class="job-pills">${jobs.map(j => `
+        <button type="button" class="pill is-on job-pill" data-job-remove="${j.id}">
+          ${j.company} · ${j.role}
+          <span class="x" aria-hidden="true">${X}</span>
+        </button>`).join("")}</div>` : ""}
+    </section>
+    <button class="start" id="start" type="button" ${canStart() ? "" : "disabled"}>Join Interview</button>
+  `;
+}
+
+document.getElementById("builder").addEventListener("click", (e) => {
+  const toggle = e.target.closest("[data-job-toggle]");
+  if (toggle) {
+    state.jobOpen = !state.jobOpen;
+    render();
+    return;
+  }
+  const pick = e.target.closest("[data-job]");
+  if (pick) {
+    const id = pick.dataset.job;
+    if (id && !state.jobIds.includes(id)) state.jobIds.push(id);
+    state.jobOpen = false;
+    render();
+    return;
+  }
+  const remove = e.target.closest("[data-job-remove]");
+  if (remove) {
+    state.jobIds = state.jobIds.filter(id => id !== remove.dataset.jobRemove);
+    render();
+    return;
+  }
+  const btn = e.target.closest("[data-act], [data-pool], #start");
+  if (!btn) return;
+  if (btn.id === "start") {
+    if (!canStart()) return;
+    localStorage.setItem("be-interview-set", JSON.stringify({
+      ids: orderedIds(),
+      cultural: state.cultural,
+      technical: state.technical,
+      poolId: state.poolId,
+      jobIds: state.jobIds,
+      jobId: state.jobIds[0] || ""
+    }));
+    location.href = "interview.html";
+    return;
+  }
+  if (btn.dataset.act === "cultural") state.cultural = !state.cultural;
+  if (btn.dataset.act === "technical") state.technical = !state.technical;
+  if (btn.dataset.pool) state.poolId = state.poolId === btn.dataset.pool ? "" : btn.dataset.pool;
+  state.jobOpen = false;
+  render();
+});
+
+document.addEventListener("click", (e) => {
+  if (!state.jobOpen) return;
+  if (e.target.closest(".job-dd") || e.target.closest("#builder")) return;
+  state.jobOpen = false;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
