@@ -153,7 +153,7 @@ body.is-resizing textarea { pointer-events: none; }
 .panel-scroll { overflow: auto; flex: 1; }
 .q-panel { overflow: visible; }
 
-.profile { padding: 0 0 28px; }
+.profile { padding: 0 0 80px; }
 .profile-sticky {
   position: sticky; top: 0; z-index: 4;
   background: var(--page);
@@ -191,7 +191,7 @@ body.is-resizing textarea { pointer-events: none; }
   font-size: 12px; font-weight: 650;
 }
 .jump a:hover { color: var(--text); }
-.profile-body { padding: 4px 20px 0; }
+.profile-body { padding: 4px 24px 0; }
 .stats {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 10px 16px; margin: 14px 0 8px;
@@ -270,7 +270,7 @@ img { display: block; max-width: 100%; }
 /* ===== Top bar ===== */
 .topbar {
   background: #fff;
-  border-bottom: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -350,7 +350,7 @@ body.is-profile-wide { --profile: 650px; }
 .q-panel .panel-scroll { border-radius: 0 0 16px 16px; }
 
 /* ===== Profile ===== */
-.profile { padding: 0 0 28px; }
+.profile { padding: 0 0 80px; }
 .profile-sticky {
   position: sticky; top: 0; z-index: 4;
   background: #fff;
@@ -394,7 +394,7 @@ body.is-profile-wide { --profile: 650px; }
   display: inline-flex; align-items: center;
 }
 .jump a:hover { background: var(--brand-soft); color: var(--brand); }
-.profile-body { padding: 4px 16px 0; }
+.profile-body { padding: 4px 24px 0; }
 .stats {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 8px; margin: 12px 0 4px;
@@ -896,6 +896,7 @@ body.is-profile-wide { --profile: 650px; }
   min-height: 68px;
   padding-left: 32px;
   padding-right: 28px;
+  border-bottom: 1px solid var(--line);
 }
 .live {
   height: auto;
@@ -1204,6 +1205,12 @@ body.is-outline-collapsed { --outline: 56px; }
   margin: 0 0 18px;
   min-height: 28px;
 }
+.outline-head-copy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
 .outline-kicker {
   margin: 0;
   font-size: 11px;
@@ -1212,6 +1219,17 @@ body.is-outline-collapsed { --outline: 56px; }
   text-transform: uppercase;
   color: var(--subtle);
 }
+.outline-edit {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 8px;
+  color: var(--subtle);
+  display: grid;
+  place-items: center;
+}
+.outline-edit:hover { background: #f0f0ec; color: var(--text); }
+.outline-edit svg { display: block; }
 .outline-fold {
   width: 28px;
   height: 28px;
@@ -1232,7 +1250,7 @@ body.is-outline-collapsed .outline {
   padding: 16px 0 28px;
   overflow: auto;
 }
-body.is-outline-collapsed .outline-kicker { display: none; }
+body.is-outline-collapsed .outline-head-copy { display: none; }
 body.is-outline-collapsed .outline-head {
   justify-content: center;
   margin: 0 0 6px;
@@ -1412,14 +1430,23 @@ body.is-ai-open .ai-col { display: flex; }
   border-top: 0;
 }
 .wrap-head {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px 24px;
+  column-gap: 24px;
+  width: 100%;
   margin: 0;
   padding: 14px 0;
   border-bottom: 1px solid var(--line);
+}
+.wrap-head:last-child { border-bottom: 0; }
+.wrap-head h4 { margin: 0; }
+.wrap-head .stars,
+.wrap-head .thumbs,
+.wrap-block .stars,
+.wrap-block .thumbs {
+  justify-self: end;
+  margin-left: 0;
 }
 .wrap-head:last-child { border-bottom: 0; }
 .wrap-head h4 { margin: 0; }
@@ -1446,6 +1473,7 @@ body.is-ai-open .ai-col { display: flex; }
 .stars {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 2px;
   flex: 0 0 auto;
 }
@@ -1486,6 +1514,7 @@ body.is-ai-open .ai-col { display: flex; }
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
+.stars-score:empty { display: none; }
 .thumbs {
   display: inline-flex;
   align-items: center;
@@ -1540,8 +1569,8 @@ body.is-ai-open .ai-col { display: flex; }
   color: #b8b8b2;
 }
 .wrap-up {
-  width: 100%;
-  max-width: 720px;
+  width: min(720px, 100%);
+  min-width: min(720px, 100%);
   margin-left: auto;
   margin-right: auto;
 }
@@ -1612,7 +1641,6 @@ body.is-ai-open .ai-col { display: flex; }
   color: var(--subtle);
 }
 .wrap-label span { font-weight: 500; letter-spacing: 0; text-transform: none; }
-.wrap-block .stars { margin: 0; }
 .wrap-meta {
   margin: 28px 0 0;
   font-size: 13px;
@@ -1667,6 +1695,44 @@ body.is-ai-open .ai-col { display: flex; }
   border-radius: 8px;
 }
 .dock .hang:hover { filter: brightness(.96); background: var(--red); }
+.dock .hang.is-rejoin,
+.dock .hang.is-rejoin:hover {
+  background: var(--brand);
+}
+body.is-call-ended .live { display: none; }
+body.is-call-ended .call-dock { display: none !important; }
+.call-ended {
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  background: #ecece8;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 20px;
+}
+.call-ended img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: grayscale(.35);
+  opacity: .9;
+}
+.call-ended b {
+  margin: 4px 0 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+.call-ended span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
 .toast { bottom: 24px; }
 
 .call-wrap {
@@ -1714,6 +1780,116 @@ body.is-ai-open .ai-col { display: flex; }
 .call-dock button:hover { background: rgba(255, 255, 255, .22); }
 .call-dock button.is-off { background: #c4473a; color: #fff; }
 .call-dock button.is-on { background: var(--brand); color: #fff; }
+.panel-scroll,
+.outline {
+  background: var(--page);
+  scrollbar-width: thin;
+  scrollbar-color: #c8c8c2 var(--page);
+}
+.panel-scroll::-webkit-scrollbar,
+.outline::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: var(--page);
+}
+.panel-scroll::-webkit-scrollbar-track,
+.outline::-webkit-scrollbar-track {
+  background: var(--page);
+}
+.panel-scroll::-webkit-scrollbar-thumb,
+.outline::-webkit-scrollbar-thumb {
+  background: #c8c8c2;
+  border-radius: 99px;
+  border: 2px solid var(--page);
+}
+.panel-scroll::-webkit-scrollbar-corner,
+.outline::-webkit-scrollbar-corner {
+  background: var(--page);
+}
+.dock .close-screen {
+  display: none;
+  width: auto;
+  height: 34px;
+  padding: 0 12px;
+  margin-left: 4px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font-weight: 650;
+  font-size: 13px;
+  border-radius: 8px;
+}
+body.is-call-ended .close-screen {
+  display: inline-flex;
+  align-items: center;
+}
+.dock .close-screen:hover { background: #f3f3ef; }
+.dev-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(26, 26, 26, .4);
+}
+.dev-overlay[hidden] { display: none; }
+.dev-overlay-card {
+  width: min(440px, 100%);
+  padding: 28px 28px 24px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(26, 26, 26, .18);
+}
+.dev-overlay-kicker {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.dev-overlay-card h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.dev-overlay-card p {
+  margin: 0 0 22px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #3a3a3a;
+}
+.dev-overlay-card b { font-weight: 650; }
+.dev-overlay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.dev-overlay-actions .primary {
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 650;
+}
+.dev-overlay-actions .primary:hover { filter: brightness(.96); }
+.dev-overlay-actions .ghost {
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 650;
+}
+.dev-overlay-actions .ghost:hover { background: #f3f3ef; }
 </style>
 </head>
 <body>
@@ -1726,6 +1902,7 @@ body.is-ai-open .ai-col { display: flex; }
       <span class="live"><i></i> Live · <span id="clock">12:18</span></span>
       <nav class="dock" aria-label="Call">
         <button class="hang" type="button" id="btnHang">End call</button>
+        <button class="close-screen" type="button" id="btnCloseScreen">Close</button>
       </nav>
     </div>
   </header>
@@ -1889,7 +2066,6 @@ body.is-ai-open .ai-col { display: flex; }
       <article class="panel q-panel">
         <div class="q-head">
           <div class="q-head-actions">
-            <a href="prep.html" id="editSet">Edit set</a>
             <button class="ai-fab" type="button" id="aiToggle" title="Instruct the AI" aria-label="Instruct the AI">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2 13.4 8.8 20 10.2 13.4 11.6 12 18.2 10.6 11.6 4 10.2 10.6 8.8 12 2.2ZM19 15.2l.7 3.1 3.1.7-3.1.7-.7 3.1-.7-3.1-3.1-.7 3.1-.7.7-3.1ZM5.2 14.5l.5 2.2 2.2.5-2.2.5-.5 2.2-.5-2.2-2.2-.5 2.2-.5.5-2.2Z"/></svg>
             </button>
@@ -1934,6 +2110,17 @@ body.is-ai-open .ai-col { display: flex; }
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="dev-overlay" id="closeOverlay" hidden>
+  <div class="dev-overlay-card" role="dialog" aria-modal="true" aria-labelledby="closeOverlayTitle">
+    <p class="dev-overlay-kicker">Prototype note</p>
+    <h2 id="closeOverlayTitle">This would open the candidate profile</h2>
+    <p>Close leaves the interview and returns to Marcelo Dosko’s profile, on the <b>Vetting</b> tab, with this call summary attached. That destination is not built in this prototype.</p>
+    <div class="dev-overlay-actions">
+      <button type="button" class="primary" id="btnStartOver">Start over</button>
+      <button type="button" class="ghost" id="btnStaySummary">Stay on summary</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const CULTURAL = {
@@ -2206,6 +2393,61 @@ function loadQueue() {
   });
 }
 
+function persistLiveSet() {
+  localStorage.setItem("be-interview-set", JSON.stringify({
+    ids: state.queue.map(q => q.id),
+    cultural: state.queue.some(q => questionBucket(q) === "cultural"),
+    technical: state.queue.some(q => {
+      const b = questionBucket(q);
+      return b === "technical" || b === "specialist";
+    }),
+    poolId: state.poolId || "",
+    jobIds: state.jobIds,
+    jobId: state.jobId || state.jobIds[0] || ""
+  }));
+}
+
+function saveInterviewSession() {
+  localStorage.setItem("be-interview-session", JSON.stringify({
+    answers: state.answers,
+    filled: state.filled,
+    coverage: state.coverage,
+    qIndex: state.qIndex,
+    qId: (currentQ() || {}).id || null,
+    ratings: state.ratings,
+    summaries: state.summaries,
+    english: state.english,
+    elapsed: state.elapsed,
+    aiChat: state.aiChat,
+    aiQ: state.aiQ
+  }));
+}
+
+function restoreInterviewSession() {
+  if (!new URLSearchParams(location.search).has("resume")) return false;
+  try {
+    const s = JSON.parse(localStorage.getItem("be-interview-session") || "null");
+    if (!s || typeof s !== "object") return false;
+    state.answers = s.answers || {};
+    state.filled = s.filled || {};
+    state.coverage = s.coverage || {};
+    state.ratings = s.ratings || {};
+    state.summaries = s.summaries || {};
+    if (s.english) state.english = s.english;
+    if (typeof s.elapsed === "number") state.elapsed = s.elapsed;
+    if (Array.isArray(s.aiChat)) state.aiChat = s.aiChat;
+    if (s.aiQ) state.aiQ = { ...state.aiQ, ...s.aiQ };
+    let idx = 0;
+    if (s.qId) idx = state.queue.findIndex(q => q.id === s.qId);
+    else if (typeof s.qIndex === "number") idx = s.qIndex;
+    if (idx < 0) idx = 0;
+    state.qIndex = Math.min(idx, Math.max(0, state.queue.length - 1));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 function currentQ() { return state.queue[state.qIndex] || null; }
 
 function toast(msg) {
@@ -2467,11 +2709,16 @@ function renderOutline() {
   const fold = `<button type="button" class="outline-fold" id="outlineFold" aria-expanded="${state.outlineOpen}" aria-label="${state.outlineOpen ? "Collapse question list" : "Expand question list"}">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
   </button>`;
+  const edit = state.done ? "" : `<a class="outline-edit" href="prep.html?edit=1" id="editSet" title="Edit set" aria-label="Edit set">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+  </a>`;
+  const kicker = state.queue.length ? `${s.answered} of ${s.total} answered` : "No questions in this set";
+  const head = `<div class="outline-head"><div class="outline-head-copy"><p class="outline-kicker">${kicker}</p>${edit}</div>${fold}</div>`;
   if (!state.queue.length) {
-    root.innerHTML = `<div class="outline-head">${fold}<p class="outline-kicker">No questions in this set</p></div>`;
+    root.innerHTML = head;
     return;
   }
-  root.innerHTML = `<div class="outline-head">${fold}<p class="outline-kicker">${s.answered} of ${s.total} answered</p></div>` + outlineGroups().map(g => `
+  root.innerHTML = head + outlineGroups().map(g => `
     <div class="outline-group">
       <h3>${esc(g.label)}</h3>
       ${g.items.map(({ q, i }) => {
@@ -2491,8 +2738,6 @@ function renderQuestions() {
   const root = document.getElementById("qStage");
   const peek = document.getElementById("nextPeek");
   const scriptBtn = document.getElementById("scriptToggle");
-  const editSet = document.getElementById("editSet");
-  if (editSet) editSet.classList.toggle("hidden", !!state.done);
   renderOutline();
   if (scriptBtn) {
     scriptBtn.textContent = state.scriptOpen
@@ -2595,8 +2840,10 @@ function goQuestion(i) {
   typeInto._pinned = i;
   state.qIndex = i;
   state.detailsOpen = false;
+  const wasDone = state.done;
   state.done = false;
   state.endedEarly = false;
+  if (wasDone) syncCallChrome();
   renderQuestions();
 }
 
@@ -2606,7 +2853,39 @@ function endInterview(early) {
   state.scriptOpen = false;
   state.aiOpen = false;
   renderAiChat();
+  syncCallChrome();
   renderQuestions();
+}
+
+function rejoinCall() {
+  state.done = false;
+  state.endedEarly = false;
+  syncCallChrome();
+  renderQuestions();
+}
+
+function clockLabel(secs) {
+  const n = Math.max(0, Number(secs) || 0);
+  const m = String(Math.floor(n / 60)).padStart(2, "0");
+  const s = String(n % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+function setCloseOverlay(open) {
+  const overlay = document.getElementById("closeOverlay");
+  if (!overlay) return;
+  overlay.hidden = !open;
+}
+
+function syncCallChrome() {
+  document.body.classList.toggle("is-call-ended", !!state.done);
+  const hang = document.getElementById("btnHang");
+  if (hang) {
+    hang.textContent = state.done ? "Rejoin call" : "End call";
+    hang.classList.toggle("is-rejoin", !!state.done);
+  }
+  if (!state.done) setCloseOverlay(false);
+  renderStage();
 }
 
 function updateProgress() { renderQuestions(); }
@@ -2639,6 +2918,15 @@ function renderStage() {
   const stage = document.getElementById("stageInner");
   const wrap = stage.closest(".call-wrap");
   const dock = wrap.querySelector(".call-dock");
+  if (state.done) {
+    stage.innerHTML = `<div class="call-ended">
+      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop&crop=faces" alt="">
+      <b>Call ended</b>
+      <span>Marcelo Dosko · ${clockLabel(state.elapsed)}</span>
+    </div>`;
+    if (dock) wrap.appendChild(dock);
+    return;
+  }
   if (dock) wrap.appendChild(dock);
   stage.innerHTML = state.share
     ? `${share}<div class="people-row">${cand}${self.replace("self", "tile")}</div>`
@@ -2764,6 +3052,11 @@ document.getElementById("qStage").addEventListener("click", (e) => {
 });
 
 document.getElementById("qOutline").addEventListener("click", (e) => {
+  if (e.target.closest("#editSet")) {
+    persistLiveSet();
+    saveInterviewSession();
+    return;
+  }
   if (e.target.closest("#outlineFold")) {
     e.preventDefault();
     e.stopPropagation();
@@ -2794,19 +3087,36 @@ document.getElementById("aiChatForm").addEventListener("submit", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (e.key !== "Escape") return;
-  if (state.aiOpen) { setAiOpen(false); return; }
-  if (state.scriptOpen) {
-    state.scriptOpen = false;
-    renderQuestions();
+  const overlay = document.getElementById("closeOverlay");
+  if (e.key === "Escape") {
+    if (overlay && !overlay.hidden) { setCloseOverlay(false); return; }
+    if (state.aiOpen) { setAiOpen(false); return; }
+    if (state.scriptOpen) {
+      state.scriptOpen = false;
+      renderQuestions();
+    }
+    return;
   }
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  if (overlay && !overlay.hidden) return;
+  if (state.done || !state.queue.length) return;
+  const t = e.target;
+  if (t && (t.isContentEditable || /^(input|textarea|select)$/i.test(t.tagName))) return;
+  if (e.key === "ArrowLeft") {
+    if (state.qIndex <= 0) return;
+    e.preventDefault();
+    goQuestion(state.qIndex - 1);
+    return;
+  }
+  if (state.qIndex >= state.queue.length - 1) return;
+  e.preventDefault();
+  goQuestion(state.qIndex + 1);
 });
 
 document.getElementById("nextPeek").addEventListener("click", (e) => {
   if (e.target.id === "qPrev") {
     if (state.done) {
-      state.done = false;
-      renderQuestions();
+      rejoinCall();
       return;
     }
     goQuestion(state.qIndex - 1);
@@ -2823,15 +3133,25 @@ document.getElementById("nextPeek").addEventListener("click", (e) => {
 });
 
 document.getElementById("btnHang").addEventListener("click", () => {
-  if (state.done) location.href = "index.html";
+  if (state.done) rejoinCall();
   else endInterview(true);
 });
 
+document.getElementById("btnCloseScreen").addEventListener("click", () => setCloseOverlay(true));
+document.getElementById("btnStaySummary").addEventListener("click", () => setCloseOverlay(false));
+document.getElementById("btnStartOver").addEventListener("click", () => {
+  localStorage.removeItem("be-interview-session");
+  location.href = "prep.html";
+});
+document.getElementById("closeOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "closeOverlay") setCloseOverlay(false);
+});
+
 function tickClock() {
+  if (state.done) return;
   state.elapsed += 1;
-  const m = String(Math.floor(state.elapsed / 60)).padStart(2, "0");
-  const s = String(state.elapsed % 60).padStart(2, "0");
-  document.getElementById("clock").textContent = `${m}:${s}`;
+  const el = document.getElementById("clock");
+  if (el) el.textContent = clockLabel(state.elapsed);
 }
 setInterval(tickClock, 1000);
 
@@ -2879,10 +3199,11 @@ document.getElementById("trToggle").addEventListener("click", () => toggle("capt
 })();
 
 loadQueue();
+const resumed = restoreInterviewSession();
 renderQuestions();
 renderStage();
 syncTranscript();
-playScript();
+if (!resumed) playScript();
 </script>
 </body>
 </html>

@@ -228,7 +228,7 @@ a { color: inherit; text-decoration: none; }
 <body>
 <header class="topbar">
   <a class="brand" href="index.html"><img src="assets/logo.svg" alt="BetterEngineer"></a>
-  <span>Prepare the set before you join</span>
+  <span id="prepBanner">Prepare the set before you join</span>
 </header>
 
 <main class="wrap">
@@ -380,6 +380,8 @@ const PLUS = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke
 const CHECK = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 12 5 5 9-10"/></svg>`;
 const X = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 6l12 12M18 6 6 18"/></svg>`;
 
+const editing = new URLSearchParams(location.search).has("edit");
+
 const state = {
   cultural: true,
   technical: false,
@@ -396,15 +398,27 @@ try {
     state.poolId = saved.poolId || "";
     state.jobIds = Array.isArray(saved.jobIds) ? saved.jobIds.filter(id => JOBS.some(j => j.id === id)) : [];
     if (!state.jobIds.length && saved.jobId && JOBS.some(j => j.id === saved.jobId)) state.jobIds = [saved.jobId];
-    if (!state.poolId && saved.ids?.length) {
+    if (saved.ids?.length) {
+      if (typeof saved.cultural !== "boolean") state.cultural = saved.ids.some(id => String(id).startsWith("c"));
+      const fromIds = saved.ids.some(id => String(id).startsWith("t") || /^p\d/.test(id));
+      if (typeof saved.technical !== "boolean") state.technical = fromIds;
       const hit = POOLS.find(p => p.questions.some(q => saved.ids.includes(q.id)));
-      if (hit) {
+      if (!state.poolId && hit) {
         state.poolId = hit.id;
+        state.technical = true;
+      } else if ((state.technical || fromIds) && !state.poolId && saved.ids.some(id => /^p\d/.test(id))) {
+        state.poolId = "dotnet";
         state.technical = true;
       }
     }
   }
 } catch (e) {}
+
+if (editing) {
+  document.title = "BetterEngineer · Edit set · Marcelo Dosko";
+  const banner = document.getElementById("prepBanner");
+  if (banner) banner.textContent = "Edit the live question set";
+}
 
 function currentPool() { return POOLS.find(p => p.id === state.poolId) || null; }
 function selectedJobs() { return state.jobIds.map(id => JOBS.find(j => j.id === id)).filter(Boolean); }
@@ -446,7 +460,9 @@ function render() {
       <h2>Choose question categories</h2>
       <p class="hint${missingPool() ? " warn" : ""}">${missingPool()
         ? "You must select a talent pool to include cultural or technical."
-        : "Cultural and technical need a talent pool Marcelo is already in. A job is optional."}</p>
+        : editing
+          ? "Add or remove categories. The live interview updates when you go back to the questions."
+          : "Cultural and technical need a talent pool Marcelo is already in. A job is optional."}</p>
       <div class="pills">
         ${pill(state.cultural, "Cultural", `data-act="cultural"`)}
         ${pill(state.technical, "Technical", `data-act="technical"`)}
@@ -471,7 +487,7 @@ function render() {
           <span class="x" aria-hidden="true">${X}</span>
         </button>`).join("")}</div>` : ""}
     </section>
-    <button class="start" id="start" type="button" ${canStart() ? "" : "disabled"}>Join Interview</button>
+    <button class="start" id="start" type="button" ${canStart() ? "" : "disabled"}>${editing ? "Back to questions" : "Join Interview"}</button>
   `;
 }
 
@@ -508,7 +524,12 @@ document.getElementById("builder").addEventListener("click", (e) => {
       jobIds: state.jobIds,
       jobId: state.jobIds[0] || ""
     }));
-    location.href = "interview.html";
+    if (editing) {
+      location.href = "interview.html?resume=1";
+    } else {
+      localStorage.removeItem("be-interview-session");
+      location.href = "interview.html";
+    }
     return;
   }
   if (btn.dataset.act === "cultural") state.cultural = !state.cultural;
