@@ -29,6 +29,7 @@
   --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --ease: cubic-bezier(.4, 0, .2, 1);
   --profile: 475px;
+  --outline: 322px;
   --ai: 0px;
 }
 * { box-sizing: border-box; }
@@ -100,7 +101,7 @@ img { display: block; max-width: 100%; }
 
 .room {
   display: grid;
-  grid-template-columns: var(--profile) 10px minmax(0, 1fr) var(--ai);
+  grid-template-columns: var(--profile) 10px minmax(0, 1fr) var(--outline) var(--ai);
   gap: 0;
   padding: 0 0 72px;
   min-height: 0;
@@ -319,7 +320,7 @@ img { display: block; max-width: 100%; }
 /* ===== Workspace ===== */
 .room {
   display: grid;
-  grid-template-columns: var(--profile) 10px minmax(0, 1fr) var(--ai);
+  grid-template-columns: var(--profile) 10px minmax(0, 1fr) var(--outline) var(--ai);
   gap: 12px;
   padding: 12px 12px 88px;
   min-height: 0;
@@ -1153,6 +1154,8 @@ body.is-profile-wide { --profile: 650px; }
   right: auto;
   bottom: auto;
   margin: 0 80px 40px 72px;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
   align-items: center;
   padding: 0;
   gap: 28px;
@@ -1180,6 +1183,111 @@ body.is-profile-wide { --profile: 650px; }
 .ai-fab:hover { filter: brightness(.96); }
 .ai-fab.is-open { background: #1a1a1a; }
 body.is-ai-open { --ai: 380px; }
+body.is-outline-collapsed { --outline: 56px; }
+.outline-col {
+  min-height: 0;
+  min-width: 0;
+  border-left: 1px solid var(--line);
+  background: var(--page);
+  transition: none;
+}
+.outline {
+  height: 100%;
+  overflow: auto;
+  padding: 28px 22px 40px;
+}
+.outline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 18px;
+  min-height: 28px;
+}
+.outline-kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.outline-fold {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+}
+.outline-fold:hover { background: #f0f0ec; color: var(--text); }
+.outline-fold svg {
+  display: block;
+  transition: transform .18s var(--ease);
+}
+body.is-outline-collapsed .outline {
+  padding: 16px 0 28px;
+  overflow: auto;
+}
+body.is-outline-collapsed .outline-kicker { display: none; }
+body.is-outline-collapsed .outline-head {
+  justify-content: center;
+  margin: 0 0 6px;
+}
+body.is-outline-collapsed .outline-fold svg { transform: rotate(180deg); }
+body.is-outline-collapsed .outline-group {
+  margin: 0 8px;
+  padding: 8px 0;
+}
+body.is-outline-collapsed .outline-group + .outline-group {
+  border-top: 1px solid var(--line);
+}
+body.is-outline-collapsed .outline-group h3 { display: none; }
+body.is-outline-collapsed .outline-item {
+  grid-template-columns: 18px;
+  justify-content: center;
+  padding: 5px 0;
+}
+body.is-outline-collapsed .outline-item span { display: none; }
+.outline-group { margin-bottom: 26px; }
+.outline-group h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.outline-item {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  width: 100%;
+  margin: 0;
+  padding: 7px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--text);
+}
+.outline-item:hover { color: var(--brand); }
+.outline-item.is-now { font-weight: 650; color: var(--brand); }
+.outline-tick {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: #c5c5bf;
+  display: block;
+}
+.outline-item.is-now .outline-tick { color: var(--brand); }
+.outline-item.is-done .outline-tick { color: var(--brand); }
 .ai-col {
   display: none;
   min-height: 0;
@@ -1378,6 +1486,35 @@ body.is-ai-open .ai-col { display: flex; }
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
+.thumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.thumbs .thumb {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #c8c8c2;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  transition: color .15s var(--ease), background .15s var(--ease), transform .15s var(--ease);
+}
+.thumbs .thumb svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+}
+.thumbs .thumb:hover { background: #f0f0ec; color: var(--text); transform: translateY(-1px); }
+.thumbs .thumb.is-up.is-on { color: var(--brand); }
+.thumbs .thumb.is-down.is-on { color: var(--red); }
+.thumbs .thumb.is-on svg { fill: currentColor; }
 .wrap-copy {
   cursor: text;
   border-radius: 10px;
@@ -1751,13 +1888,8 @@ body.is-ai-open .ai-col { display: flex; }
     <section class="col" aria-label="Interview questions">
       <article class="panel q-panel">
         <div class="q-head">
-          <div class="remain">
-              <b id="progress">3 left</b>
-            <div class="pips" id="pips" aria-hidden="true"></div>
-          </div>
           <div class="q-head-actions">
             <a href="prep.html" id="editSet">Edit set</a>
-            <button type="button" class="script-link" id="scriptToggle">See all</button>
             <button class="ai-fab" type="button" id="aiToggle" title="Instruct the AI" aria-label="Instruct the AI">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2 13.4 8.8 20 10.2 13.4 11.6 12 18.2 10.6 11.6 4 10.2 10.6 8.8 12 2.2ZM19 15.2l.7 3.1 3.1.7-3.1.7-.7 3.1-.7-3.1-3.1-.7 3.1-.7.7-3.1ZM5.2 14.5l.5 2.2 2.2.5-2.2.5-.5 2.2-.5-2.2-2.2-.5 2.2-.5.5-2.2Z"/></svg>
             </button>
@@ -1778,6 +1910,10 @@ body.is-ai-open .ai-col { display: flex; }
           </div>
         </div>
       </article>
+    </section>
+
+    <section class="col outline-col" aria-label="Question list">
+      <div class="outline" id="qOutline"></div>
     </section>
 
     <section class="col ai-col" aria-label="AI instructions">
@@ -1803,12 +1939,22 @@ body.is-ai-open .ai-col { display: flex; }
 const CULTURAL = {
   label: "Cultural",
   questions: [
-    { id: "c1", prompt: "How much overall experience do you have, and how much of that is in this role?" },
+    { id: "c1", prompt: "How much overall experience do you have? How much experience in this role do you have?" },
     { id: "c2", prompt: "What would motivate you to explore a new career opportunity?" },
-    { id: "c3", prompt: "What kind of team environment helps you do your best work?" },
-    { id: "c4", prompt: "How do you like to get feedback, and how do you give it?" },
-    { id: "c5", prompt: "What does a good week look like for you, hours and communication included?" },
-    { id: "c6", prompt: "Where do you want to be in this role a year from now?" }
+    { id: "c3", prompt: "Education highlights" },
+    { id: "c4", prompt: "Most notable jobs highlights" }
+  ]
+};
+
+const SPECIALIST = {
+  label: ".NET Software Engineer",
+  questions: [
+    { id: "p1", prompt: "Walk me through a production .NET system you owned end to end." },
+    { id: "p2", prompt: "How do you debug a failing service in production, and what do you look at first?" },
+    { id: "p3", prompt: "Where have you used Azure, Service Bus, or similar messaging in anger?" },
+    { id: "p4", prompt: "How do you test a .NET service that talks to the bus or a database?" },
+    { id: "p5", prompt: "Tell me about an EF Core or data-model decision you later regretted." },
+    { id: "p6", prompt: "How have you handled configuration, secrets, and environment differences in Azure?" }
   ]
 };
 
@@ -1840,6 +1986,17 @@ const POOLS = [
 ];
 
 const JOBS = [
+  {
+    id: "pricefx-sa",
+    role: ".NET Software Engineer",
+    company: "Aviato",
+    questions: [
+      { id: "j-pf1", prompt: "This seat owns Aviato’s booking API. A booking looks confirmed and inventory didn’t move. Where do you look first?" },
+      { id: "j-pf2", prompt: "Clients retry the payment capture. How would you make that safe in this .NET service?" },
+      { id: "j-pf3", prompt: "Search and availability drift after a deploy. How do you find which store is lying?" },
+      { id: "j-pf4", prompt: "On-call for Aviato overlaps US mornings. What does a good first fifteen minutes look like when bookings are stuck?" }
+    ]
+  },
   {
     id: "wedge-devops",
     role: "DevOps Engineer",
@@ -1926,10 +2083,14 @@ const SCRIPT = [
 const DETAILS = {
   c1: { why: "Calibrate seniority before we get into the stack.", listen: "Years total vs years in this role, and whether titles are inflated.", good: "A clear split, e.g. 8 years overall, about 3 in this seat, and honesty about other stacks.", follow: "What changed in those last three years? What did you actually own?" },
   c2: { why: "Motivation tells us if this is a real search or a fishing trip.", listen: "Push vs pull: manager, money, boredom, ownership, growth.", good: "A concrete gap in the current seat, not a generic “new challenges.”", follow: "What would make you stay where you are?" },
-  c3: { why: "Culture fit is the thing clients still bounce on after a strong technical pass.", listen: "Collaboration vs hero mode, feedback, timezone overlap.", good: "Specifics about pairing, ownership, and the kind of team they want to join.", follow: "When has a team environment gotten in your way?" },
-  c4: { why: "Feedback style shows whether they will land on a US team.", listen: "Direct vs buffered, written vs live, how they handle being wrong.", good: "A real example of giving and getting hard notes.", follow: "What feedback did you ignore that you shouldn’t have?" },
-  c5: { why: "Hours and communication are how overlap actually works.", listen: "Calendar honesty, async habits, meeting load.", good: "A week that could exist here, not a heroic one.", follow: "What happens to that week when production is on fire?" },
-  c6: { why: "Trajectory tells us if this seat is a stretch or a parking spot.", listen: "Ownership, scope, mentoring, not a title chase.", good: "A year from now that maps to this role.", follow: "What would make you feel stuck?" },
+  c3: { why: "Education is the short calibration before we go deep on the work.", listen: "What they actually studied vs what they use, and whether they oversell it.", good: "A clean highlight, not a transcript dump.", follow: "What from that still shows up in how you work?" },
+  c4: { why: "Job highlights tell us what they personally owned.", listen: "Scope, production, the thing they would put on a loop.", good: "A specific seat with a result, not a company list.", follow: "What would you refuse to rebuild the same way?" },
+  p1: { why: "We need to hear a system, not a résumé line.", listen: "Boundaries, data, failure modes, what they personally owned.", good: "Can walk the request path and name what broke in production.", follow: "If you had to rebuild one piece, what would you change?" },
+  p2: { why: "Debugging is the job more often than design.", listen: "Metrics first vs logs vs guesswork; how they involve others.", good: "A repeatable path: symptom → signal → hypothesis → fix → prevention.", follow: "Tell me about a time that path was wrong." },
+  p3: { why: "This pool is .NET / Azure. We should hear it used under load.", listen: "Service Bus, Functions, retries, poison messages, idempotency.", good: "A real consumer they owned, including the ugly parts.", follow: "How did you handle duplicate messages?" },
+  p4: { why: "Tests against the bus are where .NET seniors separate.", listen: "What they mock, what they don’t, how CI looks.", good: "A test they actually run, not a theory.", follow: "What broke in prod that tests missed?" },
+  p5: { why: "Data-model regret is a senior signal.", listen: "Migrations, coupling, what they would do now.", good: "A specific schema choice and the cost.", follow: "How did you live with it in the meantime?" },
+  p6: { why: "Config and secrets are how Azure services actually ship.", listen: "Key Vault, slots, what leaked, what they rotated.", good: "A boring, repeatable path across environments.", follow: "How do you keep local from lying to you?" },
   t1: { why: "We need to hear a system, not a résumé line.", listen: "Boundaries, data, failure modes, what they personally owned.", good: "Can walk the request path and name what broke in production.", follow: "If you had to rebuild one piece, what would you change?" },
   t2: { why: "Debugging is the job more often than design.", listen: "Metrics first vs logs vs guesswork; how they involve others.", good: "A repeatable path: symptom → signal → hypothesis → fix → prevention.", follow: "Tell me about a time that path was wrong." },
   t3: { why: "This pool is .NET / Azure. We should hear it used under load.", listen: "Service Bus, Functions, retries, poison messages, idempotency.", good: "A real consumer they owned, including the ugly parts.", follow: "How did you handle duplicate messages?" },
@@ -1942,6 +2103,10 @@ const DETAILS = {
   t10: { why: "Versioning is how they treat other teams.", listen: "Compatibility, deprecation, who they told.", good: "A change they shipped without breaking callers.", follow: "When did you have to break someone?" },
   t11: { why: "Observability on a inherited service is the real job.", listen: "Metrics, traces, logs, what they added first.", good: "A concrete add, not “we’d put Datadog on it.”", follow: "What did you still not know after that?" },
   t12: { why: "Sync vs queue is the design bar.", listen: "Latency, retries, user-facing vs background.", good: "A time they picked one and why the other was wrong.", follow: "What happens when the queue lags?" },
+  "j-pf1": { why: "Aviato lives and dies on booking integrity.", listen: "SQL, cache, the write path, what they check first.", good: "A triage that starts with the write, not the UI.", follow: "How do you know inventory is the source of truth?" },
+  "j-pf2": { why: "Idempotent capture is the .NET payments bar for this seat.", listen: "Idempotency keys, at-least-once, what they persist first.", good: "A retry that cannot charge twice.", follow: "Where does the key live, and for how long?" },
+  "j-pf3": { why: "Search vs availability is Aviato’s actual pain.", listen: "Source of truth, rebuild vs live write, who they page.", good: "A way to find which store is lying.", follow: "How long can search be wrong before it is a customer bug?" },
+  "j-pf4": { why: "US morning overlap is a client must-have.", listen: "Real on-call habits, not a hopeful timezone.", good: "A first fifteen minutes they have actually run.", follow: "Who do you page if it is not your service?" },
   "j-ff1": { why: "Client asked us to probe double-booking / inventory consistency.", listen: "Transactions, locks, uniqueness, the race they actually hit.", good: "A concrete approach, not “we’d just use a lock.”", follow: "What happens if the lock times out?" },
   "j-ff2": { why: "Client wants morning overlap with US hours.", listen: "Real schedule, not a hopeful one.", good: "A typical day that actually overlaps ET mornings.", follow: "How do you handle a 7am incident?" },
   "j-ff3": { why: "Marketplace / booking experience is the closest analog.", listen: "What broke: inventory, payments, search, ops tools.", good: "A production story, not a side project.", follow: "What would you refuse to rebuild the same way?" },
@@ -1981,6 +2146,7 @@ const state = {
   scriptOpen: false,
   done: false,
   aiOpen: false,
+  outlineOpen: true,
   aiRoom: "Capture evidence, not slogans. Flag it if US-hours overlap is vague.",
   aiQ: {},
   aiChat: [],
@@ -1994,6 +2160,7 @@ const state = {
 function catalogById() {
   const map = {};
   CULTURAL.questions.forEach(q => { map[q.id] = { ...q, group: CULTURAL.label, ...(DETAILS[q.id] || {}) }; });
+  SPECIALIST.questions.forEach(q => { map[q.id] = { ...q, group: SPECIALIST.label, ...(DETAILS[q.id] || {}) }; });
   POOLS.forEach(p => {
     p.questions.forEach(q => { map[q.id] = { ...q, group: p.label, ...(DETAILS[q.id] || {}) }; });
   });
@@ -2005,14 +2172,20 @@ function catalogById() {
 
 function loadQueue() {
   const byId = catalogById();
-  let ids = CULTURAL.questions.map(q => q.id).concat(POOLS[0].questions.map(q => q.id));
+  const job = JOBS.find(j => j.id === "pricefx-sa");
+  let ids = CULTURAL.questions.map(q => q.id)
+    .concat(SPECIALIST.questions.map(q => q.id))
+    .concat(job ? job.questions.map(q => q.id) : []);
   try {
     const saved = JSON.parse(localStorage.getItem("be-interview-set") || "null");
-    if (saved?.ids?.length) ids = saved.ids;
+    if (saved?.ids?.length && saved.ids.every(id => byId[id])) ids = saved.ids;
     state.jobId = saved?.jobId || null;
     state.jobIds = Array.isArray(saved?.jobIds) ? saved.jobIds : (state.jobId ? [state.jobId] : []);
     state.poolId = saved?.poolId || state.poolId;
   } catch (e) {}
+  if (!ids.some(id => String(id).startsWith("j-")) && job) {
+    ids = ids.concat(job.questions.map(q => q.id));
+  }
   if (!state.poolId) {
     const hit = POOLS.find(p => p.questions.some(q => ids.includes(q.id)));
     if (hit) state.poolId = hit.id;
@@ -2063,6 +2236,7 @@ function esc(s) {
 function questionBucket(q) {
   const id = String(q.id || q).replace(/-\d+$/, "");
   if (id.startsWith("c")) return "cultural";
+  if (id.startsWith("p")) return "specialist";
   if (id.startsWith("t")) return "technical";
   if (id.startsWith("b")) return "behavioral";
   if (id.startsWith("e")) return "education";
@@ -2075,9 +2249,10 @@ function feedbackSections() {
   const jobs = (state.jobIds.length ? state.jobIds : [state.jobId]).map(id => JOBS.find(j => j.id === id)).filter(Boolean);
   const pool = POOLS.find(p => p.id === state.poolId);
   const sections = [];
-  if (present.has("cultural")) sections.push({ key: "cultural", title: "Cultural", kicker: "General feedback" });
-  if (present.has("technical") && pool) sections.push({ key: "pool", title: pool.label, kicker: "Talent pool" });
-  jobs.forEach(job => sections.push({ key: "job:" + job.id, title: job.company, kicker: job.role }));
+  if (present.has("cultural")) sections.push({ key: "cultural", title: "Cultural", kicker: "General feedback", kind: "stars" });
+  if (present.has("specialist")) sections.push({ key: "specialist", title: SPECIALIST.label, kicker: "Talent pool", kind: "stars" });
+  if (present.has("technical") && pool) sections.push({ key: "pool", title: pool.label, kicker: "Talent pool", kind: "stars" });
+  jobs.forEach(job => sections.push({ key: "job:" + job.id, title: job.role, kicker: job.company, kind: "thumbs" }));
   return sections;
 }
 
@@ -2095,7 +2270,7 @@ function callSummary() {
   const s = wrapStats();
   const pool = POOLS.find(p => p.id === state.poolId);
   const jobs = (state.jobIds.length ? state.jobIds : [state.jobId]).map(id => JOBS.find(j => j.id === id)).filter(Boolean);
-  const ratings = feedbackSections().map(sec => state.ratings[sec.key] || 0).filter(n => n > 0);
+  const ratings = feedbackSections().map(sec => state.ratings[sec.key]).filter(n => typeof n === "number" && n > 0);
   const avg = ratings.length ? ratings.reduce((a, n) => a + n, 0) / ratings.length : 0;
   const strip = (key) => defaultSummary(key).replace(/^This screen was ended early because it was already clear Marcelo was not a fit for this seat.\n\n/, "");
   const paras = [];
@@ -2129,7 +2304,7 @@ function defaultSummary(key) {
       ? [c1, c2].filter(Boolean).join(" ") + " He is calm on a call and answers with the system, not a slogan. Looking for clearer ownership of a product area, and a team where he can mentor without being the only senior in the room."
       : "Marcelo is a senior .NET engineer from Córdoba with 8 years in production systems. Culture conversation was light: he wants ownership of a product area and a team where he is not the only senior.");
   }
-  if (key === "pool" || key === "technical") {
+  if (key === "pool" || key === "technical" || key === "specialist") {
     const pool = POOLS.find(p => p.id === state.poolId);
     const name = pool ? pool.label : ".NET Software Engineer";
     if (state.poolId === "backend") {
@@ -2150,6 +2325,13 @@ function defaultSummary(key) {
 function starSvg() {
   const d = "M12 2.8 14.65 8.7l6.45.84-4.74 4.4 1.22 6.36L12 17.18l-5.58 3.12 1.22-6.36-4.74-4.4 6.45-.84L12 2.8z";
   return `<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path class="fill" fill="currentColor" d="${d}"/><path fill="none" stroke="currentColor" stroke-width="1.45" stroke-linejoin="round" d="${d}"/></svg>`;
+}
+
+function thumbSvg(dir) {
+  if (dir === "down") {
+    return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>`;
+  }
+  return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>`;
 }
 
 function renderAiChat() {
@@ -2232,15 +2414,86 @@ function aiReply(text) {
   return "I’ll keep that as a standing note for the whole interview.";
 }
 
+function outlineGroupFor(q) {
+  const bucket = questionBucket(q);
+  if (bucket === "cultural") return "Cultural";
+  if (bucket === "specialist") return `Talent pool · ${SPECIALIST.label}`;
+  if (bucket === "technical") {
+    const pool = POOLS.find(p => p.questions.some(pq => pq.id === q.id));
+    return pool ? `Talent pool · ${pool.label}` : "Talent pool";
+  }
+  if (bucket === "job") {
+    const job = JOBS.find(j => j.questions.some(jq => jq.id === q.id));
+    return job ? `${job.company} · ${job.role}` : "Specific job";
+  }
+  return q.group || "More";
+}
+
+function outlineTick(done) {
+  if (done) {
+    return `<svg class="outline-tick" viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="1.5" width="17" height="17" rx="5" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+  return `<svg class="outline-tick" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.25" y="2.25" width="15.5" height="15.5" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.65"/></svg>`;
+}
+
+function setOutlineOpen(open) {
+  state.outlineOpen = open;
+  document.body.classList.toggle("is-outline-collapsed", !open);
+  const fold = document.getElementById("outlineFold");
+  if (fold) {
+    fold.setAttribute("aria-expanded", String(open));
+    fold.setAttribute("aria-label", open ? "Collapse question list" : "Expand question list");
+  }
+}
+
+function outlineGroups() {
+  const order = [];
+  const map = new Map();
+  state.queue.forEach((q, i) => {
+    const label = outlineGroupFor(q);
+    if (!map.has(label)) {
+      map.set(label, { label, items: [] });
+      order.push(label);
+    }
+    map.get(label).items.push({ q, i });
+  });
+  return order.map(label => map.get(label));
+}
+
+function renderOutline() {
+  const root = document.getElementById("qOutline");
+  if (!root) return;
+  const s = wrapStats();
+  const fold = `<button type="button" class="outline-fold" id="outlineFold" aria-expanded="${state.outlineOpen}" aria-label="${state.outlineOpen ? "Collapse question list" : "Expand question list"}">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+  </button>`;
+  if (!state.queue.length) {
+    root.innerHTML = `<div class="outline-head">${fold}<p class="outline-kicker">No questions in this set</p></div>`;
+    return;
+  }
+  root.innerHTML = `<div class="outline-head">${fold}<p class="outline-kicker">${s.answered} of ${s.total} answered</p></div>` + outlineGroups().map(g => `
+    <div class="outline-group">
+      <h3>${esc(g.label)}</h3>
+      ${g.items.map(({ q, i }) => {
+        const done = !!(state.answers[q.id] || "").trim();
+        const now = i === state.qIndex && !state.done && !state.scriptOpen;
+        return `<button type="button" class="outline-item${done ? " is-done" : ""}${now ? " is-now" : ""}" data-jump="${i}" title="${esc(q.prompt)}">
+          ${outlineTick(done)}
+          <span>${esc(q.prompt)}</span>
+        </button>`;
+      }).join("")}
+    </div>
+  `).join("");
+}
+
 function renderQuestions() {
   const q = currentQ();
   const root = document.getElementById("qStage");
   const peek = document.getElementById("nextPeek");
   const scriptBtn = document.getElementById("scriptToggle");
-  const remain = document.querySelector(".q-head .remain");
   const editSet = document.getElementById("editSet");
-  if (remain) remain.classList.toggle("hidden", !!state.done);
   if (editSet) editSet.classList.toggle("hidden", !!state.done);
+  renderOutline();
   if (scriptBtn) {
     scriptBtn.textContent = state.scriptOpen
       ? (state.done ? "Back to summary" : "Back to question")
@@ -2249,11 +2502,9 @@ function renderQuestions() {
   if (!q) {
     root.innerHTML = `<div class="empty-q"><b>No questions in this set</b><a href="prep.html">Build a set first</a></div>`;
     peek.classList.add("hidden");
-    document.getElementById("progress").textContent = "0 of 0";
     return;
   }
   const total = state.queue.length;
-  const pips = document.getElementById("pips");
 
   if (state.scriptOpen) {
     peek.classList.add("hidden");
@@ -2266,7 +2517,6 @@ function renderQuestions() {
         <p class="${ans ? "" : "is-empty"}">${ans ? esc(ans) : "No answer yet"}</p>
       </button>`;
     }).join("")}</div>`;
-    document.getElementById("progress").textContent = state.done ? "Complete" : (Math.max(0, total - state.qIndex - 1) === 0 ? "Last question" : `${Math.max(0, total - state.qIndex - 1)} left`);
     requestAnimationFrame(() => {
       const now = root.querySelector(".script-item.is-now") || root.querySelector(".script-item");
       if (now) now.scrollIntoView({ block: "center", inline: "nearest" });
@@ -2283,15 +2533,21 @@ function renderQuestions() {
         <section class="wrap-block">
           ${sections.map(sec => {
             const rating = state.ratings[sec.key] || 0;
+            const control = sec.kind === "thumbs"
+              ? `<div class="thumbs" role="radiogroup" aria-label="${esc(sec.kicker)} ${esc(sec.title)} fit">
+                  <button type="button" class="thumb is-up${rating === "up" ? " is-on" : ""}" data-thumb="up" data-rate="${sec.key}" aria-label="Thumbs up" aria-checked="${rating === "up"}">${thumbSvg("up")}</button>
+                  <button type="button" class="thumb is-down${rating === "down" ? " is-on" : ""}" data-thumb="down" data-rate="${sec.key}" aria-label="Thumbs down" aria-checked="${rating === "down"}">${thumbSvg("down")}</button>
+                </div>`
+              : `<div class="stars" role="radiogroup" aria-label="${esc(sec.title)} rating">
+                  ${[1,2,3,4,5].map(n => `<button type="button" class="star${n <= rating ? " is-on" : ""}" data-star="${n}" data-rate="${sec.key}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-checked="${n === rating}">${starSvg()}</button>`).join("")}
+                  <span class="stars-score">${typeof rating === "number" && rating ? rating + " / 5" : ""}</span>
+                </div>`;
             return `<div class="wrap-head">
               <div class="wrap-rate-copy">
-                <span class="wrap-rate-kicker">${sec.kicker}</span>
-                <b class="wrap-rate-label">${sec.title}</b>
+                <span class="wrap-rate-kicker">${esc(sec.kicker)}</span>
+                <b class="wrap-rate-label">${esc(sec.title)}</b>
               </div>
-              <div class="stars" role="radiogroup" aria-label="${sec.title} rating">
-                ${[1,2,3,4,5].map(n => `<button type="button" class="star${n <= rating ? " is-on" : ""}" data-star="${n}" data-rate="${sec.key}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-checked="${n === rating}">${starSvg()}</button>`).join("")}
-                <span class="stars-score">${rating ? rating + " / 5" : ""}</span>
-              </div>
+              ${control}
             </div>`;
           }).join("")}
         </section>
@@ -2318,48 +2574,25 @@ function renderQuestions() {
         </section>
       </div>
     `;
-    document.getElementById("progress").textContent = state.endedEarly ? "Ended early" : "Complete";
-    if (pips) {
-      pips.innerHTML = Array.from({ length: total }, (_, i) => {
-        const cls = state.endedEarly ? (i <= state.qIndex ? "is-done" : "") : "is-done";
-        return `<i class="${cls}"></i>`;
-      }).join("");
-    }
     return;
   }
-  const level = covLevel(q.id);
   const val = state.answers[q.id] || "";
-  const pct = [0, 33, 66, 100][level];
   root.innerHTML = `
     <div class="q-kicker">${q.group}</div>
     <h3 class="q-prompt">${q.prompt}</h3>
     <div class="q-answer" data-answer="${q.id}" data-placeholder="Answer will land here from the live transcript.">${esc(val)}</div>
-    <div class="cov" data-level="${level}">
-      <div class="cov-top"><span>Answer coverage</span><b>${COV[level]}</b></div>
-      <div class="cov-bar"><i style="width:${pct}%"></i></div>
-    </div>
   `;
   const next = state.queue[state.qIndex + 1];
   peek.classList.remove("hidden");
   peek.innerHTML = `
     <button type="button" class="q-step" id="qPrev" ${state.qIndex === 0 ? "disabled" : ""}>Previous</button>
-    <div class="copy">${next
-      ? `<span class="k">Up next · ${next.group}</span><b>${next.prompt}</b>`
-      : `<span class="k">End of set</span><b>That’s the last question in this interview.</b>`}</div>
     <button type="button" class="q-step next" id="qNext">${next ? "Next" : "Finish"}</button>
   `;
-  const left = Math.max(0, total - state.qIndex - 1);
-  document.getElementById("progress").textContent = left === 0 ? "Last question" : `${left} left`;
-  if (pips) {
-    pips.innerHTML = Array.from({ length: total }, (_, i) => {
-      const cls = i < state.qIndex ? "is-done" : i === state.qIndex ? "is-now" : "";
-      return `<i class="${cls}"></i>`;
-    }).join("");
-  }
 }
 
 function goQuestion(i) {
   if (i < 0 || i >= state.queue.length) return;
+  typeInto._pinned = i;
   state.qIndex = i;
   state.detailsOpen = false;
   state.done = false;
@@ -2427,17 +2660,19 @@ function addLine(entry) {
 
 function typeInto(id, text) {
   const idx = state.queue.findIndex(q => q.id === id);
-  if (idx >= 0) { state.qIndex = idx; state.detailsOpen = false; }
-  renderQuestions();
-  const box = document.querySelector(`[data-answer="${id}"]`);
-  if (!box) return;
-  box.textContent = "";
+  if (idx >= 0 && typeInto._pinned == null) {
+    state.qIndex = idx;
+    state.detailsOpen = false;
+    renderQuestions();
+  }
   let i = 0;
   clearInterval(typeInto._t);
   typeInto._t = setInterval(() => {
     i += 2;
-    box.textContent = text.slice(0, i);
-    state.answers[id] = box.textContent;
+    const slice = text.slice(0, i);
+    const box = document.querySelector(`[data-answer="${id}"]`);
+    if (box) box.textContent = slice;
+    state.answers[id] = slice;
     if (i >= text.length) {
       clearInterval(typeInto._t);
       state.filled[id] = true;
@@ -2501,6 +2736,14 @@ document.getElementById("qStage").addEventListener("click", (e) => {
     renderQuestions();
     return;
   }
+  const thumb = e.target.closest("[data-thumb]");
+  if (thumb) {
+    const key = thumb.dataset.rate || "overall";
+    const val = thumb.dataset.thumb;
+    state.ratings[key] = state.ratings[key] === val ? 0 : val;
+    renderQuestions();
+    return;
+  }
   const eng = e.target.closest("[data-english]");
   if (eng) {
     state.english = eng.dataset.english;
@@ -2520,9 +2763,17 @@ document.getElementById("qStage").addEventListener("click", (e) => {
   }
 });
 
-document.getElementById("scriptToggle").addEventListener("click", () => {
-  state.scriptOpen = !state.scriptOpen;
-  renderQuestions();
+document.getElementById("qOutline").addEventListener("click", (e) => {
+  if (e.target.closest("#outlineFold")) {
+    e.preventDefault();
+    e.stopPropagation();
+    setOutlineOpen(!state.outlineOpen);
+    return;
+  }
+  const item = e.target.closest("[data-jump]");
+  if (!item) return;
+  state.scriptOpen = false;
+  goQuestion(Number(item.dataset.jump));
 });
 
 document.getElementById("aiToggle").addEventListener("click", () => setAiOpen(!state.aiOpen));

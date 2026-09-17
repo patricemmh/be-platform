@@ -250,12 +250,10 @@ a { color: inherit; text-decoration: none; }
 
 <script>
 const CULTURAL = [
-  { id: "c1", prompt: "How much overall experience do you have, and how much of that is in this role?" },
+  { id: "c1", prompt: "How much overall experience do you have? How much experience in this role do you have?" },
   { id: "c2", prompt: "What would motivate you to explore a new career opportunity?" },
-  { id: "c3", prompt: "What kind of team environment helps you do your best work?" },
-  { id: "c4", prompt: "How do you like to get feedback, and how do you give it?" },
-  { id: "c5", prompt: "What does a good week look like for you, hours and communication included?" },
-  { id: "c6", prompt: "Where do you want to be in this role a year from now?" }
+  { id: "c3", prompt: "Education highlights" },
+  { id: "c4", prompt: "Most notable jobs highlights" }
 ];
 
 const POOLS = [
@@ -286,6 +284,18 @@ const POOLS = [
 ];
 
 const JOBS = [
+  {
+    id: "pricefx-sa",
+    role: ".NET Software Engineer",
+    company: "Aviato",
+    posted: "Sep 12, 2026",
+    questions: [
+      { id: "j-pf1", prompt: "This seat owns Aviato’s booking API. A booking looks confirmed and inventory didn’t move. Where do you look first?" },
+      { id: "j-pf2", prompt: "Clients retry the payment capture. How would you make that safe in this .NET service?" },
+      { id: "j-pf3", prompt: "Search and availability drift after a deploy. How do you find which store is lying?" },
+      { id: "j-pf4", prompt: "On-call for Aviato overlaps US mornings. What does a good first fifteen minutes look like when bookings are stuck?" }
+    ]
+  },
   {
     id: "wedge-devops",
     role: "DevOps Engineer",
