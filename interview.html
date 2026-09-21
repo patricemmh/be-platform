@@ -1354,7 +1354,12 @@ body.is-outline-collapsed .outline-item span { display: none; }
   line-height: 1.35;
   color: var(--text);
 }
-.outline-item:hover { color: var(--brand); }
+.outline-n {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  color: var(--subtle);
+}
+.outline-item.is-now .outline-n { color: inherit; }
 .outline-item.is-now { font-weight: 650; color: var(--brand); }
 .outline-tick {
   width: 18px;
@@ -2402,7 +2407,7 @@ body.is-call-ended .close-screen {
 
             <div class="section" id="languages">
               <h4>Languages</h4>
-              <div class="lang"><b>English</b><span>Fluent · written and spoken</span></div>
+              <div class="lang"><b>English</b><span>Fluent</span></div>
             </div>
           </div>
         </div>
@@ -3453,7 +3458,7 @@ function renderOutline() {
         const now = i === state.qIndex && !state.done && !state.scriptOpen && !state.onSetup;
         return `<button type="button" class="outline-item${done ? " is-done" : ""}${now ? " is-now" : ""}" data-jump="${i}" title="${esc(q.prompt)}">
           ${outlineTick(done)}
-          <span>${esc(q.prompt)}</span>
+          <span><span class="outline-n">${i + 1}.</span> ${esc(q.prompt)}</span>
         </button>`;
       }).join("")}
     </div>
@@ -3530,8 +3535,9 @@ function renderQuestions() {
     return;
   }
   const val = state.answers[q.id] || "";
+  const n = state.qIndex + 1;
   root.innerHTML = `
-    <div class="q-kicker">${q.group}</div>
+    <div class="q-kicker">${String(n).padStart(2, "0")} · ${q.group}</div>
     <h3 class="q-prompt">${q.prompt}</h3>
     <div class="q-answer" data-answer="${q.id}" data-placeholder="Answer will land here from the live transcript.">${esc(val)}</div>
   `;
@@ -3668,8 +3674,7 @@ function addLine(entry) {
   div.innerHTML = `<b>${entry.name}</b><p>${entry.text}</p>`;
   feed.appendChild(div);
   feed.parentElement.scrollTop = feed.parentElement.scrollHeight;
-  const n = transcriptCount();
-  document.getElementById("trMeta").textContent = state.captions ? "Hide" : `${n} lines · Show`;
+  document.getElementById("trMeta").textContent = state.captions ? "Hide" : "Show";
 }
 
 function typeInto(id, text) {
@@ -3719,18 +3724,13 @@ function toggle(kind) {
   if (kind === "captions") syncTranscript();
 }
 
-function transcriptCount() {
-  return document.getElementById("trFeed").children.length;
-}
-
 function syncTranscript() {
   const open = state.captions;
   const panel = document.getElementById("transcriptPanel");
   const toggleBtn = document.getElementById("trToggle");
   panel.classList.toggle("is-collapsed", !open);
   toggleBtn.setAttribute("aria-expanded", String(open));
-  const n = transcriptCount();
-  document.getElementById("trMeta").textContent = open ? "Hide" : (n ? `${n} lines · Show` : "Show");
+  document.getElementById("trMeta").textContent = open ? "Hide" : "Show";
   syncCallButtons();
 }
 
