@@ -19,12 +19,13 @@
   --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; }
+html, body { margin: 0; height: 100%; }
 body {
   font-family: var(--font);
   color: var(--text);
   background: var(--page);
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 button, select { font-family: inherit; }
 button { cursor: pointer; }
@@ -48,8 +49,17 @@ a { color: inherit; text-decoration: none; }
   color: var(--subtle);
 }
 
+.prep {
+  height: calc(100vh - 68px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 322px;
+}
+.prep-main {
+  min-width: 0;
+  overflow: auto;
+}
 .wrap {
-  width: min(720px, calc(100% - 80px));
+  width: min(640px, calc(100% - 80px));
   margin: 48px auto 96px;
 }
 .who { margin-bottom: 28px; }
@@ -220,8 +230,82 @@ a { color: inherit; text-decoration: none; }
 .start:hover { filter: brightness(.96); }
 .start:disabled { background: #d8d8d2; color: #fff; cursor: not-allowed; filter: none; }
 
-@media (max-width: 700px) {
-  .wrap { width: min(720px, calc(100% - 48px)); }
+.outline-col {
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--line);
+  background: var(--page);
+}
+.outline {
+  height: 100%;
+  overflow: auto;
+  padding: 28px 22px 80px;
+  scrollbar-width: thin;
+  scrollbar-color: #c8c8c2 var(--page);
+}
+.outline::-webkit-scrollbar { width: 10px; background: var(--page); }
+.outline::-webkit-scrollbar-track { background: var(--page); }
+.outline::-webkit-scrollbar-thumb {
+  background: #c8c8c2;
+  border-radius: 99px;
+  border: 2px solid var(--page);
+}
+.outline-head { margin: 0 0 18px; min-height: 28px; }
+.outline-kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.outline-empty {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.outline-group { margin-bottom: 26px; }
+.outline-group h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.outline-item {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  margin: 0;
+  padding: 7px 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--text);
+}
+.outline-tick {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: #c5c5bf;
+  display: block;
+}
+
+@media (max-width: 980px) {
+  body { overflow: auto; }
+  .prep {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+  .outline-col {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    min-height: 420px;
+  }
+  .wrap { width: min(640px, calc(100% - 48px)); }
 }
 </style>
 </head>
@@ -231,21 +315,28 @@ a { color: inherit; text-decoration: none; }
   <span id="prepBanner">Prepare the set before you join</span>
 </header>
 
-<main class="wrap">
-  <div class="who">
-    <div class="who-main">
-      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop&crop=faces" alt="Marcelo Dosko">
-      <div>
-        <h1>Marcelo Dosko</h1>
-        <p class="title">Córdoba, Argentina · GMT-3</p>
+<main class="prep">
+  <div class="prep-main">
+    <div class="wrap">
+      <div class="who">
+        <div class="who-main">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop&crop=faces" alt="Marcelo Dosko">
+          <div>
+            <h1>Marcelo Dosko</h1>
+            <p class="title">Córdoba, Argentina · GMT-3</p>
+          </div>
+        </div>
+        <div class="meet">
+          <b>Cultural / Technical</b>
+          <span>Tue, Sep 15, 2026 · 1:00 pm–2:00 pm (America/Chicago)</span>
+        </div>
       </div>
-    </div>
-    <div class="meet">
-      <b>Cultural / Technical</b>
-      <span>Tue, Sep 15, 2026 · 1:00 pm–2:00 pm (America/Chicago)</span>
+      <div id="builder"></div>
     </div>
   </div>
-  <div id="builder"></div>
+  <aside class="outline-col" aria-label="Question list">
+    <div class="outline" id="qOutline"></div>
+  </aside>
 </main>
 
 <script>
@@ -386,6 +477,7 @@ const state = {
   cultural: true,
   technical: false,
   poolId: "",
+  poolIds: [],
   jobIds: [],
   jobOpen: false
 };
@@ -395,18 +487,22 @@ try {
   if (saved) {
     if (typeof saved.cultural === "boolean") state.cultural = saved.cultural;
     if (typeof saved.technical === "boolean") state.technical = saved.technical;
-    state.poolId = saved.poolId || "";
+    state.poolIds = Array.isArray(saved.poolIds) ? saved.poolIds.filter(id => POOLS.some(p => p.id === id)) : [];
+    if (!state.poolIds.length && saved.poolId && POOLS.some(p => p.id === saved.poolId)) state.poolIds = [saved.poolId];
+    state.poolId = state.poolIds[0] || "";
     state.jobIds = Array.isArray(saved.jobIds) ? saved.jobIds.filter(id => JOBS.some(j => j.id === id)) : [];
     if (!state.jobIds.length && saved.jobId && JOBS.some(j => j.id === saved.jobId)) state.jobIds = [saved.jobId];
     if (saved.ids?.length) {
       if (typeof saved.cultural !== "boolean") state.cultural = saved.ids.some(id => String(id).startsWith("c"));
       const fromIds = saved.ids.some(id => String(id).startsWith("t") || /^p\d/.test(id));
       if (typeof saved.technical !== "boolean") state.technical = fromIds;
-      const hit = POOLS.find(p => p.questions.some(q => saved.ids.includes(q.id)));
-      if (!state.poolId && hit) {
-        state.poolId = hit.id;
+      const hits = POOLS.filter(p => p.questions.some(q => saved.ids.includes(q.id))).map(p => p.id);
+      if (!state.poolIds.length && hits.length) {
+        state.poolIds = hits;
+        state.poolId = state.poolIds[0];
         state.technical = true;
-      } else if ((state.technical || fromIds) && !state.poolId && saved.ids.some(id => /^p\d/.test(id))) {
+      } else if ((state.technical || fromIds) && !state.poolIds.length && saved.ids.some(id => /^p\d/.test(id))) {
+        state.poolIds = ["dotnet"];
         state.poolId = "dotnet";
         state.technical = true;
       }
@@ -420,19 +516,55 @@ if (editing) {
   if (banner) banner.textContent = "Edit the live question set";
 }
 
-function currentPool() { return POOLS.find(p => p.id === state.poolId) || null; }
+function selectedPools() { return (state.poolIds || []).map(id => POOLS.find(p => p.id === id)).filter(Boolean); }
 function selectedJobs() { return state.jobIds.map(id => JOBS.find(j => j.id === id)).filter(Boolean); }
 
 function needsPool() { return state.cultural || state.technical; }
-function missingPool() { return needsPool() && !state.poolId; }
+function missingPool() { return needsPool() && !state.poolIds.length; }
 
 function orderedIds() {
   const ids = [];
   if (state.cultural) CULTURAL.forEach(q => ids.push(q.id));
-  const pool = currentPool();
-  if (state.technical && pool) pool.questions.forEach(q => ids.push(q.id));
+  if (state.technical) selectedPools().forEach(pool => pool.questions.forEach(q => ids.push(q.id)));
   selectedJobs().forEach(job => job.questions.forEach(q => ids.push(q.id)));
   return ids;
+}
+
+function outlineGroups() {
+  const groups = [];
+  if (state.cultural) groups.push({ label: "Cultural", items: CULTURAL });
+  if (state.technical) selectedPools().forEach(pool => groups.push({ label: `Talent pool · ${pool.label}`, items: pool.questions }));
+  selectedJobs().forEach(job => groups.push({ label: `${job.company} · ${job.role}`, items: job.questions }));
+  return groups;
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+}
+
+function outlineTick() {
+  return `<svg class="outline-tick" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.25" y="2.25" width="15.5" height="15.5" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.65"/></svg>`;
+}
+
+function renderOutline() {
+  const root = document.getElementById("qOutline");
+  if (!root) return;
+  const groups = outlineGroups();
+  const total = groups.reduce((n, g) => n + g.items.length, 0);
+  const kicker = total ? `${total} question${total === 1 ? "" : "s"}` : "No questions yet";
+  if (!total) {
+    root.innerHTML = `<div class="outline-head"><p class="outline-kicker">${kicker}</p></div>
+      <p class="outline-empty">${missingPool()
+        ? "Select a talent pool to preview cultural and technical questions."
+        : "Select categories or a job to preview the set."}</p>`;
+    return;
+  }
+  root.innerHTML = `<div class="outline-head"><p class="outline-kicker">${kicker}</p></div>` + groups.map(g => `
+    <div class="outline-group">
+      <h3>${esc(g.label)}</h3>
+      ${g.items.map(q => `<div class="outline-item">${outlineTick()}<span>${esc(q.prompt)}</span></div>`).join("")}
+    </div>
+  `).join("");
 }
 
 function canStart() {
@@ -466,7 +598,7 @@ function render() {
       <div class="pills">
         ${pill(state.cultural, "Cultural", `data-act="cultural"`)}
         ${pill(state.technical, "Technical", `data-act="technical"`)}
-        ${POOLS.map(p => pill(p.id === state.poolId, p.label, `data-pool="${p.id}"`)).join("")}
+        ${POOLS.map(p => pill(state.poolIds.includes(p.id), p.label, `data-pool="${p.id}"`)).join("")}
       </div>
     </section>
     <section class="field">
@@ -489,6 +621,7 @@ function render() {
     </section>
     <button class="start" id="start" type="button" ${canStart() ? "" : "disabled"}>${editing ? "Back to questions" : "Join Interview"}</button>
   `;
+  renderOutline();
 }
 
 document.getElementById("builder").addEventListener("click", (e) => {
@@ -520,7 +653,8 @@ document.getElementById("builder").addEventListener("click", (e) => {
       ids: orderedIds(),
       cultural: state.cultural,
       technical: state.technical,
-      poolId: state.poolId,
+      poolId: state.poolIds[0] || "",
+      poolIds: state.poolIds,
       jobIds: state.jobIds,
       jobId: state.jobIds[0] || ""
     }));
@@ -534,7 +668,12 @@ document.getElementById("builder").addEventListener("click", (e) => {
   }
   if (btn.dataset.act === "cultural") state.cultural = !state.cultural;
   if (btn.dataset.act === "technical") state.technical = !state.technical;
-  if (btn.dataset.pool) state.poolId = state.poolId === btn.dataset.pool ? "" : btn.dataset.pool;
+  if (btn.dataset.pool) {
+    const id = btn.dataset.pool;
+    if (state.poolIds.includes(id)) state.poolIds = state.poolIds.filter(p => p !== id);
+    else state.poolIds.push(id);
+    state.poolId = state.poolIds[0] || "";
+  }
   state.jobOpen = false;
   render();
 });

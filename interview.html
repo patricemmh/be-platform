@@ -1099,8 +1099,58 @@ body.is-profile-wide { --profile: 650px; }
 .q-panel { background: var(--page); }
 .q-head {
   padding: 40px 80px 0 72px;
+  min-height: 0;
   border-bottom: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 16px;
 }
+body.is-call-ended .q-head {
+  padding: 0 80px 0 72px;
+  min-height: 56px;
+  border-bottom: 1px solid var(--line);
+}
+.q-tabs {
+  display: none;
+  align-items: stretch;
+  gap: 28px;
+  min-width: 0;
+}
+body.is-call-ended .q-tabs { display: flex; }
+.q-tab {
+  position: relative;
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--subtle);
+}
+.q-tab:hover { color: var(--text); }
+.q-tab.is-on { color: var(--text); }
+.q-tab.is-on::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--text);
+}
+.q-tab:disabled {
+  color: #c8c8c2;
+  cursor: default;
+}
+.q-head-actions {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  justify-self: auto;
+}
+body.is-call-ended .transcript { display: none; }
+.q-panel:has(.q-tab.is-on[data-q-tab="transcript"]) .transcript { display: none; }
 .q-stage {
   align-items: flex-start;
   padding: 28px 80px 28px 72px;
@@ -1185,6 +1235,12 @@ body.is-profile-wide { --profile: 650px; }
 .ai-fab.is-open { background: #1a1a1a; }
 body.is-ai-open { --ai: 380px; }
 body.is-outline-collapsed { --outline: 56px; }
+body.is-call-ended,
+body.is-call-ended.is-outline-collapsed { --outline: 0px; }
+body.is-call-ended .outline-col { display: none; }
+body.is-call-ended .room {
+  grid-template-columns: var(--profile) 10px minmax(0, 1fr) var(--ai);
+}
 .outline-col {
   min-height: 0;
   min-width: 0;
@@ -1223,7 +1279,10 @@ body.is-outline-collapsed { --outline: 56px; }
   width: 28px;
   height: 28px;
   flex: 0 0 28px;
+  border: 0;
+  padding: 0;
   border-radius: 8px;
+  background: transparent;
   color: var(--subtle);
   display: grid;
   place-items: center;
@@ -1436,7 +1495,7 @@ body.is-ai-open .ai-col { display: flex; }
   column-gap: 24px;
   width: 100%;
   margin: 0;
-  padding: 14px 0;
+  padding: 16px 0;
   border-bottom: 1px solid var(--line);
 }
 .wrap-head:last-child { border-bottom: 0; }
@@ -1448,8 +1507,6 @@ body.is-ai-open .ai-col { display: flex; }
   justify-self: end;
   margin-left: 0;
 }
-.wrap-head:last-child { border-bottom: 0; }
-.wrap-head h4 { margin: 0; }
 .wrap-rate-copy {
   display: flex;
   flex-direction: column;
@@ -1507,12 +1564,14 @@ body.is-ai-open .ai-col { display: flex; }
 .stars:hover .star:has(~ .star:hover) .fill { opacity: 1; }
 .stars .star:hover { transform: translateY(-1px); }
 .stars-score {
-  margin-left: 10px;
-  min-width: 2.8ch;
+  margin-right: 10px;
+  margin-left: 0;
+  min-width: 4.2ch;
   font-size: 13px;
   font-weight: 650;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 .stars-score:empty { display: none; }
 .thumbs {
@@ -1573,6 +1632,8 @@ body.is-ai-open .ai-col { display: flex; }
   min-width: min(720px, 100%);
   margin-left: auto;
   margin-right: auto;
+  padding-top: 32px;
+  padding-bottom: 48vh;
 }
 .wrap-up .script-list {
   width: 100%;
@@ -1627,6 +1688,162 @@ body.is-ai-open .ai-col { display: flex; }
   font-size: 22px;
   font-weight: 650;
   letter-spacing: -0.03em;
+}
+.wrap-acc {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+.wrap-acc span {
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+.wrap-acc svg {
+  flex: 0 0 auto;
+  color: var(--subtle);
+  transition: transform .18s var(--ease);
+}
+.wrap-acc:hover svg { color: var(--text); }
+.wrap-acc[aria-expanded="true"] svg { transform: rotate(180deg); }
+.wrap-qa .script-list { margin-top: 8px; }
+.wrap-up.is-wide {
+  width: min(960px, 100%);
+  min-width: min(960px, 100%);
+}
+.wrap-up.is-wide .q-prompt { max-width: none; }
+.wrap-notes-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 0 40px;
+  align-items: start;
+  margin-top: 28px;
+}
+.wrap-notes-row .wrap-block,
+.wrap-notes-row .wrap-block + .wrap-block,
+.wrap-notes-row .wrap-block:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+}
+.wrap-notes-row .wrap-note {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 2;
+  margin-top: 0;
+  padding-top: 0;
+}
+.wrap-notes-row .wrap-note h4 {
+  margin: 0 0 10px;
+  padding: 0;
+  align-self: start;
+}
+.wrap-fit .wrap-signals {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.wrap-signals h4 { margin: 0 0 14px; }
+.signal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.signal {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+}
+.signal svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  margin-top: 1px;
+}
+.signal.is-good { color: #1f9a57; }
+.signal.is-gap { color: #d4a017; }
+.signal span {
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: #2a2a2a;
+}
+.wrap-fit,
+.wrap-block + .wrap-fit,
+.wrap-notes-row + .wrap-fit {
+  margin-top: 36px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.wrap-fit > h4 {
+  margin: 0 0 4px;
+}
+.wrap-fit > .wrap-head:last-of-type {
+  margin-bottom: 8px;
+}
+.wrap-fit .wrap-notes-row {
+  margin-top: 28px;
+}
+.wrap-fit + .wrap-qa { margin-top: 36px; }
+.wrap-tr {
+  display: grid;
+  gap: 18px;
+  margin-top: 8px;
+  padding-bottom: 48px;
+}
+.wrap-tr .line b {
+  font-size: 12px;
+  font-weight: 750;
+  margin-bottom: 4px;
+}
+.wrap-tr .line p {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: #2a2a2a;
+}
+.wrap-tr-empty {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+.wrap-note .wrap-copy {
+  min-height: 5.5em;
+  font-size: 15px;
+}
+.wrap-note.is-full,
+.wrap-block + .wrap-note.is-full {
+  margin-top: 36px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.wrap-note.is-full h4 {
+  margin: 0 0 12px;
+}
+.wrap-note.is-full .wrap-copy {
+  min-height: 4.5em;
+}
+@media (max-width: 980px) {
+  .wrap-notes-row {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+  .wrap-notes-row .wrap-note {
+    display: block;
+    grid-row: auto;
+  }
+  .wrap-notes-row .wrap-block + .wrap-block { margin-top: 24px; }
 }
 .wrap-label {
   display: flex;
@@ -1890,6 +2107,138 @@ body.is-call-ended .close-screen {
   font-weight: 650;
 }
 .dev-overlay-actions .ghost:hover { background: #f3f3ef; }
+.q-stage:has(.setup-card) {
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+.setup-card {
+  width: min(640px, 100%);
+  margin: 0 auto;
+  padding: 8px 0 48px;
+}
+.setup-meet { margin: 0 0 28px; }
+.setup-meet b {
+  display: block;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.setup-meet span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.setup-card .field { padding: 22px 0; border-top: 1px solid var(--line); }
+.setup-card .field h2 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.setup-card .hint { margin: 0 0 14px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+.setup-card .hint.warn { color: var(--text); }
+.setup-card .pills { display: flex; flex-wrap: wrap; gap: 10px; }
+.setup-card .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  border: 1.5px solid #c8c8c2;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+}
+.setup-card .pill svg { flex: 0 0 auto; }
+.setup-card .pill:hover { background: #ecece8; }
+.setup-card .pill.is-on {
+  background: var(--brand-soft);
+  border-color: #c5cbe0;
+  color: #3a4b94;
+}
+.setup-card .job-pills { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 0; }
+.setup-card .job-pill { padding-right: 10px; }
+.setup-card .job-pill .x {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  border-radius: 50%;
+  background: rgba(58, 75, 148, .12);
+}
+.setup-card .job-dd { position: relative; }
+.setup-card .job-dd-btn {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  border: 1px solid #d8d8d2;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  text-align: left;
+}
+.setup-card .job-dd-btn.is-empty { color: var(--subtle); font-weight: 400; }
+.setup-card .job-dd-btn:disabled { opacity: .45; cursor: default; }
+.setup-card .job-dd-btn svg { flex: 0 0 auto; color: var(--muted); }
+.setup-card .job-dd.is-open .job-dd-btn { border-color: var(--brand); }
+.setup-card .job-dd-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 8;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(26, 26, 26, .08);
+  max-height: 320px;
+  overflow: auto;
+}
+.setup-card .job-opt {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  padding: 12px 16px;
+  border: 0;
+  background: #fff;
+  text-align: left;
+}
+.setup-card .job-opt + .job-opt { border-top: 1px solid var(--line); }
+.setup-card .job-opt:hover { background: #f7f7f4; }
+.setup-card .job-opt b { display: block; font-size: 14px; font-weight: 650; letter-spacing: -0.02em; }
+.setup-card .job-opt .when { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+.setup-card .job-opt .co { display: block; font-size: 13px; font-weight: 500; color: var(--muted); text-align: right; }
+.setup-card .job-opt .st {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 650;
+  color: #2f9e5f;
+}
+.setup-card .job-opt .st i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+}
 </style>
 </head>
 <body>
@@ -2065,6 +2414,11 @@ body.is-call-ended .close-screen {
     <section class="col" aria-label="Interview questions">
       <article class="panel q-panel">
         <div class="q-head">
+          <nav class="q-tabs" id="qTabs" aria-label="Interview views" hidden>
+            <button type="button" class="q-tab" data-q-tab="summary">Summary</button>
+            <button type="button" class="q-tab is-on" data-q-tab="questions">Questions</button>
+            <button type="button" class="q-tab" data-q-tab="transcript">Transcript</button>
+          </nav>
           <div class="q-head-actions">
             <button class="ai-fab" type="button" id="aiToggle" title="Instruct the AI" aria-label="Instruct the AI">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2 13.4 8.8 20 10.2 13.4 11.6 12 18.2 10.6 11.6 4 10.2 10.6 8.8 12 2.2ZM19 15.2l.7 3.1 3.1.7-3.1.7-.7 3.1-.7-3.1-3.1-.7 3.1-.7.7-3.1ZM5.2 14.5l.5 2.2 2.2.5-2.2.5-.5 2.2-.5-2.2-2.2-.5 2.2-.5.5-2.2Z"/></svg>
@@ -2177,6 +2531,7 @@ const JOBS = [
     id: "pricefx-sa",
     role: ".NET Software Engineer",
     company: "Aviato",
+    posted: "Sep 12, 2026",
     questions: [
       { id: "j-pf1", prompt: "This seat owns Aviato’s booking API. A booking looks confirmed and inventory didn’t move. Where do you look first?" },
       { id: "j-pf2", prompt: "Clients retry the payment capture. How would you make that safe in this .NET service?" },
@@ -2188,6 +2543,7 @@ const JOBS = [
     id: "wedge-devops",
     role: "DevOps Engineer",
     company: "Wedge",
+    posted: "Sep 10, 2026",
     questions: [
       { id: "j-wd1", prompt: "Walk me through how you ship a service from laptop to production here. What do you own versus what the platform team owns?" },
       { id: "j-wd2", prompt: "A deploy looks green and users still see the old version. Where do you look first?" },
@@ -2200,6 +2556,7 @@ const JOBS = [
     id: "reliacare",
     role: "BackEnd Engineer",
     company: "ReliaCare Solutions",
+    posted: "Sep 9, 2026",
     questions: [
       { id: "j-ff1", prompt: "This seat owns inventory consistency. How would you keep two requests from double-booking the same unit?" },
       { id: "j-ff2", prompt: "The client asked us to confirm morning overlap with US hours. What does a typical day look like for you?" },
@@ -2212,6 +2569,7 @@ const JOBS = [
     id: "hackerai",
     role: "Staff Engineer",
     company: "Hackerai.co",
+    posted: "Sep 3, 2026",
     questions: [
       { id: "j-hk1", prompt: "What does staff-level ownership look like for you on a team that already has seniors?" },
       { id: "j-hk2", prompt: "Walk me through a technical decision you made that other teams had to live with." },
@@ -2224,6 +2582,7 @@ const JOBS = [
     id: "wedge-staff",
     role: "Staff Engineer",
     company: "Wedge",
+    posted: "Sep 2, 2026",
     questions: [
       { id: "j-ws1", prompt: "This seat is expected to set direction, not only ship tickets. How have you done that?" },
       { id: "j-ws2", prompt: "How do you split time between writing code and unblocking other engineers?" },
@@ -2236,6 +2595,7 @@ const JOBS = [
     id: "connective-cloud",
     role: "Cloud Operations & Observability Engineer",
     company: "Connective Talent",
+    posted: "Aug 28, 2026",
     questions: [
       { id: "j-ah1", prompt: "Client wants HIPAA-aware logging. How have you kept PII out of logs without going blind in prod?" },
       { id: "j-ah2", prompt: "They run Azure Functions + Service Bus. Where have you used that shape of system?" },
@@ -2248,6 +2608,7 @@ const JOBS = [
     id: "connective-cyber",
     role: "Cybersecurity Platform Engineer",
     company: "Connective Talent",
+    posted: "Aug 26, 2026",
     questions: [
       { id: "j-cy1", prompt: "How do you keep secrets out of logs, CI, and exception traces?" },
       { id: "j-cy2", prompt: "Where does identity stop and the app start in systems you’ve built?" },
@@ -2313,11 +2674,20 @@ const DETAILS = {
 
 const COV = ["Not yet", "Partial", "Covered", "Strong"];
 const ENGLISH = ["Novice", "Limited", "Professional", "Proficient", "Fluent"];
+const PLUS = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>`;
+const CHECK = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 12 5 5 9-10"/></svg>`;
+const X = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 6l12 12M18 6 6 18"/></svg>`;
 
 const state = {
   jobId: null,
   jobIds: [],
   poolId: "dotnet",
+  poolIds: ["dotnet"],
+  cultural: true,
+  technical: true,
+  jobOpen: false,
+  onSetup: true,
+  scriptStarted: false,
   answers: {},
   filled: {},
   coverage: {},
@@ -2331,6 +2701,9 @@ const state = {
   qIndex: 0,
   detailsOpen: false,
   scriptOpen: false,
+  qaOpen: false,
+  wrapTab: "questions",
+  lines: [],
   done: false,
   aiOpen: false,
   outlineOpen: true,
@@ -2357,54 +2730,194 @@ function catalogById() {
   return map;
 }
 
-function loadQueue() {
+function selectedJobs() {
+  return (state.jobIds || []).map(id => JOBS.find(j => j.id === id)).filter(Boolean);
+}
+
+function selectedPools() {
+  return (state.poolIds || []).map(id => POOLS.find(p => p.id === id)).filter(Boolean);
+}
+
+function missingPool() {
+  return (state.cultural || state.technical) && !state.poolIds.length;
+}
+
+function canStart() {
+  if (missingPool()) return false;
+  return state.cultural || state.technical || state.jobIds.length > 0;
+}
+
+function applyQueueFromFlags() {
   const byId = catalogById();
-  const job = JOBS.find(j => j.id === "pricefx-sa");
-  let ids = CULTURAL.questions.map(q => q.id)
-    .concat(SPECIALIST.questions.map(q => q.id))
-    .concat(job ? job.questions.map(q => q.id) : []);
-  try {
-    const saved = JSON.parse(localStorage.getItem("be-interview-set") || "null");
-    if (saved?.ids?.length && saved.ids.every(id => byId[id])) ids = saved.ids;
-    state.jobId = saved?.jobId || null;
-    state.jobIds = Array.isArray(saved?.jobIds) ? saved.jobIds : (state.jobId ? [state.jobId] : []);
-    state.poolId = saved?.poolId || state.poolId;
-  } catch (e) {}
-  if (!ids.some(id => String(id).startsWith("j-")) && job) {
-    ids = ids.concat(job.questions.map(q => q.id));
-  }
-  if (!state.poolId) {
-    const hit = POOLS.find(p => p.questions.some(q => ids.includes(q.id)));
-    if (hit) state.poolId = hit.id;
-  }
+  const ids = [];
+  if (state.cultural) CULTURAL.questions.forEach(q => ids.push(q.id));
+  if (state.technical) selectedPools().forEach(pool => pool.questions.forEach(q => ids.push(q.id)));
+  selectedJobs().forEach(job => job.questions.forEach(q => ids.push(q.id)));
+  const currentId = (state.queue[state.qIndex] || {}).id;
   state.queue = ids.map(id => {
     const q = byId[id];
     return q ? { ...q } : null;
   }).filter(Boolean);
-  if (!state.jobIds.length) {
-    const hits = JOBS.filter(j => j.questions.some(q => ids.includes(q.id)));
-    state.jobIds = hits.map(j => j.id);
-    if (!state.jobId && hits[0]) state.jobId = hits[0].id;
+  if (!state.jobId && state.jobIds[0]) state.jobId = state.jobIds[0];
+  if (state.jobId && !state.jobIds.includes(state.jobId)) state.jobId = state.jobIds[0] || null;
+  state.poolId = state.poolIds[0] || "";
+  if (currentId) {
+    const idx = state.queue.findIndex(q => q.id === currentId);
+    state.qIndex = idx >= 0 ? idx : 0;
+  } else {
+    state.qIndex = 0;
   }
-  state.qIndex = 0;
+  if (state.qIndex >= state.queue.length) state.qIndex = Math.max(0, state.queue.length - 1);
   state.queue.forEach(q => {
     const base = q.id.replace(/-\d+$/, "");
     if (!state.aiQ[q.id] && DETAILS[base]?.listen) state.aiQ[q.id] = DETAILS[base].listen;
   });
 }
 
+function loadQueue() {
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem("be-interview-set") || "null");
+  } catch (e) {}
+  if (saved) {
+    if (typeof saved.cultural === "boolean") state.cultural = saved.cultural;
+    else if (saved.ids?.length) state.cultural = saved.ids.some(id => String(id).startsWith("c"));
+    if (typeof saved.technical === "boolean") state.technical = saved.technical;
+    else if (saved.ids?.length) state.technical = saved.ids.some(id => String(id).startsWith("t") || /^p\d/.test(id));
+    state.poolIds = Array.isArray(saved.poolIds) ? saved.poolIds.filter(id => POOLS.some(p => p.id === id)) : [];
+    if (!state.poolIds.length && saved.poolId && POOLS.some(p => p.id === saved.poolId)) state.poolIds = [saved.poolId];
+    state.poolId = state.poolIds[0] || "";
+    state.jobIds = Array.isArray(saved.jobIds) ? saved.jobIds.filter(id => JOBS.some(j => j.id === id)) : [];
+    if (!state.jobIds.length && saved.jobId && JOBS.some(j => j.id === saved.jobId)) state.jobIds = [saved.jobId];
+    state.jobIds = state.jobIds.filter(id => id !== "reliacare");
+    state.jobId = state.jobIds[0] || null;
+    delete state.ratings["job:reliacare"];
+    delete state.summaries["job:reliacare"];
+    if (!state.poolIds.length && saved.ids?.length) {
+      const hits = POOLS.filter(p => p.questions.some(q => saved.ids.includes(q.id))).map(p => p.id);
+      if (hits.length) state.poolIds = hits;
+      else if (saved.ids.some(id => /^p\d/.test(id))) state.poolIds = ["dotnet"];
+      state.poolId = state.poolIds[0] || "";
+    }
+  } else {
+    const job = JOBS.find(j => j.id === "pricefx-sa");
+    if (job) {
+      state.jobIds = [job.id];
+      state.jobId = job.id;
+    }
+  }
+  applyQueueFromFlags();
+  persistLiveSet();
+}
+
 function persistLiveSet() {
   localStorage.setItem("be-interview-set", JSON.stringify({
     ids: state.queue.map(q => q.id),
-    cultural: state.queue.some(q => questionBucket(q) === "cultural"),
-    technical: state.queue.some(q => {
-      const b = questionBucket(q);
-      return b === "technical" || b === "specialist";
-    }),
-    poolId: state.poolId || "",
+    cultural: state.cultural,
+    technical: state.technical,
+    poolId: state.poolIds[0] || "",
+    poolIds: state.poolIds,
     jobIds: state.jobIds,
     jobId: state.jobId || state.jobIds[0] || ""
   }));
+}
+
+function startScriptIfNeeded() {
+  if (state.scriptStarted) return;
+  state.scriptStarted = true;
+  playScript();
+}
+
+function openSetup() {
+  if (state.done) return;
+  state.scriptOpen = false;
+  state.onSetup = true;
+  state.jobOpen = false;
+  typeInto._pinned = "setup";
+  renderQuestions();
+}
+
+function leaveSetup() {
+  if (!canStart()) {
+    toast(missingPool()
+      ? "Select a talent pool to include cultural or technical."
+      : "Choose a category or a job to start.");
+    return;
+  }
+  applyQueueFromFlags();
+  persistLiveSet();
+  state.onSetup = false;
+  state.jobOpen = false;
+  if (!state.scriptStarted) state.qIndex = 0;
+  if (state.qIndex >= state.queue.length) state.qIndex = 0;
+  typeInto._pinned = state.qIndex;
+  startScriptIfNeeded();
+  renderQuestions();
+}
+
+function setupPill(on, label, attrs) {
+  return `<button type="button" class="pill${on ? " is-on" : ""}" ${attrs}>${on ? CHECK : PLUS}${label}</button>`;
+}
+
+function setupJobRow(j) {
+  return `<button type="button" class="job-opt" data-job="${j.id}">
+    <span><b>${esc(j.role)}</b><span class="when">${esc(j.posted || "")}</span></span>
+    <span><span class="co">${esc(j.company)}</span><span class="st"><i></i>Active</span></span>
+  </button>`;
+}
+
+function renderSetupStage() {
+  const root = document.getElementById("qStage");
+  const peek = document.getElementById("nextPeek");
+  const jobs = selectedJobs();
+  const available = JOBS.filter(j => !state.jobIds.includes(j.id));
+  const bits = [];
+  if (state.cultural) bits.push("Cultural");
+  if (state.technical) bits.push("Technical");
+  const meetTitle = bits.join(" / ") || "Interview";
+  const chevron = `<svg width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" stroke="currentColor" stroke-width="1.6"/></svg>`;
+  root.innerHTML = `
+    <div class="setup-card">
+      <div class="setup-meet">
+        <b>${esc(meetTitle)}</b>
+        <span>Tue, Sep 15, 2026 · 1:00 pm–2:00 pm (America/Chicago)</span>
+      </div>
+      <section class="field">
+        <h2>Choose question categories</h2>
+        <p class="hint${missingPool() ? " warn" : ""}">${missingPool()
+          ? "You must select a talent pool to include cultural or technical."
+          : "Cultural and technical need a talent pool Marcelo is already in. A job is optional."}</p>
+        <div class="pills">
+          ${setupPill(state.cultural, "Cultural", `data-act="cultural"`)}
+          ${setupPill(state.technical, "Technical", `data-act="technical"`)}
+          ${POOLS.map(p => setupPill(state.poolIds.includes(p.id), p.label, `data-pool="${p.id}"`)).join("")}
+        </div>
+      </section>
+      <section class="field">
+        <h2>Select job</h2>
+        <p class="hint">Optional. Add the opening this screen is for.</p>
+        <div class="job-dd${state.jobOpen ? " is-open" : ""}">
+          <button type="button" class="job-dd-btn is-empty" data-job-toggle="1" aria-expanded="${state.jobOpen}" ${available.length ? "" : "disabled"}>
+            <span>Select job</span>
+            ${chevron}
+          </button>
+          ${state.jobOpen && available.length ? `<div class="job-dd-menu" role="listbox">
+            ${available.map(j => setupJobRow(j)).join("")}
+          </div>` : ""}
+        </div>
+        ${jobs.length ? `<div class="job-pills">${jobs.map(j => `
+          <button type="button" class="pill is-on job-pill" data-job-remove="${j.id}">
+            ${esc(j.company)} · ${esc(j.role)}
+            <span class="x" aria-hidden="true">${X}</span>
+          </button>`).join("")}</div>` : ""}
+      </section>
+    </div>
+  `;
+  peek.classList.remove("hidden");
+  peek.innerHTML = `
+    <button type="button" class="q-step" id="qPrev" disabled>Previous</button>
+    <button type="button" class="q-step next" id="qNext" ${canStart() ? "" : "disabled"}>Next</button>
+  `;
 }
 
 function saveInterviewSession() {
@@ -2442,6 +2955,8 @@ function restoreInterviewSession() {
     else if (typeof s.qIndex === "number") idx = s.qIndex;
     if (idx < 0) idx = 0;
     state.qIndex = Math.min(idx, Math.max(0, state.queue.length - 1));
+    state.onSetup = false;
+    state.scriptStarted = true;
     return true;
   } catch (e) {
     return false;
@@ -2488,13 +3003,16 @@ function questionBucket(q) {
 
 function feedbackSections() {
   const present = new Set(state.queue.map(questionBucket));
-  const jobs = (state.jobIds.length ? state.jobIds : [state.jobId]).map(id => JOBS.find(j => j.id === id)).filter(Boolean);
-  const pool = POOLS.find(p => p.id === state.poolId);
   const sections = [];
   if (present.has("cultural")) sections.push({ key: "cultural", title: "Cultural", kicker: "General feedback", kind: "stars" });
   if (present.has("specialist")) sections.push({ key: "specialist", title: SPECIALIST.label, kicker: "Talent pool", kind: "stars" });
-  if (present.has("technical") && pool) sections.push({ key: "pool", title: pool.label, kicker: "Talent pool", kind: "stars" });
-  jobs.forEach(job => sections.push({ key: "job:" + job.id, title: job.role, kicker: job.company, kind: "thumbs" }));
+  if (present.has("technical")) {
+    selectedPools().forEach(pool => {
+      if (pool.questions.some(q => state.queue.some(qq => qq.id === q.id))) {
+        sections.push({ key: "pool:" + pool.id, title: pool.label, kicker: "Talent pool", kind: "stars" });
+      }
+    });
+  }
   return sections;
 }
 
@@ -2510,7 +3028,7 @@ function wrapStats() {
 
 function callSummary() {
   const s = wrapStats();
-  const pool = POOLS.find(p => p.id === state.poolId);
+  const pools = selectedPools();
   const jobs = (state.jobIds.length ? state.jobIds : [state.jobId]).map(id => JOBS.find(j => j.id === id)).filter(Boolean);
   const ratings = feedbackSections().map(sec => state.ratings[sec.key]).filter(n => typeof n === "number" && n > 0);
   const avg = ratings.length ? ratings.reduce((a, n) => a + n, 0) / ratings.length : 0;
@@ -2519,10 +3037,10 @@ function callSummary() {
   if (state.endedEarly) {
     paras.push(`The call was ended early after ${s.answered} of ${s.total} questions. Enough was on the table to score what had been heard.`);
   } else {
-    paras.push(`Marcelo answered ${s.answered} of ${s.total} questions${pool ? ` on the ${pool.label} set` : ""}${jobs.length ? `, including client questions for ${jobs.map(j => j.company).join(", ")}` : ""}. English on the call was marked ${state.english}.`);
+    paras.push(`Marcelo answered ${s.answered} of ${s.total} questions${pools.length ? ` on the ${pools.map(p => p.label).join(" / ")} set` : ""}${jobs.length ? `, including client questions for ${jobs.map(j => j.company).join(", ")}` : ""}. English on the call was marked ${state.english}.`);
   }
   paras.push(strip("cultural"));
-  paras.push(strip("pool"));
+  pools.forEach(p => paras.push(strip("pool:" + p.id)));
   if (avg >= 4) {
     paras.push("Overall he performed at a level we would advance: calm on the call, specific about production, and not selling a slogan.");
   } else if (avg >= 3) {
@@ -2546,10 +3064,11 @@ function defaultSummary(key) {
       ? [c1, c2].filter(Boolean).join(" ") + " He is calm on a call and answers with the system, not a slogan. Looking for clearer ownership of a product area, and a team where he can mentor without being the only senior in the room."
       : "Marcelo is a senior .NET engineer from Córdoba with 8 years in production systems. Culture conversation was light: he wants ownership of a product area and a team where he is not the only senior.");
   }
-  if (key === "pool" || key === "technical" || key === "specialist") {
-    const pool = POOLS.find(p => p.id === state.poolId);
+  if (key === "pool" || key === "technical" || key === "specialist" || String(key).startsWith("pool:")) {
+    const id = String(key).startsWith("pool:") ? key.slice(5) : (state.poolIds[0] || state.poolId);
+    const pool = POOLS.find(p => p.id === id);
     const name = pool ? pool.label : ".NET Software Engineer";
-    if (state.poolId === "backend") {
+    if ((pool && pool.id === "backend") || id === "backend") {
       return early + `On the ${name} talent-pool bar, Marcelo talks like someone who has owned APIs other teams depend on, including the races and timeouts. Strongest as the person who takes a messy production path and makes it boring. Recommend advancing for senior backend seats that need that kind of production ownership.`;
     }
     return early + `On the ${name} talent-pool bar, Marcelo shows 8 years overall and about 3 fully on C#, .NET, and Azure. He talks like someone who has owned Service Bus consumers, retries, and the on-call habits around them, not someone who has only read the docs. Strongest as the person who takes a messy production path and makes it boring. Recommend advancing for senior .NET / Azure seats that need that kind of production ownership.`;
@@ -2562,6 +3081,214 @@ function defaultSummary(key) {
       : "Client-specific questions were part of this screen. Score against what that seat actually needs.");
   }
   return early + "Notes from this screen.";
+}
+
+const NOTE_FIELDS = [
+  { key: "overall", title: "Overall Interview Summary" },
+  { key: "comm", title: "Communication & Collaboration" },
+  { key: "seniority", title: "Experience & Seniority Signals" },
+  { key: "strengths", title: "Strengths & Potential" },
+  { key: "concerns", title: "Concerns / Follow-Up Areas" }
+];
+
+function defaultNote(key) {
+  if (key === "overall") {
+    return "Marcelo comes across as a calm senior .NET engineer who answers with the system, not a slogan. On the call he is easy to follow: he listens, then walks the path of the request, the retry, and what broke in production. English is fluent, spoken and written. A U.S. client conversation would not need a translator in the room, and he does not oversell seniority.\n\nEight years overall, about three fully on C# / .NET / Azure after other stacks. That split is honest, not padded. He talks like someone who has owned production paths rather than tickets: Service Bus consumers, idempotent capture, runbooks for stuck transactions, mentoring two mids, on-call for payouts. He is looking for clearer ownership of a product area and a team where he can mentor without being the only senior in the room — a pull toward scope, not a generic “new challenges.”\n\nImpression is a real senior who would not need to be sold as one. Strongest as the person who takes a messy production path and makes it boring. The remaining questions are bounded: confirm the last three years of ownership in this stack, and that US-morning overlap is a habit rather than a hope. Neither is a reason to hold him. Recommend advancing for senior .NET / Azure seats that need that kind of production ownership, including Aviato’s booking-API seat.";
+  }
+  if (key === "comm") {
+    return "He listens, then walks the path of the system. English is fluent, spoken and written, and he does not oversell. Easy to imagine on a call with a U.S. client — the technical conversation would not need a translator in the room.";
+  }
+  if (key === "seniority") {
+    return "Talks like someone who has owned production paths, not tickets: mentoring two mids, on-call for payouts, runbooks for stuck transactions. Senior signals are ownership and the boring parts, not architecture theater. Complements a strong talent-pool bar rather than replacing it.";
+  }
+  if (key === "strengths") {
+    return "Strongest as the person who takes a messy production path and makes it boring. Clear on idempotency, Service Bus, and the first fifteen minutes of an incident. Particularly valuable on a squad that already has a product owner and needs a senior who can raise the floor without becoming the bottleneck.";
+  }
+  if (key === "concerns") {
+    return "Only about three years fully on C# / .NET / Azure after other stacks — worth confirming the last three years of ownership in a technical loop. US-morning overlap should be validated as a real on-call habit, not a hopeful one. Not a red flag; the next screen’s job.";
+  }
+  return "";
+}
+
+function wrapCopyHtml(key, fallback) {
+  const text = state.summaries[key] || fallback;
+  return `<div class="wrap-copy" contenteditable="true" data-summary="${key}" data-placeholder="Write this section.">${String(text).split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("")}</div>`;
+}
+
+function wrapRateHead(sec) {
+  const rating = state.ratings[sec.key] || 0;
+  const control = sec.kind === "thumbs"
+    ? `<div class="thumbs" role="radiogroup" aria-label="${esc(sec.kicker)} ${esc(sec.title)} fit">
+        <button type="button" class="thumb is-up${rating === "up" ? " is-on" : ""}" data-thumb="up" data-rate="${sec.key}" aria-label="Thumbs up" aria-checked="${rating === "up"}">${thumbSvg("up")}</button>
+        <button type="button" class="thumb is-down${rating === "down" ? " is-on" : ""}" data-thumb="down" data-rate="${sec.key}" aria-label="Thumbs down" aria-checked="${rating === "down"}">${thumbSvg("down")}</button>
+      </div>`
+    : `<div class="stars" role="radiogroup" aria-label="${esc(sec.title)} rating">
+        <span class="stars-score">${typeof rating === "number" && rating ? rating + " / 5" : ""}</span>
+        ${[1,2,3,4,5].map(n => `<button type="button" class="star${n <= rating ? " is-on" : ""}" data-star="${n}" data-rate="${sec.key}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-checked="${n === rating}">${starSvg()}</button>`).join("")}
+      </div>`;
+  return `<div class="wrap-head is-${sec.kind}">
+    <div class="wrap-rate-copy">
+      <span class="wrap-rate-kicker">${esc(sec.kicker)}</span>
+      <b class="wrap-rate-label">${esc(sec.title)}</b>
+    </div>
+    ${control}
+  </div>`;
+}
+
+function wrapRatingsHtml() {
+  const sections = feedbackSections();
+  return `<section class="wrap-block">
+    ${sections.map(wrapRateHead).join("")}
+  </section>
+  <section class="wrap-block">
+    <h4>English proficiency</h4>
+    <div class="eng" role="radiogroup" aria-label="English proficiency">
+      ${ENGLISH.map(tier => `<button type="button" class="eng-opt${state.english === tier ? " is-on" : ""}" data-english="${tier}" aria-checked="${state.english === tier}">${tier}</button>`).join("")}
+    </div>
+  </section>`;
+}
+
+function wrapNoteCard(field, full) {
+  return `<section class="wrap-block wrap-note${full ? " is-full" : ""}">
+    <h4>${esc(field.title)}</h4>
+    ${wrapCopyHtml(field.key, defaultNote(field.key))}
+  </section>`;
+}
+
+const SIGNALS = [
+  { kind: "good", text: "Owns production .NET paths — Service Bus consumers, idempotent capture, and runbooks for stuck transactions." },
+  { kind: "good", text: "Fluent English, spoken and written. Easy to put on a U.S. client call without a translator in the room." },
+  { kind: "good", text: "Senior signals are ownership and the boring parts: mentoring two mids, on-call for payouts, not architecture theater." },
+  { kind: "gap", text: "Has not worked in marketplace or booking systems before — Aviato’s inventory and availability problems would be a new domain." },
+  { kind: "gap", text: "Only about three years fully on C# / .NET / Azure after other stacks. Confirm the last stretch of ownership in a technical loop." },
+  { kind: "gap", text: "US-morning overlap still needs to be a real on-call habit, not a hopeful one." }
+];
+
+function signalIcon(kind) {
+  if (kind === "good") {
+    return `<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+  return `<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg>`;
+}
+
+function wrapSignalsHtml() {
+  return `<section class="wrap-block wrap-signals">
+    <h4>Highlights and gaps</h4>
+    <ul class="signal-list">
+      ${SIGNALS.map(item => `<li class="signal is-${item.kind}">${signalIcon(item.kind)}<span>${esc(item.text)}</span></li>`).join("")}
+    </ul>
+  </section>`;
+}
+
+function defaultJobFit(job) {
+  if (job.id === "pricefx-sa") {
+    return "Marcelo is a strong fit for Aviato’s .NET Software Engineer seat. He already answers in this job’s constraints: a booking that looks confirmed while inventory did not move, client retries on payment capture, search and availability drift after a deploy, and the first fifteen minutes of stuck bookings on a US-morning overlap. That is production ownership of Aviato’s booking API, not a generic architecture answer.\n\nThe remaining questions are bounded. Only about three years fully on C# / .NET / Azure, and US-hours overlap still needs to be a real on-call habit. Neither is a reason to hold him from this seat. Recommend submitting him to Aviato as a senior .NET engineer — a yes, not a stretch.";
+  }
+  return `Marcelo is a credible fit for ${job.company}’s ${job.role} seat. He talks like someone who has owned production paths, retries, and the first minutes of an incident, which is the bar this client is hiring against.\n\nConfirm the last stretch of ownership in this stack and that overlap hours are a habit, then submit. A yes for a senior who makes a messy path boring, not a stretch into staff.`;
+}
+
+function defaultJobFitNote(job, key) {
+  const company = job.company;
+  const role = job.role;
+  if (job.id === "pricefx-sa") {
+    if (key === "comm") {
+      return "He can walk Aviato’s booking and inventory path on a client call without hedging. English is fluent, and he explains retries and drift in the order a U.S. stakeholder would follow. The technical conversation with Aviato would not need a translator in the room.";
+    }
+    if (key === "seniority") {
+      return "Senior for this seat: he talks like the person who owns the write path, not a ticket. Mentoring, on-call for payouts, and runbooks for stuck transactions map cleanly onto Aviato’s booking-API ownership. Not architecture theater — production habits Aviato actually hires against.";
+    }
+    if (key === "strengths") {
+      return "Strongest where Aviato hurts: a booking that looks confirmed while inventory did not move, client retries on payment capture, search vs availability after a deploy, and the first fifteen minutes of stuck bookings. Idempotency and Service Bus are already in how he answers.";
+    }
+    if (key === "concerns") {
+      return "Only about three years fully on C# / .NET / Azure after other stacks — worth a technical loop on the last stretch of ownership. US-morning overlap for Aviato on-call still needs to be a habit, not a hope. Neither is a reason to hold the submit.";
+    }
+  }
+  if (key === "comm") {
+    return `He listens, then walks the system. Easy to put on a call with ${company} — the conversation would not need a translator in the room.`;
+  }
+  if (key === "seniority") {
+    return `Talks like someone who has owned production paths, not tickets. Senior signals match a ${role} bar: ownership and the boring parts, not architecture theater.`;
+  }
+  if (key === "strengths") {
+    return `Strongest as the person who takes a messy production path and makes it boring. That is the kind of senior ${company} is hiring.`;
+  }
+  if (key === "concerns") {
+    return `Confirm the last stretch of ownership in this stack, and that overlap hours are a real on-call habit. Not a red flag for ${company}; the next screen’s job.`;
+  }
+  return "";
+}
+
+function wrapJobNoteCard(job, field) {
+  return `<section class="wrap-block wrap-note">
+    <h4>${esc(field.title)}</h4>
+    ${wrapCopyHtml("fit:" + job.id + ":" + field.key, defaultJobFitNote(job, field.key))}
+  </section>`;
+}
+
+function wrapJobFitHtml() {
+  const jobs = selectedJobs();
+  if (!jobs.length) return "";
+  const fields = NOTE_FIELDS.slice(1);
+  return jobs.map(job => `<section class="wrap-block wrap-fit">
+    <h4>Fit for ${esc(job.company)} · ${esc(job.role)}</h4>
+    ${wrapRateHead({ key: "job:" + job.id + ":stars", title: job.role, kicker: job.company, kind: "stars" })}
+    ${wrapRateHead({ key: "job:" + job.id, title: "Recommend", kicker: job.company, kind: "thumbs" })}
+    ${wrapCopyHtml("fit:" + job.id, defaultJobFit(job))}
+    <div class="wrap-notes-row">
+      ${wrapJobNoteCard(job, fields[0])}
+      ${wrapJobNoteCard(job, fields[1])}
+    </div>
+    <div class="wrap-notes-row">
+      ${wrapJobNoteCard(job, fields[2])}
+      ${wrapJobNoteCard(job, fields[3])}
+    </div>
+    ${wrapSignalsHtml()}
+  </section>`).join("");
+}
+
+function wrapQuestionsHtml() {
+  return `<div class="wrap-up is-wide">
+    <div class="script-list">${state.queue.map((item, i) => {
+      const ans = (state.answers[item.id] || "").trim();
+      return `<article class="script-item">
+        <div class="script-n">${String(i + 1).padStart(2, "0")} · ${item.group}</div>
+        <h3>${item.prompt}</h3>
+        <p class="${ans ? "" : "is-empty"}">${ans ? esc(ans) : "No answer yet"}</p>
+      </article>`;
+    }).join("")}</div>
+  </div>`;
+}
+
+function transcriptLines() {
+  if (state.lines.length) return state.lines;
+  return SCRIPT.map(({ who, name, text }) => ({ who, name, text }));
+}
+
+function wrapTranscriptHtml() {
+  const lines = transcriptLines();
+  return `<div class="wrap-up is-wide">
+    ${lines.length
+      ? `<div class="wrap-tr">${lines.map(line => `<div class="line ${line.who}"><b>${esc(line.name)}</b><p>${esc(line.text)}</p></div>`).join("")}</div>`
+      : `<p class="wrap-tr-empty">No transcript yet.</p>`}
+  </div>`;
+}
+
+function wrapQaHtml() {
+  return `<section class="wrap-block wrap-qa">
+    <button type="button" class="wrap-acc" data-qa-toggle="1" aria-expanded="${state.qaOpen}" aria-controls="qaList">
+      <span>Questions and answers</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    ${state.qaOpen ? `<div class="script-list" id="qaList">${state.queue.map((item, i) => {
+      const ans = (state.answers[item.id] || "").trim();
+      return `<article class="script-item">
+        <div class="script-n">${String(i + 1).padStart(2, "0")} · ${item.group}</div>
+        <h3>${item.prompt}</h3>
+        <p class="${ans ? "" : "is-empty"}">${ans ? esc(ans) : "No answer yet"}</p>
+      </article>`;
+    }).join("")}</div>` : `<div id="qaList" hidden></div>`}
+  </section>`;
 }
 
 function starSvg() {
@@ -2709,9 +3436,9 @@ function renderOutline() {
   const fold = `<button type="button" class="outline-fold" id="outlineFold" aria-expanded="${state.outlineOpen}" aria-label="${state.outlineOpen ? "Collapse question list" : "Expand question list"}">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
   </button>`;
-  const edit = state.done ? "" : `<a class="outline-edit" href="prep.html?edit=1" id="editSet" title="Edit set" aria-label="Edit set">
+  const edit = state.done ? "" : `<button type="button" class="outline-edit" id="editSet" title="Edit set" aria-label="Edit set">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-  </a>`;
+  </button>`;
   const kicker = state.queue.length ? `${s.answered} of ${s.total} answered` : "No questions in this set";
   const head = `<div class="outline-head"><div class="outline-head-copy"><p class="outline-kicker">${kicker}</p>${edit}</div>${fold}</div>`;
   if (!state.queue.length) {
@@ -2723,7 +3450,7 @@ function renderOutline() {
       <h3>${esc(g.label)}</h3>
       ${g.items.map(({ q, i }) => {
         const done = !!(state.answers[q.id] || "").trim();
-        const now = i === state.qIndex && !state.done && !state.scriptOpen;
+        const now = i === state.qIndex && !state.done && !state.scriptOpen && !state.onSetup;
         return `<button type="button" class="outline-item${done ? " is-done" : ""}${now ? " is-now" : ""}" data-jump="${i}" title="${esc(q.prompt)}">
           ${outlineTick(done)}
           <span>${esc(q.prompt)}</span>
@@ -2738,11 +3465,21 @@ function renderQuestions() {
   const root = document.getElementById("qStage");
   const peek = document.getElementById("nextPeek");
   const scriptBtn = document.getElementById("scriptToggle");
+  syncQTabs();
   renderOutline();
   if (scriptBtn) {
     scriptBtn.textContent = state.scriptOpen
       ? (state.done ? "Back to summary" : "Back to question")
       : "See all";
+  }
+  if (state.wrapTab === "transcript") {
+    peek.classList.add("hidden");
+    root.innerHTML = wrapTranscriptHtml();
+    return;
+  }
+  if (state.onSetup && !state.done && !state.scriptOpen) {
+    renderSetupStage();
+    return;
   }
   if (!q) {
     root.innerHTML = `<div class="empty-q"><b>No questions in this set</b><a href="prep.html">Build a set first</a></div>`;
@@ -2770,55 +3507,26 @@ function renderQuestions() {
   }
 
   if (state.done) {
-    const sections = feedbackSections();
     peek.classList.add("hidden");
-    root.innerHTML = `
-      <div class="wrap-up">
-        <h3 class="q-prompt">Call Summary</h3>
-        <section class="wrap-block">
-          ${sections.map(sec => {
-            const rating = state.ratings[sec.key] || 0;
-            const control = sec.kind === "thumbs"
-              ? `<div class="thumbs" role="radiogroup" aria-label="${esc(sec.kicker)} ${esc(sec.title)} fit">
-                  <button type="button" class="thumb is-up${rating === "up" ? " is-on" : ""}" data-thumb="up" data-rate="${sec.key}" aria-label="Thumbs up" aria-checked="${rating === "up"}">${thumbSvg("up")}</button>
-                  <button type="button" class="thumb is-down${rating === "down" ? " is-on" : ""}" data-thumb="down" data-rate="${sec.key}" aria-label="Thumbs down" aria-checked="${rating === "down"}">${thumbSvg("down")}</button>
-                </div>`
-              : `<div class="stars" role="radiogroup" aria-label="${esc(sec.title)} rating">
-                  ${[1,2,3,4,5].map(n => `<button type="button" class="star${n <= rating ? " is-on" : ""}" data-star="${n}" data-rate="${sec.key}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-checked="${n === rating}">${starSvg()}</button>`).join("")}
-                  <span class="stars-score">${typeof rating === "number" && rating ? rating + " / 5" : ""}</span>
-                </div>`;
-            return `<div class="wrap-head">
-              <div class="wrap-rate-copy">
-                <span class="wrap-rate-kicker">${esc(sec.kicker)}</span>
-                <b class="wrap-rate-label">${esc(sec.title)}</b>
-              </div>
-              ${control}
-            </div>`;
-          }).join("")}
-        </section>
-        <section class="wrap-block">
-          <h4>English proficiency</h4>
-          <div class="eng" role="radiogroup" aria-label="English proficiency">
-            ${ENGLISH.map(tier => `<button type="button" class="eng-opt${state.english === tier ? " is-on" : ""}" data-english="${tier}" aria-checked="${state.english === tier}">${tier}</button>`).join("")}
-          </div>
-        </section>
-        <section class="wrap-block">
-          <h4>General Summary</h4>
-          <div class="wrap-copy" contenteditable="true" data-summary="call" data-placeholder="Write a summary of how the call went.">${String(state.summaries.call || callSummary()).split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("")}</div>
-        </section>
-        <section class="wrap-block">
-          <h4>Questions and answers</h4>
-          <div class="script-list">${state.queue.map((item, i) => {
-            const ans = (state.answers[item.id] || "").trim();
-            return `<article class="script-item">
-              <div class="script-n">${String(i + 1).padStart(2, "0")} · ${item.group}</div>
-              <h3>${item.prompt}</h3>
-              <p class="${ans ? "" : "is-empty"}">${ans ? esc(ans) : "No answer yet"}</p>
-            </article>`;
-          }).join("")}</div>
-        </section>
-      </div>
-    `;
+    if (state.wrapTab === "questions") {
+      root.innerHTML = wrapQuestionsHtml();
+      return;
+    }
+    const body = `${wrapRatingsHtml()}
+        ${wrapNoteCard(NOTE_FIELDS[0], true)}
+        <div class="wrap-notes-row">
+          ${wrapNoteCard(NOTE_FIELDS[1])}
+          ${wrapNoteCard(NOTE_FIELDS[2])}
+        </div>
+        <div class="wrap-notes-row">
+          ${wrapNoteCard(NOTE_FIELDS[3])}
+          ${wrapNoteCard(NOTE_FIELDS[4])}
+        </div>
+        ${wrapJobFitHtml()}`;
+    root.innerHTML = `<div class="wrap-up is-wide">
+      <h3 class="q-prompt">Call Summary</h3>
+      ${body}
+    </div>`;
     return;
   }
   const val = state.answers[q.id] || "";
@@ -2830,7 +3538,7 @@ function renderQuestions() {
   const next = state.queue[state.qIndex + 1];
   peek.classList.remove("hidden");
   peek.innerHTML = `
-    <button type="button" class="q-step" id="qPrev" ${state.qIndex === 0 ? "disabled" : ""}>Previous</button>
+    <button type="button" class="q-step" id="qPrev">Previous</button>
     <button type="button" class="q-step next" id="qNext">${next ? "Next" : "Finish"}</button>
   `;
 }
@@ -2838,6 +3546,8 @@ function renderQuestions() {
 function goQuestion(i) {
   if (i < 0 || i >= state.queue.length) return;
   typeInto._pinned = i;
+  state.onSetup = false;
+  startScriptIfNeeded();
   state.qIndex = i;
   state.detailsOpen = false;
   const wasDone = state.done;
@@ -2851,6 +3561,8 @@ function endInterview(early) {
   state.done = true;
   state.endedEarly = !!early;
   state.scriptOpen = false;
+  state.qaOpen = false;
+  state.wrapTab = "summary";
   state.aiOpen = false;
   renderAiChat();
   syncCallChrome();
@@ -2860,6 +3572,7 @@ function endInterview(early) {
 function rejoinCall() {
   state.done = false;
   state.endedEarly = false;
+  state.wrapTab = "questions";
   syncCallChrome();
   renderQuestions();
 }
@@ -2885,7 +3598,19 @@ function syncCallChrome() {
     hang.classList.toggle("is-rejoin", !!state.done);
   }
   if (!state.done) setCloseOverlay(false);
+  syncQTabs();
   renderStage();
+}
+
+function syncQTabs() {
+  const tabs = document.getElementById("qTabs");
+  if (!tabs) return;
+  tabs.hidden = !state.done;
+  const tab = state.wrapTab || "summary";
+  tabs.querySelectorAll("[data-q-tab]").forEach(btn => {
+    btn.classList.toggle("is-on", btn.dataset.qTab === tab);
+    btn.disabled = false;
+  });
 }
 
 function updateProgress() { renderQuestions(); }
@@ -2936,6 +3661,7 @@ function renderStage() {
 }
 
 function addLine(entry) {
+  state.lines.push({ who: entry.who, name: entry.name, text: entry.text });
   const feed = document.getElementById("trFeed");
   const div = document.createElement("div");
   div.className = `line ${entry.who}`;
@@ -2948,7 +3674,7 @@ function addLine(entry) {
 
 function typeInto(id, text) {
   const idx = state.queue.findIndex(q => q.id === id);
-  if (idx >= 0 && typeInto._pinned == null) {
+  if (idx >= 0 && typeInto._pinned == null && !state.onSetup) {
     state.qIndex = idx;
     state.detailsOpen = false;
     renderQuestions();
@@ -2965,7 +3691,8 @@ function typeInto(id, text) {
       clearInterval(typeInto._t);
       state.filled[id] = true;
       state.coverage[id] = coverageFromAnswer(text);
-      renderQuestions();
+      if (state.onSetup) renderOutline();
+      else renderQuestions();
     }
   }, 16);
 }
@@ -3017,6 +3744,52 @@ document.getElementById("qStage").addEventListener("input", (e) => {
 });
 
 document.getElementById("qStage").addEventListener("click", (e) => {
+  const toggle = e.target.closest("[data-job-toggle]");
+  if (toggle) {
+    e.stopPropagation();
+    state.jobOpen = !state.jobOpen;
+    renderQuestions();
+    return;
+  }
+  const pick = e.target.closest("[data-job]");
+  if (pick) {
+    e.stopPropagation();
+    const id = pick.dataset.job;
+    if (id && !state.jobIds.includes(id)) state.jobIds.push(id);
+    state.jobId = state.jobIds[0] || null;
+    state.jobOpen = false;
+    applyQueueFromFlags();
+    persistLiveSet();
+    renderQuestions();
+    return;
+  }
+  const remove = e.target.closest("[data-job-remove]");
+  if (remove) {
+    e.stopPropagation();
+    state.jobIds = state.jobIds.filter(id => id !== remove.dataset.jobRemove);
+    state.jobId = state.jobIds[0] || null;
+    applyQueueFromFlags();
+    persistLiveSet();
+    renderQuestions();
+    return;
+  }
+  const cat = e.target.closest("[data-act], [data-pool]");
+  if (cat) {
+    e.stopPropagation();
+    if (cat.dataset.act === "cultural") state.cultural = !state.cultural;
+    if (cat.dataset.act === "technical") state.technical = !state.technical;
+    if (cat.dataset.pool) {
+      const id = cat.dataset.pool;
+      if (state.poolIds.includes(id)) state.poolIds = state.poolIds.filter(p => p !== id);
+      else state.poolIds.push(id);
+      state.poolId = state.poolIds[0] || "";
+    }
+    state.jobOpen = false;
+    applyQueueFromFlags();
+    persistLiveSet();
+    renderQuestions();
+    return;
+  }
   const star = e.target.closest("[data-star]");
   if (star) {
     const key = star.dataset.rate || "overall";
@@ -3040,6 +3813,12 @@ document.getElementById("qStage").addEventListener("click", (e) => {
     renderQuestions();
     return;
   }
+  const qa = e.target.closest("[data-qa-toggle]");
+  if (qa) {
+    state.qaOpen = !state.qaOpen;
+    renderQuestions();
+    return;
+  }
   const item = e.target.closest("[data-jump]");
   if (item) {
     state.scriptOpen = false;
@@ -3053,8 +3832,10 @@ document.getElementById("qStage").addEventListener("click", (e) => {
 
 document.getElementById("qOutline").addEventListener("click", (e) => {
   if (e.target.closest("#editSet")) {
+    e.preventDefault();
     persistLiveSet();
     saveInterviewSession();
+    openSetup();
     return;
   }
   if (e.target.closest("#outlineFold")) {
@@ -3099,11 +3880,22 @@ document.addEventListener("keydown", (e) => {
   }
   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
   if (overlay && !overlay.hidden) return;
-  if (state.done || !state.queue.length) return;
+  if (state.done || !state.queue.length && !state.onSetup) return;
   const t = e.target;
   if (t && (t.isContentEditable || /^(input|textarea|select)$/i.test(t.tagName))) return;
+  if (state.onSetup) {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      leaveSetup();
+    }
+    return;
+  }
   if (e.key === "ArrowLeft") {
-    if (state.qIndex <= 0) return;
+    if (state.qIndex <= 0) {
+      e.preventDefault();
+      openSetup();
+      return;
+    }
     e.preventDefault();
     goQuestion(state.qIndex - 1);
     return;
@@ -3119,11 +3911,20 @@ document.getElementById("nextPeek").addEventListener("click", (e) => {
       rejoinCall();
       return;
     }
+    if (state.onSetup) return;
+    if (state.qIndex <= 0) {
+      openSetup();
+      return;
+    }
     goQuestion(state.qIndex - 1);
     return;
   }
   if (e.target.id === "qEnd") { location.href = "index.html"; return; }
   if (e.target.id === "qNext") {
+    if (state.onSetup) {
+      leaveSetup();
+      return;
+    }
     if (state.qIndex >= state.queue.length - 1) {
       endInterview(false);
       return;
@@ -3135,6 +3936,15 @@ document.getElementById("nextPeek").addEventListener("click", (e) => {
 document.getElementById("btnHang").addEventListener("click", () => {
   if (state.done) rejoinCall();
   else endInterview(true);
+});
+document.getElementById("qTabs").addEventListener("click", (e) => {
+  const tab = e.target.closest("[data-q-tab]");
+  if (!tab || tab.disabled) return;
+  const id = tab.dataset.qTab;
+  if (id === "summary" && !state.done) return;
+  state.wrapTab = id;
+  state.scriptOpen = false;
+  renderQuestions();
 });
 
 document.getElementById("btnCloseScreen").addEventListener("click", () => setCloseOverlay(true));
@@ -3203,7 +4013,14 @@ const resumed = restoreInterviewSession();
 renderQuestions();
 renderStage();
 syncTranscript();
-if (!resumed) playScript();
+if (resumed) startScriptIfNeeded();
+
+document.addEventListener("click", (e) => {
+  if (!state.jobOpen || !state.onSetup) return;
+  if (e.target.closest(".job-dd")) return;
+  state.jobOpen = false;
+  renderQuestions();
+});
 </script>
 </body>
 </html>
