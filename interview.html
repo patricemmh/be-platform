@@ -3238,7 +3238,6 @@ function wrapJobFitHtml() {
   return jobs.map(job => `<section class="wrap-block wrap-fit">
     <h4>Fit for ${esc(job.company)} · ${esc(job.role)}</h4>
     ${wrapRateHead({ key: "job:" + job.id + ":stars", title: job.role, kicker: job.company, kind: "stars" })}
-    ${wrapRateHead({ key: "job:" + job.id, title: "Recommend", kicker: job.company, kind: "thumbs" })}
     ${wrapCopyHtml("fit:" + job.id, defaultJobFit(job))}
     <div class="wrap-notes-row">
       ${wrapJobNoteCard(job, fields[0])}
