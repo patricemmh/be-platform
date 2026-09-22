@@ -822,12 +822,11 @@ body.is-profile-wide { --profile: 650px; }
 }
 .tr-head:hover { background: #f7f8fc; }
 .tr-head h3 { margin: 0; margin-right: auto; font-size: 13px; font-weight: 750; }
-.tr-head .tr-meta { font-size: 11px; color: var(--muted); font-weight: 650; }
 .tr-head .chev {
   color: var(--muted);
   transition: transform .2s var(--ease);
 }
-.transcript.is-collapsed .tr-head .chev { transform: rotate(-90deg); }
+.transcript.is-collapsed .tr-head .chev { transform: rotate(180deg); }
 .tr-body { display: flex; flex-direction: column; min-height: 0; flex: 1; }
 .transcript.is-collapsed .tr-body { display: none; }
 .tr-feed { padding: 0 14px 16px; display: grid; gap: 10px; }
@@ -1098,7 +1097,7 @@ body.is-profile-wide { --profile: 650px; }
 .tr-head:hover { background: transparent; }
 .q-panel { background: var(--page); }
 .q-head {
-  padding: 40px 80px 0 72px;
+  padding: 40px 28px 0 72px;
   min-height: 0;
   border-bottom: 0;
   display: flex;
@@ -1107,7 +1106,7 @@ body.is-profile-wide { --profile: 650px; }
   gap: 16px;
 }
 body.is-call-ended .q-head {
-  padding: 0 80px 0 72px;
+  padding: 0 28px 0 72px;
   min-height: 56px;
   border-bottom: 1px solid var(--line);
 }
@@ -1148,6 +1147,7 @@ body.is-call-ended .q-tabs { display: flex; }
   align-items: center;
   align-self: center;
   justify-self: auto;
+  margin-left: auto;
 }
 body.is-call-ended .transcript { display: none; }
 .q-panel:has(.q-tab.is-on[data-q-tab="transcript"]) .transcript { display: none; }
@@ -1579,6 +1579,28 @@ body.is-ai-open .ai-col { display: flex; }
   text-align: right;
 }
 .stars-score:empty { display: none; }
+.wrap-head.is-error {
+  border-radius: 10px;
+  padding: 16px 12px;
+  margin-left: -12px;
+  margin-right: -12px;
+  width: calc(100% + 24px);
+  background: #fdf6f5;
+  border-bottom-color: transparent;
+  box-shadow: inset 0 0 0 1px #edcfc9;
+}
+.wrap-fit > h4 + .wrap-head.is-error {
+  margin-top: 16px;
+}
+.wrap-head.is-error .wrap-rate-kicker { color: var(--red); }
+.wrap-head.is-error .wrap-rate-hint {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--red);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.wrap-head.is-error .stars .star { color: #e4c8c4; }
 .thumbs {
   display: inline-flex;
   align-items: center;
@@ -2434,8 +2456,7 @@ body.is-call-ended .close-screen {
         <div class="next-peek" id="nextPeek"></div>
         <div class="transcript is-collapsed" id="transcriptPanel">
           <button type="button" class="tr-head" id="trToggle" aria-expanded="false" aria-controls="trBody">
-            <h3>Live transcript</h3>
-            <span class="tr-meta" id="trMeta">Show</span>
+            <h3 id="trLabel">Show live transcript</h3>
             <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="tr-body" id="trBody">
@@ -2477,6 +2498,16 @@ body.is-call-ended .close-screen {
     <div class="dev-overlay-actions">
       <button type="button" class="primary" id="btnStartOver">Start over</button>
       <button type="button" class="ghost" id="btnStaySummary">Stay on summary</button>
+    </div>
+  </div>
+</div>
+<div class="dev-overlay" id="finishOverlay" hidden>
+  <div class="dev-overlay-card" role="dialog" aria-modal="true" aria-labelledby="finishOverlayTitle">
+    <h2 id="finishOverlayTitle">End the call and open the summary?</h2>
+    <p>You’ll leave the live questions and go to wrap-up. You can rejoin if you still need Marcelo.</p>
+    <div class="dev-overlay-actions">
+      <button type="button" class="primary" id="btnWriteSummary">Write summary</button>
+      <button type="button" class="ghost" id="btnKeepInterviewing">Keep interviewing</button>
     </div>
   </div>
 </div>
@@ -2708,6 +2739,7 @@ const state = {
   scriptOpen: false,
   qaOpen: false,
   wrapTab: "questions",
+  onSummary: false,
   lines: [],
   done: false,
   aiOpen: false,
@@ -2717,6 +2749,7 @@ const state = {
   aiChat: [],
   rating: 0,
   ratings: {},
+  rateErrors: [],
   summaries: {},
   english: "Fluent",
   endedEarly: false
@@ -2836,6 +2869,7 @@ function startScriptIfNeeded() {
 function openSetup() {
   if (state.done) return;
   state.scriptOpen = false;
+  state.onSummary = false;
   state.onSetup = true;
   state.jobOpen = false;
   typeInto._pinned = "setup";
@@ -2970,12 +3004,12 @@ function restoreInterviewSession() {
 
 function currentQ() { return state.queue[state.qIndex] || null; }
 
-function toast(msg) {
+function toast(msg, ms) {
   const el = document.getElementById("toast");
   el.textContent = msg;
   el.classList.add("show");
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => el.classList.remove("show"), 1800);
+  toast._t = setTimeout(() => el.classList.remove("show"), ms || 1800);
 }
 
 function coverageFromAnswer(text) {
@@ -3007,18 +3041,31 @@ function questionBucket(q) {
 }
 
 function feedbackSections() {
-  const present = new Set(state.queue.map(questionBucket));
   const sections = [];
-  if (present.has("cultural")) sections.push({ key: "cultural", title: "Cultural", kicker: "General feedback", kind: "stars" });
-  if (present.has("specialist")) sections.push({ key: "specialist", title: SPECIALIST.label, kicker: "Talent pool", kind: "stars" });
-  if (present.has("technical")) {
+  if (state.cultural) sections.push({ key: "cultural", title: "Cultural", kicker: "General feedback", kind: "stars" });
+  if (state.technical) {
     selectedPools().forEach(pool => {
-      if (pool.questions.some(q => state.queue.some(qq => qq.id === q.id))) {
-        sections.push({ key: "pool:" + pool.id, title: pool.label, kicker: "Talent pool", kind: "stars" });
-      }
+      sections.push({ key: "pool:" + pool.id, title: pool.label, kicker: "Talent pool - Technical rating", kind: "stars" });
     });
   }
   return sections;
+}
+
+function requiredStarSections() {
+  const sections = feedbackSections();
+  selectedJobs().forEach(job => {
+    sections.push({ key: "job:" + job.id + ":stars", title: job.role, kicker: job.company, kind: "stars" });
+  });
+  return sections;
+}
+
+function starFilled(key) {
+  const value = state.ratings[key];
+  return typeof value === "number" && value > 0;
+}
+
+function missingStarSections() {
+  return requiredStarSections().filter(sec => !starFilled(sec.key));
 }
 
 function wrapStats() {
@@ -3122,19 +3169,21 @@ function wrapCopyHtml(key, fallback) {
 
 function wrapRateHead(sec) {
   const rating = state.ratings[sec.key] || 0;
+  const invalid = (state.rateErrors || []).includes(sec.key);
   const control = sec.kind === "thumbs"
     ? `<div class="thumbs" role="radiogroup" aria-label="${esc(sec.kicker)} ${esc(sec.title)} fit">
         <button type="button" class="thumb is-up${rating === "up" ? " is-on" : ""}" data-thumb="up" data-rate="${sec.key}" aria-label="Thumbs up" aria-checked="${rating === "up"}">${thumbSvg("up")}</button>
         <button type="button" class="thumb is-down${rating === "down" ? " is-on" : ""}" data-thumb="down" data-rate="${sec.key}" aria-label="Thumbs down" aria-checked="${rating === "down"}">${thumbSvg("down")}</button>
       </div>`
-    : `<div class="stars" role="radiogroup" aria-label="${esc(sec.title)} rating">
+    : `<div class="stars" role="radiogroup" aria-label="${esc(sec.title)} rating" aria-invalid="${invalid}">
         <span class="stars-score">${typeof rating === "number" && rating ? rating + " / 5" : ""}</span>
         ${[1,2,3,4,5].map(n => `<button type="button" class="star${n <= rating ? " is-on" : ""}" data-star="${n}" data-rate="${sec.key}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-checked="${n === rating}">${starSvg()}</button>`).join("")}
       </div>`;
-  return `<div class="wrap-head is-${sec.kind}">
+  return `<div class="wrap-head is-${sec.kind}${invalid ? " is-error" : ""}" data-rate-key="${esc(sec.key)}">
     <div class="wrap-rate-copy">
       <span class="wrap-rate-kicker">${esc(sec.kicker)}</span>
       <b class="wrap-rate-label">${esc(sec.title)}</b>
+      ${invalid ? `<span class="wrap-rate-hint">Add a star rating</span>` : ""}
     </div>
     ${control}
   </div>`;
@@ -3454,7 +3503,7 @@ function renderOutline() {
       <h3>${esc(g.label)}</h3>
       ${g.items.map(({ q, i }) => {
         const done = !!(state.answers[q.id] || "").trim();
-        const now = i === state.qIndex && !state.done && !state.scriptOpen && !state.onSetup;
+        const now = i === state.qIndex && !state.done && !state.onSummary && !state.scriptOpen && !state.onSetup;
         return `<button type="button" class="outline-item${done ? " is-done" : ""}${now ? " is-now" : ""}" data-jump="${i}" title="${esc(q.prompt)}">
           ${outlineTick(done)}
           <span><span class="outline-n">${i + 1}.</span> ${esc(q.prompt)}</span>
@@ -3481,7 +3530,7 @@ function renderQuestions() {
     root.innerHTML = wrapTranscriptHtml();
     return;
   }
-  if (state.onSetup && !state.done && !state.scriptOpen) {
+  if (state.onSetup && !state.done && !state.onSummary && !state.scriptOpen) {
     renderSetupStage();
     return;
   }
@@ -3510,7 +3559,7 @@ function renderQuestions() {
     return;
   }
 
-  if (state.done) {
+  if (state.done || state.onSummary) {
     peek.classList.add("hidden");
     if (state.wrapTab === "questions") {
       root.innerHTML = wrapQuestionsHtml();
@@ -3544,7 +3593,9 @@ function renderQuestions() {
   peek.classList.remove("hidden");
   peek.innerHTML = `
     <button type="button" class="q-step" id="qPrev">Previous</button>
-    <button type="button" class="q-step next" id="qNext">${next ? "Next" : "Finish"}</button>
+    ${next
+      ? `<button type="button" class="q-step next" id="qNext">Next</button>`
+      : `<button type="button" class="q-step next" id="qFinish">Finish interview</button>`}
   `;
 }
 
@@ -3552,6 +3603,7 @@ function goQuestion(i) {
   if (i < 0 || i >= state.queue.length) return;
   typeInto._pinned = i;
   state.onSetup = false;
+  state.onSummary = false;
   startScriptIfNeeded();
   state.qIndex = i;
   state.detailsOpen = false;
@@ -3564,6 +3616,7 @@ function goQuestion(i) {
 
 function endInterview(early) {
   state.done = true;
+  state.onSummary = true;
   state.endedEarly = !!early;
   state.scriptOpen = false;
   state.qaOpen = false;
@@ -3576,6 +3629,7 @@ function endInterview(early) {
 
 function rejoinCall() {
   state.done = false;
+  state.onSummary = false;
   state.endedEarly = false;
   state.wrapTab = "questions";
   syncCallChrome();
@@ -3595,6 +3649,34 @@ function setCloseOverlay(open) {
   overlay.hidden = !open;
 }
 
+function setFinishOverlay(open) {
+  const overlay = document.getElementById("finishOverlay");
+  if (!overlay) return;
+  overlay.hidden = !open;
+}
+
+function tryCloseScreen() {
+  const missing = missingStarSections();
+  if (!missing.length) {
+    state.rateErrors = [];
+    setCloseOverlay(true);
+    return;
+  }
+  state.rateErrors = missing.map(sec => sec.key);
+  state.wrapTab = "summary";
+  state.onSummary = true;
+  state.scriptOpen = false;
+  renderQuestions();
+  const first = missing[0];
+  toast(missing.length === 1
+    ? `Add a star rating for ${first.kicker} · ${first.title} before closing.`
+    : "Add a star rating for each highlighted section before closing.", 3200);
+  requestAnimationFrame(() => {
+    const row = document.querySelector(".wrap-head.is-error");
+    if (row) row.scrollIntoView({ block: "center", behavior: "smooth" });
+  });
+}
+
 function syncCallChrome() {
   document.body.classList.toggle("is-call-ended", !!state.done);
   const hang = document.getElementById("btnHang");
@@ -3602,6 +3684,7 @@ function syncCallChrome() {
     hang.textContent = state.done ? "Rejoin call" : "End call";
     hang.classList.toggle("is-rejoin", !!state.done);
   }
+  setFinishOverlay(false);
   if (!state.done) setCloseOverlay(false);
   syncQTabs();
   renderStage();
@@ -3673,7 +3756,8 @@ function addLine(entry) {
   div.innerHTML = `<b>${entry.name}</b><p>${entry.text}</p>`;
   feed.appendChild(div);
   feed.parentElement.scrollTop = feed.parentElement.scrollHeight;
-  document.getElementById("trMeta").textContent = state.captions ? "Hide" : "Show";
+  const label = document.getElementById("trLabel");
+  if (label) label.textContent = state.captions ? "Live transcript" : "Show live transcript";
 }
 
 function typeInto(id, text) {
@@ -3729,7 +3813,8 @@ function syncTranscript() {
   const toggleBtn = document.getElementById("trToggle");
   panel.classList.toggle("is-collapsed", !open);
   toggleBtn.setAttribute("aria-expanded", String(open));
-  document.getElementById("trMeta").textContent = open ? "Hide" : "Show";
+  const label = document.getElementById("trLabel");
+  if (label) label.textContent = open ? "Live transcript" : "Show live transcript";
   syncCallButtons();
 }
 
@@ -3793,6 +3878,7 @@ document.getElementById("qStage").addEventListener("click", (e) => {
   if (star) {
     const key = star.dataset.rate || "overall";
     state.ratings[key] = Number(star.dataset.star);
+    state.rateErrors = (state.rateErrors || []).filter(id => id !== key);
     renderQuestions();
     return;
   }
@@ -3868,8 +3954,10 @@ document.getElementById("aiChatForm").addEventListener("submit", (e) => {
 
 document.addEventListener("keydown", (e) => {
   const overlay = document.getElementById("closeOverlay");
+  const finish = document.getElementById("finishOverlay");
   if (e.key === "Escape") {
     if (overlay && !overlay.hidden) { setCloseOverlay(false); return; }
+    if (finish && !finish.hidden) { setFinishOverlay(false); return; }
     if (state.aiOpen) { setAiOpen(false); return; }
     if (state.scriptOpen) {
       state.scriptOpen = false;
@@ -3879,9 +3967,17 @@ document.addEventListener("keydown", (e) => {
   }
   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
   if (overlay && !overlay.hidden) return;
+  if (finish && !finish.hidden) return;
   if (state.done || !state.queue.length && !state.onSetup) return;
   const t = e.target;
   if (t && (t.isContentEditable || /^(input|textarea|select)$/i.test(t.tagName))) return;
+  if (state.onSummary) {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      goQuestion(state.qIndex);
+    }
+    return;
+  }
   if (state.onSetup) {
     if (e.key === "ArrowRight") {
       e.preventDefault();
@@ -3899,7 +3995,11 @@ document.addEventListener("keydown", (e) => {
     goQuestion(state.qIndex - 1);
     return;
   }
-  if (state.qIndex >= state.queue.length - 1) return;
+  if (state.qIndex >= state.queue.length - 1) {
+    e.preventDefault();
+    setFinishOverlay(true);
+    return;
+  }
   e.preventDefault();
   goQuestion(state.qIndex + 1);
 });
@@ -3919,15 +4019,16 @@ document.getElementById("nextPeek").addEventListener("click", (e) => {
     return;
   }
   if (e.target.id === "qEnd") { location.href = "index.html"; return; }
-  if (e.target.id === "qNext") {
+  if (e.target.closest("#qFinish")) {
+    setFinishOverlay(true);
+    return;
+  }
+  if (e.target.closest("#qNext")) {
     if (state.onSetup) {
       leaveSetup();
       return;
     }
-    if (state.qIndex >= state.queue.length - 1) {
-      endInterview(false);
-      return;
-    }
+    if (state.qIndex >= state.queue.length - 1) return;
     goQuestion(state.qIndex + 1);
   }
 });
@@ -3946,7 +4047,7 @@ document.getElementById("qTabs").addEventListener("click", (e) => {
   renderQuestions();
 });
 
-document.getElementById("btnCloseScreen").addEventListener("click", () => setCloseOverlay(true));
+document.getElementById("btnCloseScreen").addEventListener("click", () => tryCloseScreen());
 document.getElementById("btnStaySummary").addEventListener("click", () => setCloseOverlay(false));
 document.getElementById("btnStartOver").addEventListener("click", () => {
   localStorage.removeItem("be-interview-session");
@@ -3954,6 +4055,14 @@ document.getElementById("btnStartOver").addEventListener("click", () => {
 });
 document.getElementById("closeOverlay").addEventListener("click", (e) => {
   if (e.target.id === "closeOverlay") setCloseOverlay(false);
+});
+document.getElementById("btnWriteSummary").addEventListener("click", () => {
+  setFinishOverlay(false);
+  endInterview(false);
+});
+document.getElementById("btnKeepInterviewing").addEventListener("click", () => setFinishOverlay(false));
+document.getElementById("finishOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "finishOverlay") setFinishOverlay(false);
 });
 
 function tickClock() {
