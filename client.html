@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BetterEngineer · Client view · Marcelo Dosko</title>
+<link rel="stylesheet" href="https://use.typekit.net/lhs7vwi.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --page: #f6f6f8;
+  --white: #ffffff;
+  --text: #000;
+  --ink: #333;
+  --muted: #707070;
+  --placeholder: #d8d8d8;
+  --line: #e5e5e5;
+  --card-line: #ddd;
+  --blue: #4c60b2;
+  --gold: #dcba6a;
+  --star-empty: #eaeaea;
+  --soft: #f6f7fb;
+  --icon: #666;
+  --shadow: 0 2px 6px rgba(0,0,0,0.06);
+  --font: "runda", system-ui, sans-serif;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: var(--font);
+  font-weight: 400;
+  color: var(--text);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+}
+b, strong { font-weight: 500; }
+button, input { font-family: inherit; }
+button { cursor: pointer; }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  height: 70px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 19px 0 32px;
+}
+.logo-link {
+  height: 43px;
+  display: flex; align-items: center; justify-content: flex-start;
+  text-decoration: none;
+}
+.logo {
+  width: 168px; height: 22px;
+  object-fit: contain;
+  object-position: left center;
+}
+.top-tools { display: flex; align-items: center; gap: 20px; }
+.search {
+  width: 265px; height: 40px;
+  border: 1px solid #cecece;
+  border-radius: 4px;
+  background: #fff;
+  display: flex; align-items: center;
+  padding: 0 12px 0 15px;
+  gap: 8px;
+}
+.search input {
+  border: 0; outline: none; flex: 1; min-width: 0;
+  font-size: 14px; letter-spacing: -0.21px; background: transparent;
+  font-weight: 400;
+}
+.search input::placeholder { color: var(--placeholder); }
+.search svg, .icon-ghost { color: var(--icon); }
+.icon-ghost {
+  width: 21px; height: 36px; border: 0; background: transparent;
+  display: grid; place-items: center; color: var(--icon); padding: 0;
+}
+.icon-ghost:hover { color: #333; }
+.avatar { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+
+.profile-menu { position: relative; flex: 0 0 auto; }
+.profile-menu-btn {
+  display: block;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.profile-menu-btn:hover { opacity: 0.92; }
+.profile-menu-btn:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.profile-menu-btn .avatar { pointer-events: none; }
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 228px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(17, 17, 17, 0.12);
+  padding: 6px 0;
+  z-index: 50;
+  display: none;
+}
+.profile-menu.is-open .profile-dropdown { display: block; }
+.profile-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 14px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-left: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  transform: rotate(45deg);
+}
+.pd-label {
+  padding: 10px 14px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pd-item {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  text-decoration: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+.pd-item:hover,
+.pd-item:focus-visible {
+  background: var(--soft);
+  outline: none;
+}
+
+.shell { min-height: calc(100vh - 70px); }
+.main-col { min-width: 0; }
+.subhead {
+  height: 80px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px 0 32px;
+  gap: 16px;
+  position: sticky;
+  top: 70px;
+  z-index: 10;
+}
+.who-block { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.cand-photo {
+  width: 44px; height: 44px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.who-copy { min-width: 0; }
+.who-copy h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  color: #111;
+}
+.who-meta {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--muted);
+  letter-spacing: -0.1px;
+}
+.client-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 4px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.page {
+  padding: 36px 24px 80px;
+}
+.page-inner {
+  width: min(880px, 100%);
+  margin: 0 auto;
+}
+
+.vf-doc {
+  --vf-doc-pad-x: 48px;
+  background: #fff;
+  border: 1px solid var(--card-line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 42px var(--vf-doc-pad-x) 48px;
+}
+.vf-doc-head {
+  margin-bottom: 8px;
+}
+.vf-doc-head h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.4px;
+  line-height: 1.15;
+  color: #111;
+}
+.vf-meta {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #6b7280;
+}
+.vf-section {
+  margin-top: 28px;
+  padding-top: 32px;
+  position: relative;
+}
+.vf-section::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--vf-doc-pad-x));
+  right: calc(-1 * var(--vf-doc-pad-x));
+  top: 0;
+  border-top: 1px solid var(--line);
+}
+.vf-qa { padding: 0; }
+.vf-qa h4 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #111;
+}
+.vf-job-fit > h4 {
+  margin: 0 0 14px;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  line-height: 28px;
+  color: #111;
+}
+.vf-qa p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: #222;
+}
+.vf-qa p + p { margin-top: 6px; }
+.vf-stars {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 16px;
+}
+.vf-stars i {
+  font-size: 18px;
+  line-height: 1;
+  color: #e6e6ea;
+}
+.vf-stars i.on { color: var(--blue); }
+.vf-notes {
+  display: grid;
+  gap: 28px;
+  margin-top: 22px;
+  padding-top: 22px;
+  width: 100%;
+  border-top: 1px solid var(--line);
+}
+.vf-notes-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  width: 100%;
+}
+.vf-notes .vf-qa h4 {
+  margin: 0 0 8px;
+}
+.vf-fit-signals {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.vf-fit-signals h4 {
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #111;
+}
+.vf-signal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.vf-signal {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+}
+.vf-signal svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+.vf-signal.is-good { color: #1f9a57; }
+.vf-signal.is-gap { color: #d4a017; }
+.vf-signal span {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #222;
+}
+
+@media (max-width: 1100px) {
+  .page { padding: 28px 20px 72px; }
+  .vf-doc { --vf-doc-pad-x: 28px; padding: 32px var(--vf-doc-pad-x) 40px; }
+  .search { width: 180px; }
+  .subhead { padding: 0 18px 0 20px; }
+}
+@media (max-width: 720px) {
+  .search { display: none; }
+  .page { padding: 16px 14px 80px; }
+  .vf-doc { --vf-doc-pad-x: 18px; padding: 24px var(--vf-doc-pad-x) 32px; }
+  .vf-notes-row { grid-template-columns: 1fr; gap: 22px; }
+
+  .topbar {
+    height: 60px;
+    padding: 0 12px 0 16px;
+  }
+  .logo { width: 132px; height: 18px; }
+  .top-tools { gap: 10px; }
+  .icon-ghost {
+    width: 44px;
+    height: 44px;
+  }
+  .profile-menu-btn,
+  .avatar {
+    width: 44px;
+    height: 44px;
+  }
+  .profile-dropdown {
+    right: -4px;
+    min-width: 200px;
+    max-width: calc(100vw - 24px);
+  }
+  .pd-item {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+  }
+
+  .subhead {
+    padding: 12px 14px;
+    height: auto;
+    min-height: 0;
+    top: 60px;
+    gap: 12px;
+  }
+  .client-badge { display: none; }
+  .who-copy h1 { font-size: 18px; }
+  .vf-doc-head h2 { font-size: 26px; }
+  .vf-job-fit > h4 { font-size: 20px; line-height: 26px; }
+}
+</style>
+</head>
+<body class="page-client" data-page="client">
+  <header class="topbar">
+    <a class="logo-link" href="#" onclick="return false" aria-label="BetterEngineer">
+      <img class="logo" src="assets/logo.svg" width="168" height="22" alt="betterengineer">
+    </a>
+    <div class="top-tools">
+      <label class="search">
+        <input type="search" placeholder="Search" aria-label="Search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </label>
+      <button class="icon-ghost" type="button" aria-label="Notifications" onclick="return false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </button>
+      <div class="profile-menu" id="profileMenu">
+        <button type="button" class="profile-menu-btn" id="profileMenuBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="profileDropdown" aria-label="Account menu">
+          <img class="avatar" src="assets/avatar.png" alt="">
+        </button>
+        <div class="profile-dropdown" id="profileDropdown" role="menu" aria-labelledby="profileMenuBtn">
+          <div class="pd-label">Client view</div>
+          <a class="pd-item" role="menuitem" href="vetting.html">View as internal</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <div class="main-col">
+      <div class="subhead">
+        <div class="who-block">
+          <img class="cand-photo" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&amp;h=160&amp;fit=crop&amp;crop=faces" alt="">
+          <div class="who-copy">
+            <h1>Marcelo Dosko</h1>
+            <p class="who-meta">.NET Software Engineer · Aviato</p>
+          </div>
+        </div>
+        <span class="client-badge">Shared with client</span>
+      </div>
+
+      <div class="page">
+        <div class="page-inner">
+          <article class="vf-doc" id="report">
+            <div class="vf-doc-head">
+              <div>
+                <h2>Interview Report</h2>
+                <p class="vf-meta">Job fit for Aviato</p>
+              </div>
+            </div>
+
+            <section class="vf-section" id="report-summary" aria-label="Fit for Aviato">
+              <div class="vf-qa vf-job-fit">
+                <h4>Fit for Aviato · .NET Software Engineer</h4>
+                <div class="vf-stars" aria-label="4 out of 5 stars">
+                  <i class="fa-solid fa-star on"></i>
+                  <i class="fa-solid fa-star on"></i>
+                  <i class="fa-solid fa-star on"></i>
+                  <i class="fa-solid fa-star on"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+                <p>Marcelo is a strong fit for Aviato’s .NET Software Engineer seat. He already answers in this job’s constraints: a booking that looks confirmed while inventory did not move, client retries on payment capture, search and availability drift after a deploy, and the first fifteen minutes of stuck bookings on a US-morning overlap. That is production ownership of Aviato’s booking API, not a generic architecture answer.</p>
+                <p>The remaining questions are bounded. Only about three years fully on C# / .NET / Azure, and US-hours overlap still needs to be a real on-call habit. Neither is a reason to hold him from this seat. Recommend submitting him to Aviato as a senior .NET engineer — a yes, not a stretch.</p>
+                <div class="vf-notes">
+                  <div class="vf-notes-row">
+                    <div class="vf-qa">
+                      <h4>Communication &amp; Collaboration</h4>
+                      <p>He can walk Aviato’s booking and inventory path on a client call without hedging. English is fluent, and he explains retries and drift in the order a U.S. stakeholder would follow. The technical conversation with Aviato would not need a translator in the room.</p>
+                    </div>
+                    <div class="vf-qa">
+                      <h4>Experience &amp; Seniority Signals</h4>
+                      <p>Senior for this seat: he talks like the person who owns the write path, not a ticket. Mentoring, on-call for payouts, and runbooks for stuck transactions map cleanly onto Aviato’s booking-API ownership. Not architecture theater — production habits Aviato actually hires against.</p>
+                    </div>
+                  </div>
+                  <div class="vf-notes-row">
+                    <div class="vf-qa">
+                      <h4>Strengths &amp; Potential</h4>
+                      <p>Strongest where Aviato hurts: a booking that looks confirmed while inventory did not move, client retries on payment capture, search vs availability after a deploy, and the first fifteen minutes of stuck bookings. Idempotency and Service Bus are already in how he answers.</p>
+                    </div>
+                    <div class="vf-qa">
+                      <h4>Concerns / Follow-Up Areas</h4>
+                      <p>Only about three years fully on C# / .NET / Azure after other stacks — worth a technical loop on the last stretch of ownership. US-morning overlap for Aviato on-call still needs to be a habit, not a hope. Neither is a reason to hold the submit.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="vf-fit-signals">
+                  <h4>Highlights and gaps</h4>
+                  <ul class="vf-signal-list">
+                    <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Owns production .NET paths — Service Bus consumers, idempotent capture, and runbooks for stuck transactions.</span></li>
+                    <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Fluent English, spoken and written. Easy to put on a U.S. client call without a translator in the room.</span></li>
+                    <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Senior signals are ownership and the boring parts: mentoring two mids, on-call for payouts, not architecture theater.</span></li>
+                    <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>Has not worked in marketplace or booking systems before — Aviato’s inventory and availability problems would be a new domain.</span></li>
+                    <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>Only about three years fully on C# / .NET / Azure after other stacks. Confirm the last stretch of ownership in a technical loop.</span></li>
+                    <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>US-morning overlap still needs to be a real on-call habit, not a hopeful one.</span></li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function initProfileMenu() {
+  const menu = document.getElementById("profileMenu");
+  const btn = document.getElementById("profileMenuBtn");
+  const panel = document.getElementById("profileDropdown");
+  if (!menu || !btn || !panel) return;
+
+  function setOpen(open) {
+    menu.classList.toggle("is-open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setOpen(!menu.classList.contains("is-open"));
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!menu.contains(e.target)) setOpen(false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      setOpen(false);
+      btn.focus();
+    }
+  });
+})();
+</script>
+</body>
+</html>

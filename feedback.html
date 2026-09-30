@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BetterEngineer · Vetting · Gabriel Kouyoumdjian</title>
+<title>BetterEngineer · Feedback · Gabriel Kouyoumdjian</title>
 <link rel="stylesheet" href="https://use.typekit.net/lhs7vwi.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
@@ -263,470 +263,6 @@ body:not(.page-feedback) .proto-toggle { display: none; }
   margin: 0 auto;
 }
 
-.vf-stack { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
-.vf-doc {
-  --vf-doc-pad-x: 48px;
-  background: #fff;
-  border: 1px solid var(--card-line);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  padding: 42px var(--vf-doc-pad-x) 48px;
-}
-.vf-doc-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-.vf-doc-head h2 {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 500;
-  letter-spacing: -0.4px;
-  line-height: 1.15;
-  color: #111;
-}
-.vf-edit {
-  width: 36px;
-  height: 36px;
-  border: 0;
-  background: transparent;
-  color: #8b90a0;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  flex: 0 0 auto;
-}
-.vf-edit:hover { background: #f4f5f8; color: #333; }
-.vf-transcript {
-  flex: 0 0 auto;
-  margin: 4px 0 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--blue);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.2px;
-  line-height: 18px;
-  white-space: nowrap;
-  text-decoration: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-.vf-transcript:hover { text-decoration: underline; }
-.vf-meta {
-  margin: 8px 0 0;
-  font-size: 14px;
-  line-height: 20px;
-  color: #6b7280;
-}
-.vf-section,
-.vf-qa,
-.vf-doc { scroll-margin-top: 166px; }
-.vf-doc > .vf-section:first-of-type {
-  margin-top: 28px;
-  padding-top: 32px;
-  position: relative;
-}
-.vf-doc > .vf-section:first-of-type::before {
-  content: "";
-  position: absolute;
-  left: calc(-1 * var(--vf-doc-pad-x));
-  right: calc(-1 * var(--vf-doc-pad-x));
-  top: 0;
-  border-top: 1px solid var(--line);
-}
-.vf-section + .vf-section {
-  margin-top: 40px;
-  padding-top: 36px;
-  position: relative;
-  width: fit-content;
-  max-width: 100%;
-}
-.vf-section + .vf-section::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  border-top: 1px solid var(--line);
-}
-#interview #cultural.vf-section::before {
-  left: calc(-1 * var(--vf-doc-pad-x));
-  right: calc(-1 * var(--vf-doc-pad-x));
-  width: auto;
-}
-.vf-section > .hint {
-  margin: -6px 0 12px;
-  font-size: 14px;
-  color: #6b7280;
-}
-.vf-section > h3 {
-  margin: 0 0 14px;
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.2px;
-  line-height: 28px;
-  color: #111;
-}
-.vf-section > h3 .vf-h3-rest {
-  font-weight: 400;
-}
-.vf-qa > h4.vf-section-title {
-  margin: 0 0 14px;
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.2px;
-  line-height: 28px;
-  color: #111;
-}
-.vf-qa { padding: 0 0 22px; }
-.vf-qa:last-child { padding-bottom: 0; }
-.vf-qa h4 {
-  margin: 0 0 6px;
-  font-size: 17px;
-  font-weight: 500;
-  line-height: 24px;
-  color: #111;
-}
-.vf-qa .hint {
-  margin: 0 0 8px;
-  font-size: 14px;
-  line-height: 20px;
-  color: #6b7280;
-}
-.vf-qa p {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.65;
-  color: #222;
-}
-.vf-qa p + p { margin-top: 6px; }
-#report .vf-section .vf-qa + .vf-qa,
-#interview .vf-section .vf-qa + .vf-qa,
-#screening .vf-section .vf-qa + .vf-qa {
-  position: relative;
-  padding-top: 24px;
-  width: fit-content;
-  max-width: 100%;
-}
-#report .vf-section .vf-qa + .vf-qa::before,
-#interview .vf-section .vf-qa + .vf-qa::before,
-#screening .vf-section .vf-qa + .vf-qa::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  border-top: 1px solid var(--line);
-}
-.vf-stars {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 4px 0 16px;
-}
-.vf-stars i {
-  font-size: 18px;
-  line-height: 1;
-  color: #e6e6ea;
-}
-.vf-stars i.on { color: var(--blue); }
-.vf-stars.gold i.on { color: var(--gold); }
-.vf-stars span {
-  margin-left: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #9aa0ad;
-}
-.vf-yes {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 18px;
-  font-size: 15px;
-  color: #111;
-}
-.vf-yes svg { color: var(--blue); }
-.vf-choice {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0 0;
-}
-.vf-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 34px;
-  padding: 0 16px;
-  border-radius: 17px;
-  background: var(--blue);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 500;
-}
-.vf-pill.off {
-  background: #e8eaf0;
-  color: #6b7280;
-}
-.vf-nums { display: flex; gap: 8px; margin: 12px 0 0; }
-.vf-num {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  background: #e8eaf0;
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 500;
-}
-.vf-num.on { background: var(--blue); color: #fff; }
-.vf-select {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 420px;
-  height: 42px;
-  margin-top: 10px;
-  padding: 0 14px;
-  border-radius: 6px;
-  background: var(--blue);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-}
-.vf-select svg { flex: 0 0 auto; }
-.vf-lang {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  font-size: 15px;
-}
-.vf-flag {
-  width: 22px;
-  height: 16px;
-  border-radius: 2px;
-  object-fit: cover;
-  box-shadow: 0 0 0 1px #e5e5e5;
-}
-.vf-radio {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: 10px;
-  font-size: 15px;
-  line-height: 1.45;
-  color: #222;
-}
-.vf-radio i {
-  width: 16px;
-  height: 16px;
-  margin-top: 3px;
-  border-radius: 50%;
-  border: 5px solid var(--blue);
-  background: #fff;
-  box-sizing: border-box;
-  flex: 0 0 16px;
-}
-.vf-skills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-.vf-skills span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 14px;
-  background: #f0f1f5;
-  color: #333;
-  font-size: 13px;
-}
-.vf-jobs { display: grid; gap: 22px; }
-.vf-jobs b { display: block; margin-bottom: 4px; font-size: 15px; }
-.vf-list {
-  margin: 0;
-  padding-left: 20px;
-  font-size: 15px;
-  line-height: 22px;
-}
-.vf-list li { margin-bottom: 8px; }
-.vf-kv p { margin: 0 0 10px; font-size: 15px; line-height: 22px; }
-.vf-kv b { font-weight: 500; }
-.report-tabs {
-  display: flex;
-  align-items: stretch;
-  gap: 28px;
-  margin: 22px calc(-1 * var(--vf-doc-pad-x)) 0;
-  padding: 0 var(--vf-doc-pad-x);
-  border-bottom: 1px solid var(--line);
-}
-.report-tab {
-  position: relative;
-  border: 0;
-  background: none;
-  padding: 14px 0 12px;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: #9a9a96;
-  cursor: pointer;
-}
-.report-tab:hover { color: #111; }
-.report-tab.is-on { color: #111; }
-.report-tab.is-on::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 2px;
-  background: #111;
-}
-.report-panel { display: none; padding-top: 28px; }
-.report-panel.is-on { display: block; }
-.vf-notes {
-  display: grid;
-  gap: 28px;
-  margin-top: 28px;
-  padding-top: 28px;
-  width: 100%;
-  border-top: 1px solid var(--line);
-}
-.vf-notes-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: start;
-  width: 100%;
-}
-#report #report-summary > .vf-qa {
-  width: 100%;
-  max-width: none;
-}
-#report .vf-notes .vf-qa,
-#report .vf-notes .vf-qa + .vf-qa {
-  position: static;
-  width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-}
-#report .vf-notes .vf-qa + .vf-qa::before { content: none; }
-#report .vf-notes .vf-qa h4 {
-  margin: 0 0 8px;
-}
-.vf-notes + .vf-qa {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
-}
-#report-summary .vf-job-fit > h4 {
-  margin: 0 0 14px;
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.2px;
-  line-height: 28px;
-  color: #111;
-}
-#report-summary .vf-notes + .vf-job-fit {
-  padding-top: 36px;
-}
-#report-summary .vf-job-fit > .vf-notes {
-  margin-top: 22px;
-  padding-top: 22px;
-}
-#report-summary .vf-fit-signals {
-  margin-top: 28px;
-  padding-top: 28px;
-  border-top: 1px solid var(--line);
-}
-#report-summary .vf-fit-signals h4 {
-  margin: 0 0 14px;
-  font-size: 17px;
-  font-weight: 500;
-  line-height: 24px;
-  color: #111;
-}
-#report-summary .vf-signal-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 2px;
-}
-#report-summary .vf-signal {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  gap: 12px;
-  align-items: flex-start;
-  padding: 10px 0;
-}
-#report-summary .vf-signal svg {
-  width: 22px;
-  height: 22px;
-  display: block;
-  margin-top: 1px;
-}
-#report-summary .vf-signal.is-good { color: #1f9a57; }
-#report-summary .vf-signal.is-gap { color: #d4a017; }
-#report-summary .vf-signal span {
-  font-size: 15.5px;
-  line-height: 1.55;
-  color: #2a2a2a;
-}
-.vf-q-group {
-  margin: 22px 0 14px;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 20px;
-  color: var(--blue);
-}
-.vf-q-group:first-of-type { margin-top: 4px; }
-.vf-qa p.is-empty { color: #9aa0b0; }
-.vf-eng {
-  display: inline-flex;
-  align-items: center;
-  margin: 4px 0 8px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: #eef2ff;
-  color: var(--blue);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 18px;
-}
-.vf-tr { display: grid; gap: 16px; }
-.vf-tr .line b {
-  display: block;
-  margin-bottom: 2px;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 18px;
-  color: var(--blue);
-}
-.vf-tr .line.you b { color: #111; }
-.vf-tr .line p {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.55;
-  color: #222;
-}
-.vf-group-label {
-  margin: 0 0 14px;
-  font-size: 19px;
-  font-weight: 500;
-  line-height: 26px;
-  color: var(--ink);
-}
-.vf-list { margin: 8px 0 0; padding-left: 18px; }
-.vf-list li { margin: 0 0 6px; font-size: 15px; line-height: 1.55; color: #222; }
-
 .card {
   background: #fff;
   border: 1px solid var(--card-line);
@@ -762,6 +298,25 @@ body:not(.page-feedback) .proto-toggle { display: none; }
   color: var(--blue); font-size: 15px; font-weight: 500; line-height: 18px;
 }
 .step .links button:hover { text-decoration: underline; }
+.step .screen-lines {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  color: var(--ink);
+}
+.step .screen-lines li { margin: 0; }
+.process-skills-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue);
+  text-decoration: none;
+}
+.process-skills-link:hover { text-decoration: underline; }
 .step.is-on {
   background: var(--soft);
   box-shadow: inset -4px 0 0 var(--blue);
@@ -790,13 +345,11 @@ body:not(.page-feedback) .proto-toggle { display: none; }
   font-weight: 500;
   line-height: 16px;
   color: var(--blue);
-  white-space: normal;
 }
 .step .cultural-score-value {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  flex-shrink: 0;
   font-size: 14px;
   font-weight: 500;
   line-height: 16px;
@@ -805,27 +358,6 @@ body:not(.page-feedback) .proto-toggle { display: none; }
 .step .cultural-score-value i {
   font-size: 13px;
 }
-.step .cultural-score + .cultural-score { margin-top: 8px; }
-.step .cultural-score-label { min-width: 0; }
-.step .screen-lines {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 18px;
-  color: var(--ink);
-}
-.step .screen-lines li { margin: 0; }
-.process-skills-link {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--blue);
-  text-decoration: none;
-}
-.process-skills-link:hover { text-decoration: underline; }
 
 .status { padding: 24px 31px 24px 29px; }
 .status-top { display: flex; align-items: center; justify-content: space-between; }
@@ -891,13 +423,7 @@ body:not(.page-feedback) .proto-toggle { display: none; }
 .msg span { font-size: 12px; color: var(--muted); }
 .msg p { margin: 8px 0 0; font-size: 14px; line-height: 1.45; }
 
-.vetting-aside {
-  display: flex;
-  flex-direction: column;
-  gap: 39px;
-  position: sticky;
-  top: 166px;
-}
+.vetting-aside { display: flex; flex-direction: column; gap: 39px; }
 .layout.is-feedback {
   grid-template-columns: 1fr;
   width: min(1267px, 100%);
@@ -1251,7 +777,6 @@ body:not(.page-feedback) .proto-toggle { display: none; }
 @media (max-width: 1100px) {
   .layout { grid-template-columns: 1fr; width: min(840px, 100%); gap: 28px; }
   .vetting-aside { position: static; }
-  .vf-doc { --vf-doc-pad-x: 28px; padding: 32px var(--vf-doc-pad-x) 40px; }
   .fb { grid-template-columns: 1fr; }
   .fb-rail { width: 100%; position: static; max-height: none; }
   .search { width: 180px; }
@@ -1259,7 +784,6 @@ body:not(.page-feedback) .proto-toggle { display: none; }
   .subhead { padding: 0 16px 0 14px; }
 }
 @media (max-width: 720px) {
-  .vf-notes-row { grid-template-columns: 1fr; gap: 22px; }
   .shell { grid-template-columns: 1fr; }
   .rail { display: none; }
   .search { display: none; }
@@ -1350,8 +874,6 @@ body:not(.page-feedback) .proto-toggle { display: none; }
   .layout { width: 100%; gap: 20px; min-width: 0; }
   .layout > *,
   .vetting-aside,
-  .vf-stack,
-  .vf-doc,
   main {
     min-width: 0;
     max-width: 100%;
@@ -1399,43 +921,11 @@ body:not(.page-feedback) .proto-toggle { display: none; }
     padding: 20px 18px 0;
   }
 
-  .vf-doc {
-    --vf-doc-pad-x: 18px;
-    padding: 24px var(--vf-doc-pad-x) 32px;
-  }
-  .vf-doc-head {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .vf-doc-head h2 { font-size: 26px; }
-  .vf-transcript {
-    white-space: normal;
-  }
-  .report-tabs {
-    gap: 20px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .report-tabs::-webkit-scrollbar { display: none; }
-  .report-tab {
-    flex: 0 0 auto;
-    min-height: 44px;
-    padding: 12px 0;
-    white-space: nowrap;
-  }
-  .vf-nums { flex-wrap: wrap; }
-  .vf-select { max-width: 100%; }
-  .vf-section + .vf-section,
-  #report .vf-section .vf-qa + .vf-qa,
-  #interview .vf-section .vf-qa + .vf-qa,
-  #screening .vf-section .vf-qa + .vf-qa {
-    max-width: 100%;
-  }
-
   .fb-sheet { padding: 22px 18px 32px; }
   .fb-job { padding: 18px 16px; }
   .fb-empty { padding: 40px 20px; min-height: 280px; }
+  .msg-list { gap: 10px; }
+  .msg { padding: 14px; }
   .proto-toggle {
     right: 10px;
     bottom: 10px;
@@ -1444,7 +934,7 @@ body:not(.page-feedback) .proto-toggle { display: none; }
 }
 </style>
 </head>
-<body class="page-vetting" data-page="vetting">
+<body class="page-feedback" data-page="feedback">
   <header class="topbar">
     <a class="logo-link" href="#" onclick="return false" aria-label="BetterEngineer">
       <img class="logo" src="assets/logo.svg" width="168" height="22" alt="betterengineer">
@@ -1500,8 +990,8 @@ body:not(.page-feedback) .proto-toggle { display: none; }
             <nav class="tabs" aria-label="Candidate sections">
               <a href="profile.html">Profile</a>
               <a href="messages.html">Messages</a>
-              <a href="vetting.html" class="is-on">Vetting</a>
-              <a href="feedback.html" id="tab-feedback">Feedback</a>
+              <a href="vetting.html">Vetting</a>
+              <a href="feedback.html" class="is-on" id="tab-feedback">Feedback</a>
             </nav>
           </div>
         </div>
@@ -1519,28 +1009,7 @@ body:not(.page-feedback) .proto-toggle { display: none; }
                   <span>Software Engineer</span>
                 </div>
               </div>
-              <div class="step is-on" data-step="report" role="button" tabindex="0">
-                <span class="glyph" aria-hidden="true">
-                  <svg width="16" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/></svg>
-                </span>
-                <div class="body">
-                  <span class="title">Interview Report</span>
-                  <span class="meta">When: Sep 29th, 2026 – 12:18 PM<br>Interviewed by Patrick</span>
-                  <div class="cultural-score" aria-label="Cultural rating 4 out of 5">
-                    <span class="cultural-score-label">Cultural</span>
-                    <span class="cultural-score-value">4 <i class="fa-solid fa-star" aria-hidden="true"></i></span>
-                  </div>
-                  <div class="cultural-score" aria-label=".NET Software Engineer talent pool rating 4 out of 5">
-                    <span class="cultural-score-label">.NET Software Engineer</span>
-                    <span class="cultural-score-value">4 <i class="fa-solid fa-star" aria-hidden="true"></i></span>
-                  </div>
-                  <div class="cultural-score" aria-label="Aviato .NET Software Engineer job fit rating 4 out of 5">
-                    <span class="cultural-score-label">Aviato · .NET Software Engineer</span>
-                    <span class="cultural-score-value">4 <i class="fa-solid fa-star" aria-hidden="true"></i></span>
-                  </div>
-                </div>
-              </div>
-              <div class="step" data-step="interview" role="button" tabindex="0">
+              <div class="step is-on" data-step="interview" role="button" tabindex="0">
                 <span class="glyph" aria-hidden="true">
                   <svg width="16" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/></svg>
                 </span>
@@ -1566,7 +1035,7 @@ body:not(.page-feedback) .proto-toggle { display: none; }
                     <li>Sent By: Mariana Jaramillo</li>
                     <li>Sent On: Sep 2nd, 2026</li>
                   </ul>
-                  <a class="process-skills-link" href="#" onclick="event.stopPropagation(); showStep('general-q'); return false;">General Questions (12/12)</a>
+                  <a class="process-skills-link" href="#" onclick="event.stopPropagation(); location.href='vetting.html#general-q'; return false;">General Questions (12/12)</a>
                 </div>
               </div>
             </article>
@@ -1584,377 +1053,161 @@ body:not(.page-feedback) .proto-toggle { display: none; }
               <h3>Profile Creation</h3>
               <p class="src">Last Updated: Sep 2, 2026</p>
               <div class="status-actions">
-                <button class="btn-outline" type="button" onclick="showStep('screening')">Create Screening Questions</button>
-                <button class="btn-outline" type="button" onclick="showStep('interview')">Create Vetting Feedback</button>
+                <button class="btn-outline" type="button" onclick="location.href='vetting.html#screening'">Create Screening Questions</button>
+                <button class="btn-outline" type="button" onclick="location.href='vetting.html#interview'">Create Vetting Feedback</button>
                 <button class="btn-outline" type="button" onclick="toast('Feedback summary would open here.')">Create Feedback Summary</button>
               </div>
             </article>
           </aside>
 
           <main>
-            <section id="view-vetting" class="vf-stack">
-              <article class="vf-doc" id="report">
-                <div class="vf-doc-head">
-                  <div>
-                    <h2>Interview Report</h2>
-                    <p class="vf-meta">When: Sep 29th, 2026 – 12:18 PM<br>By: Patrick</p>
-                  </div>
-                </div>
-                <nav class="report-tabs" role="tablist" aria-label="Interview report">
-                  <button type="button" class="report-tab is-on" role="tab" aria-selected="true" data-report-tab="summary">Summary</button>
-                  <button type="button" class="report-tab" role="tab" aria-selected="false" data-report-tab="questions">Questions</button>
-                  <button type="button" class="report-tab" role="tab" aria-selected="false" data-report-tab="transcript">Transcript</button>
-                </nav>
-                <div class="report-panel is-on" data-report-panel="summary">
-                <section class="vf-section" id="report-summary">
-                  <div class="vf-qa">
-                    <h4 class="vf-section-title">Cultural</h4>
-                    <p class="hint">General feedback</p>
-                    <div class="vf-stars" aria-label="4 out of 5 stars">
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star"></i>
-                    </div>
-                    <p>Candidate has 8 years of experience overall, about 3 years in this role. He spent more of his career on other technologies before moving fully into .NET. Wants clearer ownership of a product area, and a team where he can mentor without being the only senior in the room. He is calm on a call and answers with the system, not a slogan.</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>English proficiency</h4>
-                    <span class="vf-eng">Fluent</span>
-                  </div>
-                  <div class="vf-qa">
-                    <h4 class="vf-section-title">.NET Software Engineer</h4>
-                    <p class="hint">Talent pool · Technical rating</p>
-                    <div class="vf-stars" aria-label="4 out of 5 stars">
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star"></i>
-                    </div>
-                    <p>On the .NET Software Engineer talent-pool bar, Marcelo shows 8 years overall and about 3 fully on C#, .NET, and Azure. He talks like someone who has owned Service Bus consumers, retries, and the on-call habits around them, not someone who has only read the docs. Strongest as the person who takes a messy production path and makes it boring. Recommend advancing for senior .NET / Azure seats that need that kind of production ownership.</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Overall Interview Summary</h4>
-                    <p>Marcelo comes across as a calm senior .NET engineer who answers with the system, not a slogan. On the call he is easy to follow: he listens, then walks the path of the request, the retry, and what broke in production. English is fluent, spoken and written. A U.S. client conversation would not need a translator in the room, and he does not oversell seniority.</p>
-                    <p>Eight years overall, about three fully on C# / .NET / Azure after other stacks. That split is honest, not padded. He talks like someone who has owned production paths rather than tickets: Service Bus consumers, idempotent capture, runbooks for stuck transactions, mentoring two mids, on-call for payouts. He is looking for clearer ownership of a product area and a team where he can mentor without being the only senior in the room.</p>
-                    <p>Impression is a real senior who would not need to be sold as one. Recommend advancing for senior .NET / Azure seats that need that kind of production ownership, including Aviato’s booking-API seat.</p>
-                  </div>
-                  <div class="vf-notes">
-                    <div class="vf-notes-row">
-                      <div class="vf-qa">
-                        <h4>Communication &amp; Collaboration</h4>
-                        <p>He listens, then walks the path of the system. English is fluent, spoken and written, and he does not oversell. Easy to imagine on a call with a U.S. client — the technical conversation would not need a translator in the room.</p>
-                      </div>
-                      <div class="vf-qa">
-                        <h4>Experience &amp; Seniority Signals</h4>
-                        <p>Talks like someone who has owned production paths, not tickets: mentoring two mids, on-call for payouts, runbooks for stuck transactions. Senior signals are ownership and the boring parts, not architecture theater.</p>
-                      </div>
-                    </div>
-                    <div class="vf-notes-row">
-                      <div class="vf-qa">
-                        <h4>Strengths &amp; Potential</h4>
-                        <p>Strongest as the person who takes a messy production path and makes it boring. Clear on idempotency, Service Bus, and the first fifteen minutes of an incident. Particularly valuable on a squad that already has a product owner and needs a senior who can raise the floor without becoming the bottleneck.</p>
-                      </div>
-                      <div class="vf-qa">
-                        <h4>Concerns / Follow-Up Areas</h4>
-                        <p>Only about three years fully on C# / .NET / Azure after other stacks — worth confirming the last three years of ownership in a technical loop. US-morning overlap should be validated as a real on-call habit, not a hopeful one. Not a red flag; the next screen’s job.</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="vf-qa vf-job-fit">
-                    <h4>Fit for Aviato · .NET Software Engineer</h4>
-                    <div class="vf-stars" aria-label="4 out of 5 stars">
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star on"></i>
-                      <i class="fa-solid fa-star"></i>
-                    </div>
-                    <p>Marcelo is a strong fit for Aviato’s .NET Software Engineer seat. He already answers in this job’s constraints: a booking that looks confirmed while inventory did not move, client retries on payment capture, search and availability drift after a deploy, and the first fifteen minutes of stuck bookings on a US-morning overlap. That is production ownership of Aviato’s booking API, not a generic architecture answer.</p>
-                    <p>The remaining questions are bounded. Only about three years fully on C# / .NET / Azure, and US-hours overlap still needs to be a real on-call habit. Neither is a reason to hold him from this seat. Recommend submitting him to Aviato as a senior .NET engineer — a yes, not a stretch.</p>
-                    <div class="vf-notes">
-                      <div class="vf-notes-row">
-                        <div class="vf-qa">
-                          <h4>Communication &amp; Collaboration</h4>
-                          <p>He can walk Aviato’s booking and inventory path on a client call without hedging. English is fluent, and he explains retries and drift in the order a U.S. stakeholder would follow. The technical conversation with Aviato would not need a translator in the room.</p>
-                        </div>
-                        <div class="vf-qa">
-                          <h4>Experience &amp; Seniority Signals</h4>
-                          <p>Senior for this seat: he talks like the person who owns the write path, not a ticket. Mentoring, on-call for payouts, and runbooks for stuck transactions map cleanly onto Aviato’s booking-API ownership. Not architecture theater — production habits Aviato actually hires against.</p>
-                        </div>
-                      </div>
-                      <div class="vf-notes-row">
-                        <div class="vf-qa">
-                          <h4>Strengths &amp; Potential</h4>
-                          <p>Strongest where Aviato hurts: a booking that looks confirmed while inventory did not move, client retries on payment capture, search vs availability after a deploy, and the first fifteen minutes of stuck bookings. Idempotency and Service Bus are already in how he answers.</p>
-                        </div>
-                        <div class="vf-qa">
-                          <h4>Concerns / Follow-Up Areas</h4>
-                          <p>Only about three years fully on C# / .NET / Azure after other stacks — worth a technical loop on the last stretch of ownership. US-morning overlap for Aviato on-call still needs to be a habit, not a hope. Neither is a reason to hold the submit.</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="vf-fit-signals">
-                      <h4>Highlights and gaps</h4>
-                      <ul class="vf-signal-list">
-                        <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Owns production .NET paths — Service Bus consumers, idempotent capture, and runbooks for stuck transactions.</span></li>
-                        <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Fluent English, spoken and written. Easy to put on a U.S. client call without a translator in the room.</span></li>
-                        <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Senior signals are ownership and the boring parts: mentoring two mids, on-call for payouts, not architecture theater.</span></li>
-                        <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>Has not worked in marketplace or booking systems before — Aviato’s inventory and availability problems would be a new domain.</span></li>
-                        <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>Only about three years fully on C# / .NET / Azure after other stacks. Confirm the last stretch of ownership in a technical loop.</span></li>
-                        <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>US-morning overlap still needs to be a real on-call habit, not a hopeful one.</span></li>
-                      </ul>
-                    </div>
-                  </div>
-                </section>
-                </div>
+            <section id="view-vetting">
+              <div class="panel" data-panel="interview">
+                <article class="card hero-card">
+                  <h2>Internal Interview</h2>
+                </article>
 
-                <div class="report-panel" data-report-panel="questions" hidden>
-                <section class="vf-section" id="report-questions">
-                  <p class="vf-q-group">Cultural</p>
-                  <div class="vf-qa">
-                    <h4>How much overall experience do you have? How much experience in this role do you have?</h4>
-                    <p>Candidate has 8 years of experience overall, about 3 years in this role. He spent more of his career on other technologies before moving fully into .NET.</p>
+                <article class="card block" id="general">
+                  <div class="qa" style="padding:0;border:0">
+                    <h3>General feedback about candidate</h3>
+                    <p class="hint">This will not be shared with the candidate</p>
                   </div>
-                  <div class="vf-qa">
-                    <h4>What would motivate you to explore a new career opportunity?</h4>
-                    <p>Wants clearer ownership of a product area, and a team where he can mentor without being the only senior in the room.</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Education highlights</h4>
-                    <p class="is-empty">No answer yet</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Most notable jobs highlights</h4>
-                    <p class="is-empty">No answer yet</p>
-                  </div>
-                  <p class="vf-q-group">.NET Software Engineer</p>
-                  <div class="vf-qa">
-                    <h4>Walk me through a production .NET system you owned end to end.</h4>
-                    <p>Owned a payouts service on Azure: Service Bus consumers, idempotent capture, and runbooks for stuck transactions. Mentored two mids and carried on-call for that path.</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>How do you debug a failing service in production, and what do you look at first?</h4>
-                    <p class="is-empty">No answer yet</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Where have you used Azure, Service Bus, or similar messaging in anger?</h4>
-                    <p>Service Bus consumers under real retries. Duplicate messages were the ugly part: persist the idempotency key before the side effect, then ack.</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>How do you test a .NET service that talks to the bus or a database?</h4>
-                    <p class="is-empty">No answer yet</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Tell me about an EF Core or data-model decision you later regretted.</h4>
-                    <p class="is-empty">No answer yet</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>How have you handled configuration, secrets, and environment differences in Azure?</h4>
-                    <p class="is-empty">No answer yet</p>
-                  </div>
-                  <p class="vf-q-group">Aviato · .NET Software Engineer</p>
-                  <div class="vf-qa">
-                    <h4>This seat owns Aviato’s booking API. A booking looks confirmed and inventory didn’t move. Where do you look first?</h4>
-                    <p>Start at the write path, not the UI. Confirm whether inventory is the source of truth and whether the booking write committed without the inventory move.</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Clients retry the payment capture. How would you make that safe in this .NET service?</h4>
-                    <p>Idempotency key persisted before capture, so a client retry cannot charge twice.</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Search and availability drift after a deploy. How do you find which store is lying?</h4>
-                    <p class="is-empty">No answer yet</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>On-call for Aviato overlaps US mornings. What does a good first fifteen minutes look like when bookings are stuck?</h4>
-                    <p class="is-empty">No answer yet</p>
-                  </div>
-                </section>
-                </div>
-
-                <div class="report-panel" data-report-panel="transcript" hidden>
-                <section class="vf-section" id="report-transcript">
-                  <div class="vf-tr">
-                    <div class="line you"><b>Patrick</b><p>How much overall experience do you have?</p></div>
-                    <div class="line them"><b>Marcelo Dosko</b><p>I have 8 years of experience.</p></div>
-                    <div class="line you"><b>Patrick</b><p>How much in this role?</p></div>
-                    <div class="line them"><b>Marcelo Dosko</b><p>In this role, about 3 years. I spent more of my career on other stacks before moving fully into .NET.</p></div>
-                    <div class="line you"><b>Patrick</b><p>What would motivate you to explore a new career opportunity?</p></div>
-                    <div class="line them"><b>Marcelo Dosko</b><p>I want clearer ownership of a product area, and a team where I can mentor without being the only senior in the room.</p></div>
-                  </div>
-                </section>
-                </div>
-              </article>
-
-              <article class="vf-doc" id="interview">
-                <div class="vf-doc-head">
-                  <div>
-                    <h2>Vetting Feedback</h2>
-                    <p class="vf-meta">When: Dec 2nd, 2024 – 7:52 PM<br>By: Josh Arnold</p>
-                  </div>
-                  <button class="vf-transcript" type="button" onclick="toast('Interview transcript summary would open here.')">Interview Transcript Summary</button>
-                </div>
-
-                <section class="vf-section" id="general">
-                  <h3><strong>Cultural:</strong> <span class="vf-h3-rest">General Feedback</span></h3>
-                  <div class="vf-stars" aria-label="4 out of 5 stars">
+                  <div class="stars" aria-label="4 out of 5 stars">
                     <i class="fa-solid fa-star on"></i>
                     <i class="fa-solid fa-star on"></i>
                     <i class="fa-solid fa-star on"></i>
                     <i class="fa-solid fa-star on"></i>
                     <i class="fa-solid fa-star"></i>
                   </div>
-                  <div class="vf-qa">
-                    <p>He has over five years of professional software development experience, with a strong focus on full-stack web applications. He communicates clearly about technical decisions and speaks comfortably about both frontend and backend work. His answers were structured and he gave concrete examples from recent projects rather than staying abstract.</p>
+                  <p class="answer">Gabriel is a calm, structured backend engineer. He explained tradeoffs without prompting and stayed specific about production work: queues, retries, and how he actually ships. Strong hire signal for a senior backend seat; I would still want one more pass on system design depth before a staff-level conversation.</p>
+                  <div class="recommend">
+                    <h3>Would you recommend moving forward with this candidate?</h3>
+                    <div class="yes">
+                      <i class="fa-solid fa-thumbs-up"></i>
+                      Yes
+                    </div>
                   </div>
-                  <div class="vf-qa">
-                    <p>Overall he presents as a dependable engineer who is used to shipping in small teams. He described leading feature work end to end, coordinating with product, and maintaining legacy PHP/Laravel code while introducing React and Node on newer surfaces. I would move him forward based on cultural fit and communication; technical depth looked appropriate for a mid-level full-stack role.</p>
-                  </div>
-                </section>
+                </article>
 
-                <section class="vf-section" id="cultural">
-                  <h3>Cultural</h3>
-                  <div class="vf-qa">
-                    <h4>How much overall experience do you have? How much experience in the role do you have?</h4>
-                    <p>About five years overall in software development, with roughly four years focused on full-stack work. Most of that time has been building and maintaining customer-facing web apps for startups and agencies in the Philippines, using PHP/Laravel on the backend and React on the frontend.</p>
+                <article class="card block" id="cultural">
+                  <h2>Cultural</h2>
+                  <div class="qa">
+                    <h3>How much overall experience do you have? How much experience in this role do you have?</h3>
+                    <p class="answer">About eight years total, six of them as a backend engineer. The last three have been on marketplace and logistics platforms, mostly Node and Python services, Postgres, and a lot of time in the on-call rotation. He has led small squads but is not positioning himself as a manager.</p>
                   </div>
-                  <div class="vf-qa">
-                    <h4>What would motivate you to explore a new career opportunity?</h4>
-                    <p>He is looking for a longer-term role with a stable product team, clearer ownership of features, and the chance to work with a modern stack full time. Remote work with US-based teammates and room to grow into a senior full-stack seat were the main motivators he mentioned.</p>
+                  <div class="qa">
+                    <h3>What would motivate you to explore a new career opportunity?</h3>
+                    <p class="answer">He wants a team where backend work still has product proximity, not a silo that only takes tickets. Ownership of a service from design through production, and a chance to raise the quality bar (testing, observability) were the two things he kept coming back to.</p>
                   </div>
-                </section>
+                  <div class="qa">
+                    <h3>Education highlights</h3>
+                  </div>
+                  <div class="qa">
+                    <h3>Most notable job highlights</h3>
+                    <p class="answer">Led a rewrite of a payments retry pipeline that cut failed checkouts by 18%. Before that, owned a notification service used by 200+ internal agents. Comfortable being the person who writes the runbook, not only the feature.</p>
+                  </div>
+                </article>
 
-                <section class="vf-section" id="education">
-                  <h3>Education Highlights</h3>
-                  <p>Bachelor's degree in Computer Science — University of the Philippines (2012–2016)</p>
-                </section>
+                <article class="card block" id="technical">
+                  <h2>Technical</h2>
+                  <div class="qa">
+                    <h3>Technical</h3>
+                    <p class="hint">How well does the candidate display technical knowledge?</p>
+                    <div class="stars gold" aria-label="4 out of 5 stars">
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="answer">Very solid on APIs, data modeling, and how services fail in production. He walked a checkout retry design with idempotency keys and a poison-queue path. A little lighter on Kubernetes than the resume implied: competent, not the person you want owning the cluster yet.</p>
+                  </div>
+                  <div class="qa">
+                    <h3>Problem Solving</h3>
+                    <p class="hint">How well does the candidate display problem solving skills?</p>
+                    <div class="stars gold" aria-label="4 out of 5 stars">
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="answer">Starts with constraints, then draws. Did not jump to a trendy stack. When I changed the volume assumption mid-problem he rewound instead of patching. That’s the habit we want on this team.</p>
+                  </div>
+                  <div class="qa">
+                    <h3>Communication</h3>
+                    <p class="hint">Does the candidate have the communication skills to collaborate with a team?</p>
+                    <div class="stars gold" aria-label="4 out of 5 stars">
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="answer">Clear, unhurried, and good about checking whether I was still with him. Would pair well with a product-minded frontend. English is fluent; nothing in the loop suggested a collaboration risk.</p>
+                  </div>
+                  <div class="qa">
+                    <h3>Logistical</h3>
+                    <p class="hint">Is the candidate available, aligned on hours, and able to start on a realistic timeline?</p>
+                    <div class="stars gold" aria-label="3 out of 5 stars">
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star on"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="answer">Based in Buenos Aires with a 4-hour overlap with ET. Can start in three weeks. Notice period is the only drag, not a blocker if the hiring manager can live with a mid-March start.</p>
+                  </div>
+                  <div class="qa">
+                    <h3>Main areas of expertise</h3>
+                    <p class="hint">What are the candidates primary skills?</p>
+                    <p class="answer">Node.js, Python, PostgreSQL, Redis, AWS (SQS, Lambda, RDS), API design, and production debugging. Strongest when the problem is a service that has to stay up, not a greenfield architecture review.</p>
+                  </div>
+                </article>
+              </div>
 
-                <section class="vf-section" id="jobs">
-                  <h3>Most relevant job highlights</h3>
-                  <div class="vf-jobs">
-                    <div>
-                      <b>2022 – Present · Full-stack Developer · Freelance Software Hub</b>
-                      <p>Builds and maintains client web applications. Laravel APIs, React dashboards, MySQL, and deployment on AWS. Works directly with founders on requirements and releases.</p>
-                    </div>
-                    <div>
-                      <b>2019 – 2022 · Software Engineer · Nexus Digital Solutions</b>
-                      <p>Shipped e-commerce and internal tools. Introduced React to a legacy PHP codebase, wrote integration tests, and supported production incidents.</p>
-                    </div>
-                    <div>
-                      <b>2017 – 2019 · Junior Developer · Cavite Web Studio</b>
-                      <p>Started on WordPress and PHP maintenance, then moved into Laravel feature work and basic DevOps (Docker, staging environments).</p>
-                    </div>
+              <div class="panel hidden" data-panel="screening">
+                <article class="card hero-card">
+                  <h2>Screening Questions</h2>
+                </article>
+                <article class="card block" id="general-q">
+                  <h2>General Questions <span style="font-size:16px;color:var(--muted);font-weight:500">7/12</span></h2>
+                  <div class="qa">
+                    <h3>Walk me through your current role.</h3>
+                    <p class="answer">Backend engineer on a logistics platform. Owns the order-events service and on-call for that slice of the stack.</p>
                   </div>
-                </section>
-
-                <section class="vf-section" id="notes">
-                  <h3>Additional Notes</h3>
-                  <ul class="vf-list">
-                    <li>Comfortable with PHP, Laravel, JavaScript, TypeScript, React, and Node.js.</li>
-                    <li>Has used MySQL, Docker, AWS, GitHub, and Jira in day-to-day work.</li>
-                    <li>Based in Rosario, Cavite; open to fully remote US-hour overlap.</li>
-                    <li>No visa sponsorship required; equipment and home office already in place.</li>
-                  </ul>
-                </section>
-
-                <section class="vf-section" id="fs-cultural">
-                  <h3>Full-stack Software Engineer: Cultural Questions</h3>
-                  <div class="vf-kv">
-                    <p><b>Willing to relocate:</b> No</p>
-                    <p><b>Years of experience:</b> 5</p>
-                    <p><b>Primary languages:</b> PHP, JavaScript, TypeScript, Python</p>
-                    <p><b>Preferred stack:</b> React, Node.js, Laravel</p>
-                    <p><b>Team size preference:</b> Small product team (5–15)</p>
-                    <p><b>Management interest:</b> Not at this time</p>
+                  <div class="qa">
+                    <h3>What does a strong week look like for you?</h3>
+                    <p class="answer">A design that survives review, a merge that doesn’t page anyone, and one conversation that unblocks someone else.</p>
                   </div>
-                </section>
-              </article>
-
-              <article class="vf-doc" id="screening">
-                <div class="vf-doc-head">
-                  <div>
-                    <h2>Screening Questions</h2>
-                    <p class="vf-meta">Sent: Sep 2nd, 2026<br>Updated: Sep 2nd, 2026 by Ernesto Gama Jimenez<br>Detected Timezone: America/Bogota<br>IP Address: 69.197.184.114</p>
+                  <div class="qa">
+                    <h3>Anything we should know about timeline or constraints?</h3>
+                    <p class="answer">Three-week notice. Prefers to keep overlap with US mornings.</p>
                   </div>
-                  <button class="vf-edit" type="button" onclick="toast('Editing screening questions would open here.')" aria-label="Edit screening questions">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                  </button>
-                </div>
-
-                <section class="vf-section" id="general-q">
-                  <h3>General Questions</h3>
-                  <p class="vf-group-label">Personal Information</p>
-                  <div class="vf-qa">
-                    <h4>Location (city)</h4>
-                    <div class="vf-select" role="note">Rosario, Cavite
-                      <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1.5 6 6.5 11 1.5"/></svg>
-                    </div>
+                </article>
+                <article class="card block" id="talent">
+                  <h2>Talent Pool – Backend Engineer <span style="font-size:16px;color:var(--muted);font-weight:500">2/3</span></h2>
+                  <div class="qa">
+                    <h3>Why backend rather than full stack?</h3>
+                    <p class="answer">He likes the production path: data, failure modes, and the contract with other teams. Happy to read frontend, not eager to own it.</p>
                   </div>
-                  <div class="vf-qa">
-                    <h4>Phone Number</h4>
-                    <div class="vf-lang">
-                      <img class="vf-flag" src="https://flagcdn.com/w40/ph.png" alt="">
-                      +63 917 555 0123
-                    </div>
+                  <div class="qa">
+                    <h3>Cloud comfort</h3>
+                    <p class="answer">Day-to-day AWS. Has shipped SQS + Lambda workers; has not been the person who sets up the org’s Kubernetes.</p>
                   </div>
-                  <div class="vf-qa">
-                    <h4>How fluent are you in written and spoken english?</h4>
-                    <div class="vf-radio"><i></i> Fluent</div>
+                </article>
+                <article class="card block" id="job">
+                  <h2>Job – Furnished Finders <span style="font-size:16px;color:var(--muted);font-weight:500">2/2</span></h2>
+                  <div class="qa">
+                    <h3>Fit for a marketplace / inventory-heavy product?</h3>
+                    <p class="answer">Yes. Previous payments and logistics work maps cleanly. Asked good questions about inventory consistency and double-booking.</p>
                   </div>
-                  <div class="vf-qa">
-                    <h4>What type of jobs are you looking for?</h4>
-                    <div class="vf-choice">
-                      <span class="vf-pill">Full-time</span>
-                      <span class="vf-pill">Part-time</span>
-                      <span class="vf-pill">Long-term</span>
-                    </div>
+                  <div class="qa">
+                    <h3>Rate and start</h3>
+                    <p class="answer">Rate conversation still open. Start window: three weeks after offer.</p>
                   </div>
-                  <div class="vf-qa">
-                    <h4>In weeks, how much notice will you need to start a new opportunity?</h4>
-                    <div class="vf-nums" aria-label="0 weeks notice">
-                      <span class="vf-num on">0</span>
-                      <span class="vf-num">1</span>
-                      <span class="vf-num">2</span>
-                      <span class="vf-num">3</span>
-                      <span class="vf-num">4+</span>
-                    </div>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>What is your expected pay?</h4>
-                    <p>Hourly: $5.00/hr</p>
-                    <p>Monthly Pay: $1,200</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>What are your top skills?</h4>
-                    <div class="vf-skills">
-                      <span>PHP</span><span>Laravel</span><span>React</span><span>Node.js</span><span>MySQL</span><span>Docker</span><span>AWS</span><span>GitHub</span><span>Jira</span>
-                    </div>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Are you participating in any other interview processes?</h4>
-                    <p>No</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Do you have any Trip Scheduled within the next 6 months?</h4>
-                    <p>No</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Do you have availability to work during local holidays?</h4>
-                    <p>Yes</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>Do you have the necessary Equipment to work remotely?</h4>
-                    <p>Yes</p>
-                  </div>
-                  <div class="vf-qa">
-                    <h4>What is your interview availability?</h4>
-                    <p>Available during weekends and evenings.</p>
-                  </div>
-                </section>
-              </article>
+                </article>
+              </div>
             </section>
 
             <section id="view-profile" class="hidden">
@@ -2508,50 +1761,14 @@ function showTab(id) {
   document.body.classList.toggle("is-feedback-tab", id === "feedback");
 }
 
-function stepFor(id) {
-  if (id === "screening" || id === "general-q") return "screening";
-  if (id === "report" || id.indexOf("report-") === 0) return "report";
-  return "interview";
-}
-
-function setProcessStep(step) {
-  document.querySelectorAll(".step").forEach(s => s.classList.toggle("is-on", s.dataset.step === step));
-}
-
-function showReportTab(name) {
-  document.querySelectorAll(".report-tab").forEach(tab => {
-    const on = tab.dataset.reportTab === name;
-    tab.classList.toggle("is-on", on);
-    tab.setAttribute("aria-selected", on ? "true" : "false");
-  });
-  document.querySelectorAll(".report-panel").forEach(panel => {
-    const on = panel.dataset.reportPanel === name;
-    panel.classList.toggle("is-on", on);
-    panel.hidden = !on;
-  });
-}
-
-document.querySelectorAll(".report-tab").forEach(tab => {
-  tab.addEventListener("click", () => showReportTab(tab.dataset.reportTab));
-});
-
-function scrollToVetting(id, smooth) {
-  const reportTabs = { "report-summary": "summary", "report-questions": "questions", "report-transcript": "transcript" };
-  if (reportTabs[id]) showReportTab(reportTabs[id]);
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
-  history.replaceState(null, "", "#" + id);
-  setProcessStep(stepFor(id));
-}
-
 function showStep(step) {
   if (PAGE !== "vetting") {
     location.href = "vetting.html#" + step;
     return;
   }
   showTab("vetting");
-  scrollToVetting(step, true);
+  document.querySelectorAll(".step").forEach(s => s.classList.toggle("is-on", s.dataset.step === step));
+  document.querySelectorAll("[data-panel]").forEach(p => p.classList.toggle("hidden", p.dataset.panel !== step));
 }
 
 document.querySelectorAll(".step").forEach(step => {
@@ -2575,31 +1792,31 @@ document.querySelectorAll("[data-jump]").forEach(btn => {
       location.href = "vetting.html#" + id;
       return;
     }
-    showStep(id);
+    const interviewIds = ["general", "cultural", "technical"];
+    showStep(interviewIds.includes(id) ? "interview" : "screening");
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   });
 });
-
-function watchProcess() {
-  const docs = [...document.querySelectorAll(".vf-doc")];
-  if (!docs.length) return;
-  const io = new IntersectionObserver((entries) => {
-    const visible = entries
-      .filter(e => e.isIntersecting)
-      .sort((a, b) => Math.abs(a.boundingClientRect.top - 140) - Math.abs(b.boundingClientRect.top - 140));
-    if (!visible.length) return;
-    setProcessStep(stepFor(visible[0].target.id));
-  }, { rootMargin: "-80px 0px -45% 0px", threshold: [0.15, 0.35] });
-  docs.forEach(el => io.observe(el));
-}
 
 function openPage() {
   showTab(PAGE);
   renderFeedback();
   if (PAGE !== "vetting") return;
-  watchProcess();
   const hash = (location.hash || "").slice(1);
-  if (hash && document.getElementById(hash)) {
-    requestAnimationFrame(() => scrollToVetting(hash, false));
+  const interviewIds = ["general", "cultural", "technical"];
+  const screeningIds = ["general-q", "talent", "job"];
+  if (interviewIds.includes(hash) || hash === "interview") {
+    showStep("interview");
+    if (interviewIds.includes(hash)) {
+      requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ block: "start" }));
+    }
+  } else if (screeningIds.includes(hash) || hash === "screening") {
+    showStep("screening");
+    if (screeningIds.includes(hash)) {
+      requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ block: "start" }));
+    }
   }
 }
 
