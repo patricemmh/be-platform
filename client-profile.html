@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BetterEngineer · Profile · Gabriel Kouyoumdjian</title>
+<title>BetterEngineer · Client view · Gabriel Kouyoumdjian</title>
 <link rel="stylesheet" href="https://use.typekit.net/lhs7vwi.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
@@ -167,16 +167,6 @@ p, h1, h2, h3 { margin: 0; }
 .rail .rail-foot { margin-top: auto; }
 
 .main-col { min-width: 0; }
-.crumb {
-  height: 40px;
-  background: #fff;
-  border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; gap: 9px;
-  padding: 0 17px;
-  font-size: 15px; font-weight: 500; color: #3a3a3a;
-}
-.crumb a { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; }
-.crumb svg { color: #777; }
 
 .subhead {
   height: 80px;
@@ -205,16 +195,144 @@ p, h1, h2, h3 { margin: 0; }
   color: var(--ink); line-height: 22px;
 }
 .tabs { display: flex; gap: 22px; margin-top: 4px; height: 30px; }
-.tabs a {
+.tabs a,
+.tabs button {
   font-size: 15px; color: #555; text-decoration: none; position: relative;
-  line-height: 17px; padding-top: 1px;
+  line-height: 17px; padding: 1px 0 0;
 }
-.tabs a:hover { color: #111; }
-.tabs a.is-on { color: var(--blue); }
-.tabs a.is-on::after {
+.tabs button {
+  margin: 0; border: 0; background: none; cursor: pointer;
+  font-family: inherit; font-weight: 400;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-self: stretch;
+  -webkit-appearance: none; appearance: none;
+}
+.tabs a:hover,
+.tabs button:hover { color: #111; }
+.tabs a.is-on,
+.tabs button.is-on { color: var(--blue); }
+.tabs a.is-on::after,
+.tabs button.is-on::after {
   content: "";
   position: absolute; left: 0; right: 0; bottom: 0;
   height: 3px; background: var(--blue);
+}
+
+/* ---------- client vetting (fit) panel ---------- */
+.page-inner {
+  width: min(880px, 100%);
+  margin: 0 auto;
+}
+.vf-doc {
+  --vf-doc-pad-x: 48px;
+  background: #fff;
+  border: 1px solid var(--card-line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 42px var(--vf-doc-pad-x) 48px;
+}
+.vf-meta {
+  margin: 0 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #6b7280;
+}
+.vf-meta-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #4c60b2; color: #fff;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.02em;
+  flex: 0 0 36px;
+}
+.vf-qa { padding: 0; }
+.vf-qa h4 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #111;
+}
+.vf-job-fit {
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
+}
+.vf-job-fit > h4 {
+  margin: 0 0 14px;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  line-height: 28px;
+  color: #111;
+}
+.vf-qa p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: #222;
+}
+.vf-qa p + p { margin-top: 6px; }
+.vf-notes {
+  display: grid;
+  gap: 28px;
+  margin-top: 22px;
+  padding-top: 22px;
+  width: 100%;
+  border-top: 1px solid var(--line);
+}
+.vf-notes-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  width: 100%;
+}
+.vf-notes .vf-qa h4 {
+  margin: 0 0 8px;
+}
+.vf-fit-signals {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.vf-fit-signals h4 {
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #111;
+}
+.vf-signal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.vf-signal {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+}
+.vf-signal svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+.vf-signal.is-good { color: #1f9a57; }
+.vf-signal.is-gap { color: #d4a017; }
+.vf-signal span {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #222;
 }
 
 /* ---------- page layout ---------- */
@@ -243,14 +361,9 @@ p, h1, h2, h3 { margin: 0; }
   display: inline-grid; place-items: center;
 }
 .ghost:hover { color: #333; }
-.card-head { display: flex; align-items: center; justify-content: space-between; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.card-head:not(:has(button)) { justify-content: flex-start; }
 .card-title { font-size: 22px; font-weight: 400; color: #2b2b2b; line-height: 24px; letter-spacing: -0.2px; }
-.add-link {
-  border: 0; background: none; padding: 0;
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 13px; color: #8a8a8a;
-}
-.add-link:hover { color: #333; }
 .more-link {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: 13px; font-weight: 500; color: var(--blue); text-decoration: none;
@@ -273,8 +386,7 @@ p, h1, h2, h3 { margin: 0; }
   width: 136px; height: 136px; border-radius: 6px; object-fit: cover;
   box-shadow: 0 1px 4px rgba(0,0,0,.12);
 }
-.hero-body { padding: 29px 40px 0; position: relative; }
-.hero-edit { position: absolute; right: 29px; top: 31px; }
+.hero-body { padding: 29px 40px 0; }
 .hero-name { font-size: 24px; font-weight: 500; letter-spacing: -0.3px; line-height: 28px; color: #2a2a2a; padding-top: 25px; }
 .contact { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 5px; }
 .contact li { display: flex; align-items: center; gap: 14px; font-size: 15px; color: #3d3d3d; line-height: 20px; }
@@ -293,28 +405,7 @@ p, h1, h2, h3 { margin: 0; }
 .meta b { display: block; margin-top: 0; font-size: 14px; color: #2a2a2a; line-height: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* overview */
-.pool-tabs {
-  display: flex; gap: 28px;
-  height: 52px; padding: 0 40px;
-  border-bottom: 1px solid var(--line);
-  overflow-x: auto; scrollbar-width: none;
-  position: relative;
-}
-.pool-tabs::-webkit-scrollbar { display: none; }
-.pool-tabs a {
-  flex: 0 0 auto;
-  display: flex; align-items: center;
-  font-size: 15px; color: var(--blue); text-decoration: none;
-  position: relative; white-space: nowrap;
-}
-.pool-tabs a.general { color: #666; }
-.pool-tabs a.is-on { color: #3b4c95; font-weight: 500; }
-.pool-tabs a.is-on::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
-  height: 3px; background: var(--blue);
-}
-.ov-body { padding: 33px 40px 28px; position: relative; }
-.ov-edit { position: absolute; right: 29px; top: 34px; }
+.ov-body { padding: 39px 40px 28px; }
 .ov-body h2 { font-size: 22px; font-weight: 400; line-height: 26px; color: #2b2b2b; letter-spacing: -0.2px; }
 .ov-text { margin-top: 12px; max-width: 665px; font-size: 15px; line-height: 19.7px; color: #3a3a3a; }
 .ov-body hr { border: 0; border-top: 1px solid var(--line); margin: 34px 0 34px; }
@@ -346,7 +437,7 @@ p, h1, h2, h3 { margin: 0; }
 .xp { padding: 39px 40px 0; }
 .xp .card-head { align-items: flex-start; }
 .xp-sub { margin-top: 1px; font-size: 12px; color: #6b6b6b; line-height: 14px; }
-.job { display: grid; grid-template-columns: minmax(0, 1fr) auto; padding: 0 0 31px; }
+.job { padding: 0 0 31px; }
 .job + .job { border-top: 1px solid var(--line); padding-top: 31px; }
 .job-list { margin-top: 13px; }
 .job h3 { font-size: 20px; font-weight: 500; line-height: 22px; color: #262626; }
@@ -354,7 +445,6 @@ p, h1, h2, h3 { margin: 0; }
 .job .when { margin-top: 5px; font-size: 13px; line-height: 15px; color: #a3a3a3; }
 .job .desc { margin-top: 14px; font-size: 15px; line-height: 21px; color: #3a3a3a; max-width: 640px; }
 .job .desc p + p { margin-top: 6px; }
-.job .ghost { align-self: start; margin-top: 4px; }
 .xp .card-foot { margin-top: 0; height: 80px; }
 .xp .desc { max-width: 680px; }
 .edu { padding: 39px 40px 0; }
@@ -365,18 +455,74 @@ p, h1, h2, h3 { margin: 0; }
 /* right rail */
 .col-side .card { padding: 28px 30px 30px; }
 .side-title { font-size: 16px; font-weight: 400; color: #6f6f6f; line-height: 20px; }
-.jobs-card { margin-bottom: 30px; background: #fbfbfb !important; }
-.sj { position: relative; }
-.sj + .sj { margin-top: 29px; }
-.sj .kebab { position: absolute; right: -4px; top: 6px; }
-.sj b { display: block; font-size: 15px; font-weight: 500; line-height: 17px; color: #2a2a2a; }
-.sj .role { display: block; font-size: 13px; color: #a0a0a0; line-height: 15px; }
-.sj .stage-bar { height: 4px; margin-top: 5px; background: var(--green); border-radius: 2px; }
-.sj .stage { margin-top: 9px; font-size: 14px; color: #2a2a2a; line-height: 17px; }
-.sj .stage span { color: #a0a0a0; }
-.sj .rate { font-size: 12px; color: #a0a0a0; line-height: 15px; margin-top: 1px; }
-.sj .add-rate { display: inline-block; margin-top: 2px; font-size: 13px; color: var(--green); text-decoration: none; line-height: 15px; }
-.sj .add-rate:hover { text-decoration: underline; }
+.client-job-card {
+  margin-bottom: 30px;
+  padding: 22px 24px 24px !important;
+  background: #fff !important;
+}
+.client-job-card .job-card-title {
+  font-size: 17px;
+  font-weight: 500;
+  color: #2b2b2b;
+  line-height: 22px;
+  letter-spacing: -0.15px;
+}
+.client-job {
+  position: relative;
+  margin-top: 14px;
+  padding-right: 28px;
+}
+.client-job .kebab {
+  position: absolute;
+  right: -6px;
+  top: 0;
+  color: #b8b8b8;
+}
+.client-job .company {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18px;
+  color: #222;
+}
+.client-job .role {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #9a9a9a;
+  line-height: 16px;
+}
+.job-seg {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  margin-top: 12px;
+}
+.job-seg i {
+  height: 5px;
+  border-radius: 1px;
+  background: transparent;
+  border: 1px solid #e2e2e2;
+}
+.job-seg i.on {
+  background: #3e7b27;
+  border-color: #3e7b27;
+}
+.client-job .stage {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #2a2a2a;
+  line-height: 17px;
+}
+.client-job .stage span { color: #a0a0a0; }
+.client-job .rate {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #a0a0a0;
+  line-height: 15px;
+}
 .btn {
   width: 100%; height: 44px; border-radius: 4px;
   font-size: 15px; font-weight: 500; letter-spacing: -0.1px;
@@ -387,8 +533,105 @@ p, h1, h2, h3 { margin: 0; }
 .btn-green { border: 0; background: var(--green); color: #fff; }
 .btn-blue { border: 0; background: var(--blue); color: #fff; }
 .btn-green:hover, .btn-blue:hover { filter: brightness(.95); }
-.see-jobs { display: flex; justify-content: flex-end; margin: 37px 0 57px; }
-.see-jobs button { color: var(--green); font-weight: 400; }
+
+.ai-native-card {
+  margin-bottom: 20px;
+  padding: 22px 24px 24px !important;
+}
+.ai-native-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.ai-native-chip {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  color: #c47a2c;
+}
+.ai-native-head h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #c47a2c;
+  letter-spacing: -0.2px;
+}
+.ai-native-intro {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+.ai-native-card hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 16px 0 14px;
+}
+.ai-native-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.ai-native-list li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+.ai-native-list .ai-native-sparkle {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  flex: 0 0 auto;
+  color: #c47a2c;
+}
+
+.skill-match-card {
+  margin-bottom: 24px;
+  padding: 22px 24px 24px !important;
+}
+.skill-match-card .skill-match-title {
+  font-size: 16px;
+  font-weight: 400;
+  color: #6f6f6f;
+  line-height: 20px;
+}
+.skill-match-card h3 {
+  margin: 14px 0 10px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #2a2a2a;
+}
+.skill-match-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.skill-match-list li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #222;
+}
+.skill-match-list svg {
+  width: 18px;
+  height: 18px;
+  color: var(--blue);
+}
 
 .onb-card { margin-bottom: 49px; padding-bottom: 33px !important; background: #fbfbfb !important; }
 .onb-card .card-head .ghost { margin-right: -4px; }
@@ -411,8 +654,6 @@ p, h1, h2, h3 { margin: 0; }
 .pool-card hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0 19px; }
 .pools { margin-top: 10px; display: grid; gap: 6px; }
 .pools .score-row { padding-left: 5px; height: 24px; font-size: 15px; color: #3a3a3a; }
-.pool-card .btn { margin-top: 22px; height: 44px; }
-
 .links-card { margin-bottom: 30px; padding-top: 24px !important; padding-bottom: 8px !important; }
 .lk { display: flex; align-items: center; gap: 14px; height: 57px; border-top: 1px solid var(--line); text-decoration: none; font-size: 14px; font-weight: 500; color: var(--blue); }
 .lk:first-of-type { border-top: 0; }
@@ -421,7 +662,6 @@ p, h1, h2, h3 { margin: 0; }
 .lk:hover span { text-decoration: underline; }
 .links-list { margin-top: 6px; }
 
-.att-head .upload { display: inline-flex; align-items: center; gap: 16px; font-size: 13px; color: #555; }
 .att-list { margin-top: 24px; }
 .att-card { padding-top: 22px !important; }
 .att { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; column-gap: 8px; padding: 14px 0 15px; border-top: 1px solid var(--line); }
@@ -451,6 +691,7 @@ p, h1, h2, h3 { margin: 0; }
   .layout { width: 100%; grid-template-columns: minmax(0, 1fr) 340px; column-gap: 28px; }
 }
 @media (max-width: 1100px) {
+  .vf-doc { --vf-doc-pad-x: 28px; padding: 32px var(--vf-doc-pad-x) 40px; }
   .layout { grid-template-columns: minmax(0, 1fr); width: min(840px, 100%); row-gap: 28px; }
   .col-main { gap: 28px; }
   .col-side .card { margin-bottom: 0; }
@@ -471,7 +712,6 @@ p, h1, h2, h3 { margin: 0; }
   .profile-dropdown { right: -4px; min-width: 200px; max-width: calc(100vw - 24px); }
   .pd-item { min-height: 44px; display: flex; align-items: center; padding: 12px 14px; }
 
-  .crumb { padding: 0 14px; }
   .subhead { height: auto; padding: 12px 14px 0; }
   .who-block { height: auto; align-items: flex-start; width: 100%; }
   .back { width: 32px; height: 44px; margin-left: -6px; }
@@ -480,27 +720,26 @@ p, h1, h2, h3 { margin: 0; }
   .who-copy h1 { font-size: 16px; line-height: 20px; }
   .tabs { gap: 18px; overflow-x: auto; scrollbar-width: none; height: 44px; margin-top: 2px; }
   .tabs::-webkit-scrollbar { display: none; }
-  .tabs a { flex: 0 0 auto; display: inline-flex; align-items: center; padding: 0; }
+  .tabs a, .tabs button { flex: 0 0 auto; display: inline-flex; align-items: center; padding: 0; }
 
   .page { padding: 16px 12px 80px; }
+  .vf-doc { --vf-doc-pad-x: 18px; padding: 24px var(--vf-doc-pad-x) 32px; }
+  .vf-notes-row { grid-template-columns: 1fr; gap: 22px; }
+  .vf-job-fit > h4 { font-size: 20px; line-height: 26px; }
   .layout, .col-main, .col-side { row-gap: 16px; gap: 16px; }
   .banner { height: 110px; }
   .hero-photo { width: 96px; height: 96px; left: 18px; top: 44px; }
   .banner-tools { top: 14px; right: 14px; }
   .hero-body { padding: 18px 18px 0; }
-  .hero-edit { right: 14px; top: 10px; }
   .hero-name { font-size: 20px; padding-top: 24px; }
   .contact li { font-size: 13px; align-items: flex-start; }
   .contact li span { min-width: 0; overflow-wrap: anywhere; }
   .meta { flex-wrap: wrap; row-gap: 16px; padding: 18px 0 20px; }
   .meta > div { flex: 1 1 40%; padding: 0 12px; }
   .meta > div:nth-child(odd) { padding-left: 0; border-left: 0; }
-  .meta > div:last-child { flex-basis: 100%; padding-left: 0; border-left: 0; }
   .meta b { white-space: normal; }
-  .pool-tabs { padding: 0 18px; gap: 22px; height: 48px; }
   .ov-body, .skills, .xp, .edu { padding-left: 18px; padding-right: 18px; }
   .ov-body { padding-top: 24px; padding-bottom: 26px; }
-  .ov-edit { right: 14px; top: 24px; }
   .xp, .edu { padding-top: 24px; }
   .skills { padding-top: 24px; padding-bottom: 24px; }
   .card-foot { margin: 0 -18px; padding: 0 18px; height: 56px; }
@@ -509,9 +748,7 @@ p, h1, h2, h3 { margin: 0; }
   .job { padding-bottom: 24px; }
   .job + .job { padding-top: 22px; }
   .col-side .card { padding: 22px 18px 22px; }
-  .add-link, .more-link, .ghost, .sj .add-rate { min-height: 44px; min-width: 44px; }
-  .add-link { justify-content: flex-end; }
-  .see-jobs { margin: 16px 0 20px; }
+  .more-link, .ghost, .client-job .kebab { min-height: 44px; min-width: 44px; }
   .onb-card .btn { margin-top: 28px; }
 }
 </style>
@@ -536,14 +773,14 @@ p, h1, h2, h3 { margin: 0; }
           <svg class="pm-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 9 7 7 7-7"/></svg>
         </button>
         <div class="profile-dropdown" id="profileDropdown" role="menu" aria-labelledby="profileMenuBtn">
-          <div class="pd-label">Internal view</div>
-          <a class="pd-item" role="menuitem" href="interview.html">Interviewer</a>
-          <div class="pd-sep" role="separator"></div>
           <div role="group" aria-labelledby="pdClientLabel">
-            <div class="pd-label" id="pdClientLabel">View as client</div>
-            <a class="pd-item" role="menuitem" href="client-profile.html">Client profile</a>
+            <div class="pd-label" id="pdClientLabel">Client view</div>
+            <a class="pd-item is-current" role="menuitem" href="client-profile.html" aria-current="page">Client profile</a>
             <a class="pd-item" role="menuitem" href="client.html">Client review</a>
           </div>
+          <div class="pd-sep" role="separator"></div>
+          <a class="pd-item" role="menuitem" href="interview.html">Interviewer</a>
+          <a class="pd-item" role="menuitem" href="profile.html">View as internal</a>
         </div>
       </div>
     </div>
@@ -585,12 +822,6 @@ p, h1, h2, h3 { margin: 0; }
     </nav>
 
     <div class="main-col">
-      <div class="crumb">
-        <a href="#" onclick="return false">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 9 7 7 7-7"/></svg>
-          Gabriel Profile
-        </a>
-      </div>
       <div class="subhead">
         <div class="who-block">
           <button class="back" type="button" aria-label="Back" onclick="history.back()">
@@ -599,10 +830,9 @@ p, h1, h2, h3 { margin: 0; }
           <img class="cand-photo" src="assets/gabriel.png" alt="">
           <div class="who-copy">
             <h1>Gabriel Kouyoumdjian</h1>
-            <nav class="tabs" aria-label="Candidate sections">
-              <a href="profile.html" class="is-on" aria-current="page">Profile</a>
-              <a href="messages.html">Messages</a>
-              <a href="vetting.html">Vetting</a>
+            <nav class="tabs" role="tablist" aria-label="Candidate sections">
+              <button type="button" class="is-on" id="tab-profile" role="tab" aria-selected="true" aria-controls="client-panel-profile">Profile</button>
+              <button type="button" id="tab-vetting" role="tab" aria-selected="false" aria-controls="client-panel-vetting" tabindex="-1">Vetting</button>
               <a href="feedback.html">Feedback</a>
             </nav>
           </div>
@@ -610,6 +840,7 @@ p, h1, h2, h3 { margin: 0; }
       </div>
 
       <div class="page">
+        <div data-client-panel="profile" id="client-panel-profile" role="tabpanel" aria-labelledby="tab-profile">
         <div class="layout">
           <main class="col-main">
             <article class="card hero">
@@ -625,9 +856,6 @@ p, h1, h2, h3 { margin: 0; }
               </div>
               <img class="hero-photo" src="assets/gabriel.png" alt="Gabriel Kouyoumdjian">
               <div class="hero-body">
-                <button class="ghost hero-edit" type="button" aria-label="Edit profile" onclick="toast('Profile editor would open here.')">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>
-                </button>
                 <h2 class="hero-name">Gabriel Kouyoumdjian</h2>
                 <ul class="contact">
                   <li>
@@ -644,26 +872,16 @@ p, h1, h2, h3 { margin: 0; }
                   </li>
                 </ul>
                 <div class="meta">
-                  <div><small>Desired Hourly</small><b>$75</b></div>
-                  <div><small>Desired Monthly <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.5"/></svg></small><b>$9,000</b></div>
-                  <div><small>Notice Period</small><b>2 Weeks</b></div>
-                  <div><small>Open to</small><b>Full-time, Part-time, Short-term, Contract</b></div>
+                  <div><small>Monthly rate</small><b>$9,230/month</b></div>
+                  <div><small>Notice</small><b>2 Weeks</b></div>
+                  <div><small>Open to</small><b>Full-time</b></div>
+                  <div><small>Timezone</small><b>GMT-3</b></div>
                 </div>
               </div>
             </article>
 
             <article class="card overview">
-              <nav class="pool-tabs" aria-label="Profile versions">
-                <a href="#" class="general" onclick="return false">General</a>
-                <a href="#" class="is-on" onclick="return false">Android Engineer</a>
-                <a href="#" onclick="return false">iOS Engineer</a>
-                <a href="#" onclick="return false">Project Manager</a>
-                <a href="#" onclick="return false">Senior Kubernetes &amp; Cloud Native Engineer</a>
-              </nav>
               <div class="ov-body">
-                <button class="ghost ov-edit" type="button" aria-label="Edit overview" onclick="toast('Overview editor would open here.')">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>
-                </button>
                 <h2>Overview</h2>
                 <p class="ov-text">Gabriel is a skilled and self-motivated Senior Android Developer Engineer, who has led development of apps allowing Ulta Beauty customers to try on makeup virtually and Humana customers to access healthcare via mobile app. He has more than five years of technical lead experience and ten years of software development experience in sectors such as travel, finance, health and beauty. A Google Mentor and natural team lead, he is the founder and organizer of the Google Developers Group Montevideo chapter in Uruguay.</p>
                 <hr>
@@ -679,7 +897,6 @@ p, h1, h2, h3 { margin: 0; }
             <article class="card skills">
               <div class="card-head">
                 <h2 class="card-title">Skills</h2>
-                <button class="ghost" type="button" aria-label="Edit skills" onclick="toast('Skills editor would open here.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></button>
               </div>
               <div class="chips">
                 <span class="chip">Android</span>
@@ -703,7 +920,6 @@ p, h1, h2, h3 { margin: 0; }
                   <h2 class="card-title">Work Experience</h2>
                   <p class="xp-sub">Last Updated: Katherine Smith Aug 6, 2021</p>
                 </div>
-                <button class="add-link" type="button" onclick="toast('Add experience would open here.')">Add <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></button>
               </div>
               <div class="job-list">
                 <div class="job">
@@ -713,7 +929,6 @@ p, h1, h2, h3 { margin: 0; }
                     <p class="when">Jun 2018 – Present (3 years, 3 months)</p>
                     <div class="desc"><p>Led the construction, from scratch, of an AR solution allowing users to try on makeup virtually on Android devices, now 100% used in Ulta and the Ulta Beauty app.</p></div>
                   </div>
-                  <button class="ghost" type="button" aria-label="Edit role" onclick="toast('Experience editor would open here.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></button>
                 </div>
                 <div class="job">
                   <div>
@@ -728,7 +943,6 @@ p, h1, h2, h3 { margin: 0; }
                       <p>Mobile architect for fintech startup Rosamel Bank (Lima, Peru)</p>
                     </div>
                   </div>
-                  <button class="ghost" type="button" aria-label="Edit role" onclick="toast('Experience editor would open here.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></button>
                 </div>
                 <div class="job">
                   <div>
@@ -737,7 +951,6 @@ p, h1, h2, h3 { margin: 0; }
                     <p class="when">Mar 2010 – Present (11 years, 4 months)</p>
                     <div class="desc"><p>Founded Google Developer Group (GDG) for collaboration on and discussion of the Android and App Engine platforms, product APIs such as the YouTube API and the Google Calendar API, and initiatives such as OpenSocial.</p></div>
                   </div>
-                  <button class="ghost" type="button" aria-label="Edit role" onclick="toast('Experience editor would open here.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></button>
                 </div>
               </div>
               <div class="card-foot">
@@ -748,7 +961,6 @@ p, h1, h2, h3 { margin: 0; }
             <article class="card edu">
               <div class="card-head">
                 <h2 class="card-title">Education</h2>
-                <button class="add-link" type="button" onclick="toast('Add education would open here.')">Add <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></button>
               </div>
               <div class="job-list">
                 <div class="job">
@@ -758,7 +970,6 @@ p, h1, h2, h3 { margin: 0; }
                     <p class="when">2004 – 2008</p>
                     <div class="desc"><p>Studied intensely as a software architect and worked as a teaching assistant for the last few years of my degree.</p></div>
                   </div>
-                  <button class="ghost" type="button" aria-label="Edit education" onclick="toast('Education editor would open here.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></button>
                 </div>
                 <div class="job">
                   <div>
@@ -766,45 +977,61 @@ p, h1, h2, h3 { margin: 0; }
                     <p class="org">History</p>
                     <p class="when">2009 – 2010</p>
                   </div>
-                  <button class="ghost" type="button" aria-label="Edit education" onclick="toast('Education editor would open here.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></button>
                 </div>
               </div>
             </article>
           </main>
 
           <aside class="col-side" aria-label="Candidate pipeline">
-            <article class="card jobs-card">
-              <h2 class="side-title">Jobs</h2>
-              <div class="sj-list" style="margin-top:17px">
-                <div class="sj">
-                  <b>Optimus MD</b>
-                  <span class="role">Front-End Engineer</span>
-                  <button class="ghost kebab" type="button" aria-label="Job options" onclick="toast('Job options would open here.')"><svg width="4" height="14" viewBox="0 0 4 16" fill="currentColor"><circle cx="2" cy="2" r="1.5"/><circle cx="2" cy="8" r="1.5"/><circle cx="2" cy="14" r="1.5"/></svg></button>
-                  <p class="stage" style="margin-top:20px">Lead <span>· 10 days ago</span></p>
-                  <a class="add-rate" href="#" onclick="toast('Bill rate editor would open here.'); return false">Add Bill Rate</a>
-                  <button class="btn btn-green-outline" type="button" onclick="toast('Candidate submitted to Optimus MD.')">Submit</button>
-                </div>
-                <div class="sj" style="margin-top:31px">
-                  <b>Intergalactic Agency</b>
-                  <span class="role">Senior Android Developer</span>
-                  <button class="ghost kebab" type="button" aria-label="Job options" onclick="toast('Job options would open here.')"><svg width="4" height="14" viewBox="0 0 4 16" fill="currentColor"><circle cx="2" cy="2" r="1.5"/><circle cx="2" cy="8" r="1.5"/><circle cx="2" cy="14" r="1.5"/></svg></button>
-                  <div class="stage-bar" style="width:161px"></div>
-                  <p class="stage">Submitted <span>· 15 days ago</span></p>
-                  <p class="rate">Bill Rate: $35/hour – $6,000/month</p>
-                </div>
-                <div class="sj">
-                  <b>DAC Consulting</b>
-                  <span class="role">Technical Architect</span>
-                  <button class="ghost kebab" type="button" aria-label="Job options" onclick="toast('Job options would open here.')"><svg width="4" height="14" viewBox="0 0 4 16" fill="currentColor"><circle cx="2" cy="2" r="1.5"/><circle cx="2" cy="8" r="1.5"/><circle cx="2" cy="14" r="1.5"/></svg></button>
-                  <div class="stage-bar" style="width:106px"></div>
-                  <p class="stage">Interviewing <span>· 5 days ago</span></p>
-                  <p class="rate">Bill Rate: $35/hour – $6,000/month</p>
-                </div>
+            <article class="card client-job-card" aria-label="Job">
+              <h2 class="job-card-title">Job</h2>
+              <div class="client-job">
+                <button class="ghost kebab" type="button" aria-label="Job options" onclick="toast('Job options would open here.')"><svg width="4" height="14" viewBox="0 0 4 16" fill="currentColor"><circle cx="2" cy="2" r="1.5"/><circle cx="2" cy="8" r="1.5"/><circle cx="2" cy="14" r="1.5"/></svg></button>
+                <span class="company">Aviato</span>
+                <span class="role">.NET Software Engineer</span>
+                <div class="job-seg" aria-label="Pipeline stage 2 of 6"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+                <p class="stage">Interviewing <span>– 18 days ago</span></p>
+                <p class="rate">Bill Rate: $9,230/month</p>
               </div>
-              <div class="see-jobs">
-                <button class="more-link" type="button" onclick="toast('2 more jobs would load here.')">See 2 more jobs <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 9 7 7 7-7"/></svg></button>
+            </article>
+
+            <article class="card ai-native-card" aria-label="AI Native">
+              <div class="ai-native-head">
+                <svg class="ai-native-chip" viewBox="0 0 28 28" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke="currentColor" stroke-width="1.35" stroke-linecap="round" d="M9 3.5h2.2M16.8 3.5h2.2M9 24.5h2.2M16.8 24.5h2.2M3.5 9v2.2M3.5 16.8v2.2M24.5 9v2.2M24.5 16.8v2.2"/>
+                  <rect x="7.5" y="7.5" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.45"/>
+                  <text x="14" y="15.6" text-anchor="middle" fill="currentColor" font-size="5.8" font-weight="700" font-family="Segoe UI, system-ui, sans-serif">AI</text>
+                </svg>
+                <h2>AI Native</h2>
               </div>
-              <button class="btn btn-green" type="button" onclick="toast('Add to job would open here.')">Add to job</button>
+              <p class="ai-native-intro">Operates at the frontier of human–AI collaboration on mobile delivery. Uses assistants to speed up design spikes, test ideas, and documentation while keeping release ownership, Play Store compliance, and on-device quality in human hands.</p>
+              <hr>
+              <ul class="ai-native-list">
+                <li>
+                  <svg class="ai-native-sparkle" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.4 11.35 6.55 16.5 7.9 11.35 9.25 10 14.4 8.65 9.25 3.5 7.9 8.65 6.55 10 1.4Z"/><path d="M15.6 2.2 15.95 3.65 17.4 4 15.95 4.35 15.6 5.8 15.25 4.35 13.8 4 15.25 3.65 15.6 2.2Z"/><path d="M4.1 12.1 4.38 13.15 5.43 13.43 4.38 13.71 4.1 14.76 3.82 13.71 2.77 13.43 3.82 13.15 4.1 12.1Z"/></svg>
+                  <span>Drafts AR try-on test matrices and edge-case notes for Ulta Beauty flows, then validates camera and rendering behavior on physical devices.</span>
+                </li>
+                <li>
+                  <svg class="ai-native-sparkle" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.4 11.35 6.55 16.5 7.9 11.35 9.25 10 14.4 8.65 9.25 3.5 7.9 8.65 6.55 10 1.4Z"/><path d="M15.6 2.2 15.95 3.65 17.4 4 15.95 4.35 15.6 5.8 15.25 4.35 13.8 4 15.25 3.65 15.6 2.2Z"/><path d="M4.1 12.1 4.38 13.15 5.43 13.43 4.38 13.71 4.1 14.76 3.82 13.71 2.77 13.43 3.82 13.15 4.1 12.1Z"/></svg>
+                  <span>Accelerates Kotlin refactors and module splits with generated diffs, keeping crash-free session targets and release sign-off human-reviewed.</span>
+                </li>
+                <li>
+                  <svg class="ai-native-sparkle" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.4 11.35 6.55 16.5 7.9 11.35 9.25 10 14.4 8.65 9.25 3.5 7.9 8.65 6.55 10 1.4Z"/><path d="M15.6 2.2 15.95 3.65 17.4 4 15.95 4.35 15.6 5.8 15.25 4.35 13.8 4 15.25 3.65 15.6 2.2Z"/><path d="M4.1 12.1 4.38 13.15 5.43 13.43 4.38 13.71 4.1 14.76 3.82 13.71 2.77 13.43 3.82 13.15 4.1 12.1Z"/></svg>
+                  <span>Sketches Flutter UI scaffolds and API contract stubs with a model, then owns performance tuning and integration with existing Android services.</span>
+                </li>
+              </ul>
+            </article>
+
+            <article class="card skill-match-card" aria-label="Job skill match">
+              <h2 class="skill-match-title">Gabriel&rsquo;s Job Skill Match</h2>
+              <h3>Required Skills</h3>
+              <ul class="skill-match-list">
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>C#</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>.NET / ASP.NET Core</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Azure</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>REST APIs</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>JavaScript</span></li>
+              </ul>
             </article>
 
             <article class="card onb-card">
@@ -831,13 +1058,11 @@ p, h1, h2, h3 { margin: 0; }
                 <div class="score-row"><span>Technical Architect</span><span class="score">4 <i class="fa-solid fa-star"></i></span></div>
                 <div class="score-row"><span>Ruby on Rails</span></div>
               </div>
-              <button class="btn btn-blue" type="button" onclick="toast('Talent pool manager would open here.')">Manage Talent Pools</button>
             </article>
 
             <article class="card links-card">
               <div class="card-head">
                 <h2 class="side-title">Links</h2>
-                <button class="ghost" type="button" aria-label="Edit links" onclick="toast('Links editor would open here.')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></button>
               </div>
               <div class="links-list">
                 <a class="lk" href="https://www.linkedin.com/" target="_blank" rel="noopener"><span class="lk-ico"><i class="fa-brands fa-linkedin"></i></span><span>LinkedIn</span><i class="fa-solid fa-arrow-up-right-from-square ext"></i></a>
@@ -849,7 +1074,6 @@ p, h1, h2, h3 { margin: 0; }
             <article class="card att-card">
               <div class="card-head att-head">
                 <h2 class="side-title">Attachments</h2>
-                <button class="ghost upload" type="button" onclick="toast('File picker would open here.')">Upload <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg></button>
               </div>
               <div class="att-list">
                 <div class="att">
@@ -885,6 +1109,51 @@ p, h1, h2, h3 { margin: 0; }
               </div>
             </article>
           </aside>
+        </div>
+        </div>
+
+        <div class="page-inner" data-client-panel="vetting" id="client-panel-vetting" role="tabpanel" aria-labelledby="tab-vetting" hidden>
+          <article class="vf-doc" aria-label="Fit for Aviato">
+            <p class="vf-meta"><span class="vf-meta-avatar" aria-hidden="true">MG</span><span>Interviewed by Maximo Gurfinkel<br>Sep 29th, 2026 – 12:18 PM</span></p>
+            <div class="vf-qa vf-job-fit">
+              <h4>Fit for Aviato · .NET Software Engineer</h4>
+              <p>Marcelo is a strong fit for Aviato’s .NET Software Engineer seat. He already answers in this job’s constraints: a booking that looks confirmed while inventory did not move, client retries on payment capture, search and availability drift after a deploy, and the first fifteen minutes of stuck bookings on a US-morning overlap. That is production ownership of Aviato’s booking API, not a generic architecture answer.</p>
+              <p>The remaining questions are bounded. Only about three years fully on C# / .NET / Azure, and US-hours overlap still needs to be a real on-call habit. Neither is a reason to hold him from this seat. Recommend submitting him to Aviato as a senior .NET engineer — a yes, not a stretch.</p>
+              <div class="vf-notes">
+                <div class="vf-notes-row">
+                  <div class="vf-qa">
+                    <h4>Communication &amp; Collaboration</h4>
+                    <p>He can walk Aviato’s booking and inventory path on a client call without hedging. English is fluent, and he explains retries and drift in the order a U.S. stakeholder would follow. The technical conversation with Aviato would not need a translator in the room.</p>
+                  </div>
+                  <div class="vf-qa">
+                    <h4>Experience &amp; Seniority Signals</h4>
+                    <p>Senior for this seat: he talks like the person who owns the write path, not a ticket. Mentoring, on-call for payouts, and runbooks for stuck transactions map cleanly onto Aviato’s booking-API ownership. Not architecture theater — production habits Aviato actually hires against.</p>
+                  </div>
+                </div>
+                <div class="vf-notes-row">
+                  <div class="vf-qa">
+                    <h4>Strengths &amp; Potential</h4>
+                    <p>Strongest where Aviato hurts: a booking that looks confirmed while inventory did not move, client retries on payment capture, search vs availability after a deploy, and the first fifteen minutes of stuck bookings. Idempotency and Service Bus are already in how he answers.</p>
+                  </div>
+                  <div class="vf-qa">
+                    <h4>Concerns / Follow-Up Areas</h4>
+                    <p>Only about three years fully on C# / .NET / Azure after other stacks — worth a technical loop on the last stretch of ownership. US-morning overlap for Aviato on-call still needs to be a habit, not a hope. Neither is a reason to hold the submit.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="vf-fit-signals">
+                <h4>Highlights and gaps</h4>
+                <ul class="vf-signal-list">
+                  <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Owns production .NET paths — Service Bus consumers, idempotent capture, and runbooks for stuck transactions.</span></li>
+                  <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Fluent English, spoken and written. Easy to put on a U.S. client call without a translator in the room.</span></li>
+                  <li class="vf-signal is-good"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Senior signals are ownership and the boring parts: mentoring two mids, on-call for payouts, not architecture theater.</span></li>
+                  <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>Has not worked in marketplace or booking systems before — Aviato’s inventory and availability problems would be a new domain.</span></li>
+                  <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>Only about three years fully on C# / .NET / Azure after other stacks. Confirm the last stretch of ownership in a technical loop.</span></li>
+                  <li class="vf-signal is-gap"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.8v5.2" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="13.9" r="1.15" fill="#fff"/></svg><span>US-morning overlap still needs to be a real on-call habit, not a hopeful one.</span></li>
+                </ul>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
     </div>
@@ -927,6 +1196,35 @@ function toast(msg) {
       btn.focus();
     }
   });
+})();
+
+(function initClientProfileTabs() {
+  const tabs = [
+    { id: "profile", btn: document.getElementById("tab-profile"), panel: document.getElementById("client-panel-profile") },
+    { id: "vetting", btn: document.getElementById("tab-vetting"), panel: document.getElementById("client-panel-vetting") }
+  ];
+  if (tabs.some((t) => !t.btn || !t.panel)) return;
+
+  function show(id) {
+    tabs.forEach((t) => {
+      const on = t.id === id;
+      t.btn.classList.toggle("is-on", on);
+      t.btn.setAttribute("aria-selected", on ? "true" : "false");
+      t.btn.tabIndex = on ? 0 : -1;
+      t.panel.hidden = !on;
+    });
+    history.replaceState(null, "", id === "vetting" ? "#vetting" : location.pathname + location.search);
+  }
+
+  tabs.forEach((t) => {
+    t.btn.addEventListener("click", () => show(t.id));
+  });
+
+  window.addEventListener("hashchange", () => {
+    show(location.hash === "#vetting" ? "vetting" : "profile");
+  });
+
+  show(location.hash === "#vetting" ? "vetting" : "profile");
 })();
 </script>
 </body>

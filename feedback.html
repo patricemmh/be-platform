@@ -156,6 +156,28 @@ body:not(.page-feedback) .proto-toggle { display: none; }
   background: var(--soft);
   outline: none;
 }
+.pd-sep {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--line);
+}
+.pd-item.is-current {
+  position: relative;
+  padding-right: 38px;
+  color: var(--blue);
+  font-weight: 500;
+}
+.pd-item.is-current::after {
+  content: "";
+  position: absolute;
+  right: 17px;
+  top: 50%;
+  width: 5px;
+  height: 10px;
+  border: solid var(--blue);
+  border-width: 0 2px 2px 0;
+  transform: translateY(-65%) rotate(45deg);
+}
 
 .shell { display: grid; grid-template-columns: 60px 1fr; min-height: calc(100vh - 70px); }
 .rail {
@@ -956,7 +978,13 @@ body:not(.page-feedback) .proto-toggle { display: none; }
         </button>
         <div class="profile-dropdown" id="profileDropdown" role="menu" aria-labelledby="profileMenuBtn">
           <div class="pd-label">Internal view</div>
-          <a class="pd-item" role="menuitem" href="client.html">View as client</a>
+          <a class="pd-item" role="menuitem" href="interview.html">Interviewer</a>
+          <div class="pd-sep" role="separator"></div>
+          <div role="group" aria-labelledby="pdClientLabel">
+            <div class="pd-label" id="pdClientLabel">View as client</div>
+            <a class="pd-item" role="menuitem" href="client-profile.html">Client profile</a>
+            <a class="pd-item" role="menuitem" href="client.html">Client review</a>
+          </div>
         </div>
       </div>
     </div>

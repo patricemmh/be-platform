@@ -1596,6 +1596,9 @@ body.is-ai-open .ai-col { display: flex; }
 .wrap-fit > h4 + .wrap-head.is-error {
   margin-top: 16px;
 }
+.wrap-head.is-error + .wrap-head.is-error {
+  margin-top: 10px;
+}
 .wrap-head.is-error .wrap-rate-kicker { color: var(--red); }
 .wrap-head.is-error .wrap-rate-hint {
   font-size: 12px;
@@ -1605,6 +1608,25 @@ body.is-ai-open .ai-col { display: flex; }
   text-transform: none;
 }
 .wrap-head.is-error .stars .star { color: #e4c8c4; }
+.wrap-head.has-lead {
+  align-items: start;
+  row-gap: 10px;
+}
+.wrap-head.has-lead .wrap-rate-copy {
+  grid-column: 1;
+  grid-row: 1;
+}
+.wrap-head.has-lead .stars {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+}
+.wrap-head.has-lead .lead-check--inline {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
 .thumbs {
   display: inline-flex;
   align-items: center;
@@ -2066,6 +2088,7 @@ body.is-call-ended .call-dock { display: none !important; }
   font-weight: 500;
   font-size: 13px;
   border-radius: 8px;
+  white-space: nowrap;
 }
 body.is-call-ended .close-screen {
   display: inline-flex;
@@ -2138,6 +2161,72 @@ body.is-call-ended .close-screen {
   font-weight: 500;
 }
 .dev-overlay-actions .ghost:hover { background: #f3f3ef; }
+.lead-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 22px;
+  padding: 14px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+.lead-check--inline {
+  margin: 0;
+  padding: 10px 12px;
+  gap: 10px;
+  border-radius: 10px;
+}
+.lead-check--inline span {
+  font-size: 13px;
+  line-height: 1.35;
+}
+.lead-check:hover { background: #f7f7f4; }
+.lead-check:has(input:checked) {
+  border-color: #c5cbe0;
+  background: var(--brand-soft);
+}
+.lead-check:has(input:checked):hover { background: #e4e8f4; }
+.lead-check input {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  flex: 0 0 auto;
+  border: 1.5px solid #b0b0aa;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  display: grid;
+  place-items: center;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.lead-check:hover input:not(:checked) {
+  border-color: #94948e;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 0 1px rgba(76, 96, 178, 0.08);
+}
+.lead-check input:checked {
+  background: var(--brand);
+  border-color: var(--brand);
+  box-shadow: none;
+}
+.lead-check input:checked::after {
+  content: "";
+  width: 12px;
+  height: 10px;
+  background: center / contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 11'%3E%3Cpath d='M1.75 5.35 5.2 8.8 12.25 1.75' fill='none' stroke='%23ffffff' stroke-width='2.15' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.lead-check input:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.lead-check span {
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--text);
+}
 .q-stage:has(.setup-card) {
   justify-content: center;
   align-items: center;
@@ -2336,7 +2425,7 @@ body.is-call-ended .close-screen {
       <span class="live"><i></i> Live · <span id="clock">12:18</span></span>
       <nav class="dock" aria-label="Call">
         <button class="hang" type="button" id="btnHang">End call</button>
-        <button class="close-screen" type="button" id="btnCloseScreen">Close</button>
+        <button class="close-screen" type="button" id="btnCloseScreen">Save and Close</button>
       </nav>
     </div>
   </header>
@@ -2548,17 +2637,6 @@ body.is-call-ended .close-screen {
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="dev-overlay" id="closeOverlay" hidden>
-  <div class="dev-overlay-card" role="dialog" aria-modal="true" aria-labelledby="closeOverlayTitle">
-    <p class="dev-overlay-kicker">Prototype note</p>
-    <h2 id="closeOverlayTitle">This would open the candidate profile</h2>
-    <p>Close leaves the interview and returns to Marcelo Dosko’s profile, on the <b>Vetting</b> tab, with this call summary attached. That destination is not built in this prototype.</p>
-    <div class="dev-overlay-actions">
-      <button type="button" class="primary" id="btnStartOver">Start over</button>
-      <button type="button" class="ghost" id="btnStaySummary">Stay on summary</button>
-    </div>
-  </div>
-</div>
 <div class="dev-overlay" id="finishOverlay" hidden>
   <div class="dev-overlay-card" role="dialog" aria-modal="true" aria-labelledby="finishOverlayTitle">
     <h2 id="finishOverlayTitle">End the call and open the summary?</h2>
@@ -2810,7 +2888,8 @@ const state = {
   rateErrors: [],
   summaries: {},
   english: "Fluent",
-  endedEarly: false
+  endedEarly: false,
+  leadAdds: {}
 };
 
 function catalogById() {
@@ -3029,7 +3108,8 @@ function saveInterviewSession() {
     english: state.english,
     elapsed: state.elapsed,
     aiChat: state.aiChat,
-    aiQ: state.aiQ
+    aiQ: state.aiQ,
+    leadAdds: state.leadAdds
   }));
 }
 
@@ -3047,6 +3127,7 @@ function restoreInterviewSession() {
     if (typeof s.elapsed === "number") state.elapsed = s.elapsed;
     if (Array.isArray(s.aiChat)) state.aiChat = s.aiChat;
     if (s.aiQ) state.aiQ = { ...state.aiQ, ...s.aiQ };
+    if (s.leadAdds && typeof s.leadAdds === "object") state.leadAdds = { ...state.leadAdds, ...s.leadAdds };
     let idx = 0;
     if (s.qId) idx = state.queue.findIndex(q => q.id === s.qId);
     else if (typeof s.qIndex === "number") idx = s.qIndex;
@@ -3225,9 +3306,37 @@ function wrapCopyHtml(key, fallback) {
   return `<div class="wrap-copy" contenteditable="true" data-summary="${key}" data-placeholder="Write this section.">${String(text).split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("")}</div>`;
 }
 
+function jobIdFromRateKey(key) {
+  const m = /^job:([^:]+):stars$/.exec(key || "");
+  return m ? m[1] : null;
+}
+
+function syncLeadAddFromRating(jobId, rating) {
+  if (!jobId) return;
+  const n = typeof rating === "number" ? rating : 0;
+  state.leadAdds[jobId] = n >= 4;
+}
+
+function seedJobRatingsFromPrototype() {
+  selectedJobs().forEach(job => {
+    const key = "job:" + job.id + ":stars";
+    const value = state.ratings[key];
+    if (typeof value !== "number" || value <= 0) {
+      state.ratings[key] = 4;
+      syncLeadAddFromRating(job.id, 4);
+    }
+  });
+}
+
+function leadAddChecked(jobId, rating) {
+  if (state.leadAdds[jobId] !== undefined) return !!state.leadAdds[jobId];
+  return (typeof rating === "number" ? rating : 0) >= 4;
+}
+
 function wrapRateHead(sec) {
   const rating = state.ratings[sec.key] || 0;
   const invalid = (state.rateErrors || []).includes(sec.key);
+  const jobId = sec.jobId || null;
   const control = sec.kind === "thumbs"
     ? `<div class="thumbs" role="radiogroup" aria-label="${esc(sec.kicker)} ${esc(sec.title)} fit">
         <button type="button" class="thumb is-up${rating === "up" ? " is-on" : ""}" data-thumb="up" data-rate="${sec.key}" aria-label="Thumbs up" aria-checked="${rating === "up"}">${thumbSvg("up")}</button>
@@ -3237,12 +3346,19 @@ function wrapRateHead(sec) {
         <span class="stars-score">${typeof rating === "number" && rating ? rating + " / 5" : ""}</span>
         ${[1,2,3,4,5].map(n => `<button type="button" class="star${n <= rating ? " is-on" : ""}" data-star="${n}" data-rate="${sec.key}" aria-label="${n} star${n > 1 ? "s" : ""}" aria-checked="${n === rating}">${starSvg()}</button>`).join("")}
       </div>`;
-  return `<div class="wrap-head is-${sec.kind}${invalid ? " is-error" : ""}" data-rate-key="${esc(sec.key)}">
+  const leadHtml = jobId
+    ? `<label class="lead-check lead-check--inline">
+        <input type="checkbox" data-lead-add="${esc(jobId)}"${leadAddChecked(jobId, rating) ? " checked" : ""}>
+        <span>Add candidate to lead for this job</span>
+      </label>`
+    : "";
+  return `<div class="wrap-head is-${sec.kind}${invalid ? " is-error" : ""}${jobId ? " has-lead" : ""}" data-rate-key="${esc(sec.key)}">
     <div class="wrap-rate-copy">
       <span class="wrap-rate-kicker">${esc(sec.kicker)}</span>
       <b class="wrap-rate-label">${esc(sec.title)}</b>
       ${invalid ? `<span class="wrap-rate-hint">Add a star rating</span>` : ""}
     </div>
+    ${leadHtml}
     ${control}
   </div>`;
 }
@@ -3344,7 +3460,7 @@ function wrapJobFitHtml() {
   const fields = NOTE_FIELDS.slice(1);
   return jobs.map(job => `<section class="wrap-block wrap-fit">
     <h4>Fit for ${esc(job.company)} · ${esc(job.role)}</h4>
-    ${wrapRateHead({ key: "job:" + job.id + ":stars", title: job.role, kicker: job.company, kind: "stars" })}
+    ${wrapRateHead({ key: "job:" + job.id + ":stars", title: job.role, kicker: job.company, kind: "stars", jobId: job.id })}
     ${wrapCopyHtml("fit:" + job.id, defaultJobFit(job))}
     <div class="wrap-notes-row">
       ${wrapJobNoteCard(job, fields[0])}
@@ -3571,6 +3687,23 @@ function renderOutline() {
   `).join("");
 }
 
+function qStageScrollKey() {
+  const tab = state.wrapTab || "summary";
+  return `${tab}|${!!state.scriptOpen}`;
+}
+
+function setQStageHtml(root, html) {
+  const key = qStageScrollKey();
+  const keepScroll = root.dataset.qScrollKey === key;
+  const scrollTop = keepScroll ? root.scrollTop : null;
+  root.innerHTML = html;
+  root.dataset.qScrollKey = key;
+  if (scrollTop != null) {
+    root.scrollTop = scrollTop;
+    requestAnimationFrame(() => { root.scrollTop = scrollTop; });
+  }
+}
+
 function renderQuestions() {
   const q = currentQ();
   const root = document.getElementById("qStage");
@@ -3585,7 +3718,7 @@ function renderQuestions() {
   }
   if (state.wrapTab === "transcript") {
     peek.classList.add("hidden");
-    root.innerHTML = wrapTranscriptHtml();
+    setQStageHtml(root, wrapTranscriptHtml());
     return;
   }
   if (state.onSetup && !state.done && !state.onSummary && !state.scriptOpen) {
@@ -3620,7 +3753,7 @@ function renderQuestions() {
   if (state.done || state.onSummary) {
     peek.classList.add("hidden");
     if (state.wrapTab === "questions") {
-      root.innerHTML = wrapQuestionsHtml();
+      setQStageHtml(root, wrapQuestionsHtml());
       return;
     }
     const body = `${wrapRatingsHtml()}
@@ -3634,10 +3767,10 @@ function renderQuestions() {
           ${wrapNoteCard(NOTE_FIELDS[4])}
         </div>
         ${wrapJobFitHtml()}`;
-    root.innerHTML = `<div class="wrap-up is-wide">
+    setQStageHtml(root, `<div class="wrap-up is-wide">
       <h3 class="q-prompt">Call Summary</h3>
       ${body}
-    </div>`;
+    </div>`);
     return;
   }
   const val = state.answers[q.id] || "";
@@ -3680,6 +3813,7 @@ function endInterview(early) {
   state.qaOpen = false;
   state.wrapTab = "summary";
   state.aiOpen = false;
+  seedJobRatingsFromPrototype();
   renderAiChat();
   syncCallChrome();
   renderQuestions();
@@ -3701,12 +3835,6 @@ function clockLabel(secs) {
   return `${m}:${s}`;
 }
 
-function setCloseOverlay(open) {
-  const overlay = document.getElementById("closeOverlay");
-  if (!overlay) return;
-  overlay.hidden = !open;
-}
-
 function setFinishOverlay(open) {
   const overlay = document.getElementById("finishOverlay");
   if (!overlay) return;
@@ -3717,7 +3845,8 @@ function tryCloseScreen() {
   const missing = missingStarSections();
   if (!missing.length) {
     state.rateErrors = [];
-    setCloseOverlay(true);
+    saveInterviewSession();
+    location.href = "vetting.html";
     return;
   }
   state.rateErrors = missing.map(sec => sec.key);
@@ -3743,7 +3872,6 @@ function syncCallChrome() {
     hang.classList.toggle("is-rejoin", !!state.done);
   }
   setFinishOverlay(false);
-  if (!state.done) setCloseOverlay(false);
   syncQTabs();
   renderStage();
 }
@@ -3934,9 +4062,12 @@ document.getElementById("qStage").addEventListener("click", (e) => {
   }
   const star = e.target.closest("[data-star]");
   if (star) {
+    e.preventDefault();
     const key = star.dataset.rate || "overall";
     state.ratings[key] = Number(star.dataset.star);
     state.rateErrors = (state.rateErrors || []).filter(id => id !== key);
+    const jobId = jobIdFromRateKey(key);
+    if (jobId) syncLeadAddFromRating(jobId, state.ratings[key]);
     renderQuestions();
     return;
   }
@@ -3971,6 +4102,13 @@ document.getElementById("qStage").addEventListener("click", (e) => {
   if (e.target.id === "reviewScript") {
     return;
   }
+});
+
+document.getElementById("qStage").addEventListener("change", (e) => {
+  const box = e.target.closest("[data-lead-add]");
+  if (!box || box.type !== "checkbox") return;
+  const jobId = box.dataset.leadAdd;
+  if (jobId) state.leadAdds[jobId] = box.checked;
 });
 
 document.getElementById("qOutline").addEventListener("click", (e) => {
@@ -4011,10 +4149,8 @@ document.getElementById("aiChatForm").addEventListener("submit", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  const overlay = document.getElementById("closeOverlay");
   const finish = document.getElementById("finishOverlay");
   if (e.key === "Escape") {
-    if (overlay && !overlay.hidden) { setCloseOverlay(false); return; }
     if (finish && !finish.hidden) { setFinishOverlay(false); return; }
     if (state.aiOpen) { setAiOpen(false); return; }
     if (state.scriptOpen) {
@@ -4024,7 +4160,6 @@ document.addEventListener("keydown", (e) => {
     return;
   }
   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-  if (overlay && !overlay.hidden) return;
   if (finish && !finish.hidden) return;
   if (state.done || !state.queue.length && !state.onSetup) return;
   const t = e.target;
@@ -4106,14 +4241,6 @@ document.getElementById("qTabs").addEventListener("click", (e) => {
 });
 
 document.getElementById("btnCloseScreen").addEventListener("click", () => tryCloseScreen());
-document.getElementById("btnStaySummary").addEventListener("click", () => setCloseOverlay(false));
-document.getElementById("btnStartOver").addEventListener("click", () => {
-  localStorage.removeItem("be-interview-session");
-  location.href = "prep.html";
-});
-document.getElementById("closeOverlay").addEventListener("click", (e) => {
-  if (e.target.id === "closeOverlay") setCloseOverlay(false);
-});
 document.getElementById("btnWriteSummary").addEventListener("click", () => {
   setFinishOverlay(false);
   endInterview(false);

@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
 :root {
-  --page: #f6f6f8;
+  --page: #f4f4f5;
   --white: #ffffff;
   --text: #000;
   --ink: #333;
@@ -155,60 +155,298 @@ a { color: inherit; }
   background: var(--soft);
   outline: none;
 }
+.pd-sep {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--line);
+}
+.pd-item.is-current {
+  position: relative;
+  padding-right: 38px;
+  color: var(--blue);
+  font-weight: 500;
+}
+.pd-item.is-current::after {
+  content: "";
+  position: absolute;
+  right: 17px;
+  top: 50%;
+  width: 5px;
+  height: 10px;
+  border: solid var(--blue);
+  border-width: 0 2px 2px 0;
+  transform: translateY(-65%) rotate(45deg);
+}
 
-.shell { min-height: calc(100vh - 70px); }
+.shell { min-height: 100vh; }
 .main-col { min-width: 0; }
 .subhead {
-  height: 80px;
   background: #fff;
-  border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px 0 32px;
+  border-bottom: 1px solid #e6e6e6;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 16px;
+  padding: 10px 28px 0 12px;
   position: sticky;
-  top: 70px;
-  z-index: 10;
+  top: 0;
+  z-index: 20;
 }
-.who-block { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.cand-photo {
-  width: 44px; height: 44px;
-  border-radius: 4px;
-  object-fit: cover;
-  flex: 0 0 auto;
+.subhead-main { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+.head-avatar {
+  width: 36px; height: 36px; margin-top: 2px;
+  border-radius: 50%; object-fit: cover; flex: 0 0 auto;
 }
+.back-btn {
+  width: 36px; height: 36px; margin-top: 0;
+  border: 0; background: transparent; color: #222;
+  display: grid; place-items: center; border-radius: 4px; padding: 0;
+}
+.back-btn:hover { background: #f4f4f5; }
+.back-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
 .who-copy { min-width: 0; }
 .who-copy h1 {
-  margin: 0;
-  font-size: 20px;
+  margin: 4px 0 0;
+  font-size: 18px;
   font-weight: 500;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.25px;
   line-height: 1.2;
   color: #111;
 }
-.who-meta {
-  margin: 4px 0 0;
-  font-size: 14px;
-  line-height: 18px;
-  color: var(--muted);
-  letter-spacing: -0.1px;
-}
-.client-badge {
+.view-tabs { display: flex; align-items: flex-end; gap: 18px; margin-top: 6px; }
+.view-tab {
+  appearance: none;
   display: inline-flex;
   align-items: center;
-  height: 28px;
-  padding: 0 12px;
+  height: 36px;
+  padding: 0 2px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #8a8a8a;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 400;
+  border-radius: 0;
+}
+.view-tab:hover { color: #222; }
+.view-tab.is-on { color: #111; font-weight: 500; border-bottom-color: var(--blue); }
+.view-tab:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+.subhead-actions {
+  display: flex; align-items: center; gap: 8px;
+  padding-bottom: 12px; flex: 0 0 auto;
+}
+.subhead .profile-menu-btn,
+.subhead .avatar { width: 32px; height: 32px; border-radius: 4px; }
+.cp-btn {
+  height: 32px; padding: 0 12px;
   border-radius: 4px;
-  background: var(--soft);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
+  font-family: inherit; font-size: 13px; font-weight: 500;
+  line-height: 1; white-space: nowrap;
 }
+.cp-btn-line { background: #fff; color: #222; border: 1px solid #d4d4d4; }
+.cp-btn-line:hover { background: #fafafa; }
+.cp-btn-fill { background: var(--blue); color: #fff; border: 1px solid var(--blue); }
+.cp-btn-fill:hover { filter: brightness(.96); }
+.cp-btn-text { background: transparent; color: #333; border: 0; padding: 0 8px; }
+.cp-btn-text:hover { background: #f4f4f5; }
+.cp-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
-.page {
-  padding: 36px 24px 80px;
+.page { padding: 18px 0 64px; }
+[hidden] { display: none !important; }
+
+.profile-grid {
+  width: 77.8%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  column-gap: 3.6%;
+  align-items: start;
 }
+.cp-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.cp-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 24px 7% 28px;
+  border-color: #e3e3e3;
+}
+.cp-edit {
+  position: absolute; top: 10px; right: 10px;
+  width: 28px; height: 28px; padding: 0;
+  border: 0; border-radius: 4px; background: transparent;
+  color: #9b9b9b; display: grid; place-items: center;
+}
+.cp-edit:hover { background: #f3f3f3; color: #555; }
+.cp-hero { padding: 0 0 14px; overflow: hidden; }
+.cp-banner { height: 128px; background: #96a2d2; }
+.cp-hero-tools {
+  position: absolute; top: 10px; right: 10px;
+  display: flex; gap: 2px; z-index: 1;
+}
+.cp-hero-tools a,
+.cp-hero-tools .cp-edit {
+  position: static;
+  width: 28px; height: 28px;
+  color: #fff; display: grid; place-items: center;
+  text-decoration: none;
+}
+.cp-hero-tools a:hover,
+.cp-hero-tools .cp-edit:hover { background: rgba(255,255,255,.16); color: #fff; }
+.cp-hero-body {
+  display: flex; align-items: flex-start;
+  padding: 0 7%; margin-top: -52px;
+}
+.cp-avatar {
+  width: 96px; height: 96px; border-radius: 8px;
+  border: 3px solid #fff; object-fit: cover; flex: 0 0 auto;
+  background: #ddd;
+}
+.cp-hero-copy { min-width: 0; padding: 10px 7% 0; }
+.cp-hero-copy h2 {
+  margin: 0; font-size: 26px; font-weight: 700;
+  letter-spacing: -0.4px; line-height: 1.15; color: #161616;
+}
+.cp-loc {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin: 4px 0 0; font-size: 13px; line-height: 18px; color: #6e6e6e;
+}
+.cp-loc svg { flex: 0 0 auto; color: #8d8d8d; }
+.cp-meta {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  gap: 4px 48px;
+  margin: 14px 0 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.cp-meta div { min-width: 0; }
+.cp-meta span {
+  display: block; font-size: 11px; line-height: 1.3; color: #8a8a8a; font-weight: 400;
+}
+.cp-meta b {
+  display: block; margin-top: 2px; font-size: 13px; line-height: 1.3;
+  font-weight: 500; color: #222;
+}
+.cp-section h3 {
+  margin: 0 32px 8px 0;
+  font-size: 20px; font-weight: 600; letter-spacing: -0.2px;
+  line-height: 1.3; color: #161616;
+}
+.cp-sub { margin: -2px 0 10px; font-size: 13px; line-height: 1.4; color: #707070; }
+.cp-section p, .cp-role p, .cp-edu p {
+  margin: 0; font-size: 14px; line-height: 1.55; color: #3a3a3a;
+}
+.cp-section p + p { margin-top: 8px; }
+.cp-bullets { margin: 10px 0 0; padding: 0 0 0 18px; }
+.cp-bullets li { font-size: 13.5px; line-height: 1.5; color: #2c2c2c; margin: 4px 0; }
+.cp-author {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid #eee;
+}
+.cp-author img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.cp-author b { display: block; font-size: 13px; font-weight: 500; color: #222; line-height: 1.2; }
+.cp-author span { display: block; margin-top: 1px; font-size: 12px; color: #8a8a8a; line-height: 1.3; }
+.cp-hl { margin-top: 12px; }
+.cp-hl h4 { margin: 0 0 2px; font-size: 13.5px; font-weight: 500; line-height: 1.35; color: #161616; }
+.cp-hl + .cp-hl { margin-top: 11px; }
+.cp-kicker {
+  margin: 12px 0 8px; font-size: 13.5px; font-weight: 500; color: #161616;
+}
+.cp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cp-chip {
+  display: inline-flex; align-items: center; height: 24px; padding: 0 8px;
+  border-radius: 6px; background: #f3f4f6; border: 1px solid #e4e4e4;
+  font-size: 12px; line-height: 1; color: #333;
+}
+.cp-eng {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee;
+  font-size: 13.5px; line-height: 1.4;
+}
+.cp-eng span { color: #707070; }
+.cp-eng b { font-weight: 500; color: #161616; }
+.cp-role + .cp-role { margin-top: 14px; padding-top: 14px; border-top: 1px solid #eee; }
+.cp-more-wrap { margin-top: 14px; padding-top: 14px; border-top: 1px solid #eee; }
+.cp-more-wrap .cp-role { margin: 0; padding: 0; border: 0; }
+.cp-role-head, .cp-edu-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+}
+.cp-role-head h4, .cp-edu h4 {
+  margin: 0; font-size: 14px; font-weight: 500; line-height: 1.3; color: #161616;
+}
+.cp-org { margin: 2px 0 0; font-size: 13px; line-height: 1.35; color: #6e6e6e; }
+.cp-when {
+  margin: 0; flex: 0 1 auto; max-width: 48%; text-align: right;
+  font-size: 12px; line-height: 1.4; color: #8a8a8a;
+}
+.cp-role > p { margin-top: 8px; }
+.cp-role ul { margin: 8px 0 0; padding: 0 0 0 18px; }
+.cp-role li { font-size: 13px; line-height: 1.5; color: #2c2c2c; margin: 2px 0; }
+.cp-role .cp-chips { margin-top: 10px; }
+.cp-more-row { display: flex; justify-content: flex-end; margin-top: 4px; }
+.cp-more {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: auto; width: auto; margin: 0; padding: 8px 0 0;
+  border: 0; background: transparent; color: var(--blue);
+  font-family: inherit; font-size: 13px; font-weight: 500;
+}
+.cp-more:hover { text-decoration: underline; }
+.cp-more:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.cp-more svg { transition: transform .15s var(--ease); }
+.cp-more.is-open svg { transform: rotate(180deg); }
+.cp-edu-copy { margin-top: 8px; }
+.cp-jobcard { padding: 14px 14px 14px; }
+.cp-job-top { display: flex; gap: 10px; align-items: flex-start; }
+.cp-mark {
+  width: 36px; height: 36px; flex: 0 0 auto;
+  display: grid; place-items: center; border-radius: 4px;
+  background: #eceef6; color: var(--blue); font-size: 15px; font-weight: 500;
+}
+.cp-jobcard h3 {
+  margin: 0; font-size: 14.5px; font-weight: 500; letter-spacing: -0.1px;
+  line-height: 1.3; color: #161616;
+}
+.cp-co { margin: 1px 0 0; font-size: 12.5px; line-height: 1.35; color: #6e6e6e; }
+.cp-stage {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin: 12px 0 6px; font-size: 12px; line-height: 1.3; color: #666;
+}
+.cp-stage b { font-weight: 500; color: #222; font-size: 12.5px; }
+.cp-progress { height: 4px; background: #e5efe6; border-radius: 99px; overflow: hidden; }
+.cp-progress i { display: block; width: 40%; height: 100%; background: #7aa87e; border-radius: 99px; }
+.cp-job-desc { margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: #333; }
+.cp-posted { margin: 6px 0 0; font-size: 12px; line-height: 1.4; color: #8a8a8a; }
+.cp-ai { background: #fff; border-color: #e8dcc4; border-left: 2px solid #d4a85c; }
+.cp-ai h3 {
+  margin-bottom: 6px; color: #c4923a;
+  display: flex; align-items: center; gap: 8px;
+}
+.cp-ai h3 svg { flex: 0 0 auto; color: #d7ae62; }
+.cp-ai-level { margin: 0 0 8px; font-size: 14px; font-weight: 400; color: #3a3a3a; }
+.cp-ai ul { margin: 0; padding: 0 0 0 18px; }
+.cp-ai li { margin: 6px 0; font-size: 14px; line-height: 1.5; color: #3a3a3a; }
+.cp-match { list-style: none; margin: 0; padding: 0; }
+.cp-match li {
+  display: grid; grid-template-columns: 16px minmax(0, 1fr);
+  gap: 8px; align-items: center; padding: 5px 0;
+  font-size: 13px; line-height: 1.35; color: #222;
+}
+.cp-match svg { width: 16px; height: 16px; color: #1f9a57; }
+.cp-row {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 6px 0; border: 0; background: transparent;
+  text-align: left; text-decoration: none; color: inherit; font: inherit;
+}
+.cp-row + .cp-row { border-top: 1px solid #f0f0f0; }
+.cp-row svg { flex: 0 0 auto; color: var(--blue); }
+.cp-row b { display: block; font-size: 13.5px; font-weight: 500; color: #222; line-height: 1.3; }
+.cp-row small { display: block; margin-top: 1px; font-size: 12px; color: #8a8a8a; }
+.cp-row:hover b { color: var(--blue); }
+
+
 .page-inner {
   width: min(880px, 100%);
   margin: 0 auto;
@@ -347,98 +585,295 @@ a { color: inherit; }
 }
 
 @media (max-width: 1100px) {
-  .page { padding: 28px 20px 72px; }
+  .page { padding: 16px 0 64px; }
+  .profile-grid { width: min(77.8%, calc(100% - 32px)); }
   .vf-doc { --vf-doc-pad-x: 28px; padding: 32px var(--vf-doc-pad-x) 40px; }
   .search { width: 180px; }
-  .subhead { padding: 0 18px 0 20px; }
+  .subhead { padding: 10px 16px 0 10px; top: 0; }
+}
+@media (max-width: 960px) {
+  .profile-grid { grid-template-columns: 1fr; width: min(720px, calc(100% - 28px)); column-gap: 0; }
 }
 @media (max-width: 720px) {
   .search { display: none; }
-  .page { padding: 16px 14px 80px; }
+  .page { padding: 12px 0 64px; }
+  .profile-grid { width: calc(100% - 24px); }
   .vf-doc { --vf-doc-pad-x: 18px; padding: 24px var(--vf-doc-pad-x) 32px; }
   .vf-notes-row { grid-template-columns: 1fr; gap: 22px; }
-
-  .topbar {
-    height: 60px;
-    padding: 0 12px 0 16px;
-  }
-  .logo { width: 132px; height: 18px; }
-  .top-tools { gap: 10px; }
-  .icon-ghost {
-    width: 44px;
-    height: 44px;
-  }
-  .profile-menu-btn,
-  .avatar {
-    width: 44px;
-    height: 44px;
-  }
-  .profile-dropdown {
-    right: -4px;
-    min-width: 200px;
-    max-width: calc(100vw - 24px);
-  }
-  .pd-item {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    padding: 12px 14px;
-  }
-
+  .profile-menu-btn, .avatar { width: 40px; height: 40px; }
+  .profile-dropdown { right: -4px; min-width: 200px; max-width: calc(100vw - 24px); }
+  .pd-item { min-height: 44px; display: flex; align-items: center; padding: 12px 14px; }
   .subhead {
-    padding: 12px 14px;
-    height: auto;
-    min-height: 0;
-    top: 60px;
-    gap: 12px;
+    flex-wrap: wrap; align-items: center;
+    padding: 8px 12px 0; top: 0; gap: 8px 12px;
   }
-  .client-badge { display: none; }
-  .who-copy h1 { font-size: 18px; }
+  .subhead-main { width: 100%; }
+  .subhead-actions { width: 100%; padding: 8px 0 10px; }
+  .cp-btn { min-height: 40px; }
+  .view-tab { min-height: 40px; }
+  .cp-meta { grid-template-columns: 1fr 1fr; }
+  .cp-hero-copy h2 { font-size: 22px; }
+  .who-copy h1 { font-size: 17px; }
   .vf-doc-head h2 { font-size: 26px; }
   .vf-job-fit > h4 { font-size: 20px; line-height: 26px; }
 }
+@media (max-width: 480px) {
+  .cp-role-head, .cp-edu-head { flex-direction: column; gap: 2px; }
+  .cp-when { max-width: none; text-align: left; }
+  .cp-banner { height: 96px; }
+  .cp-hero-body { padding-left: 16px; padding-right: 16px; margin-top: -40px; }
+  .cp-avatar { width: 72px; height: 72px; }
+  .cp-hero-copy { padding-left: 16px; padding-right: 16px; }
+  .cp-card { padding: 18px 16px 20px; }
+}
+
+
 </style>
 </head>
 <body class="page-client" data-page="client">
-  <header class="topbar">
-    <a class="logo-link" href="#" onclick="return false" aria-label="BetterEngineer">
-      <img class="logo" src="assets/logo.svg" width="168" height="22" alt="betterengineer">
-    </a>
-    <div class="top-tools">
-      <label class="search">
-        <input type="search" placeholder="Search" aria-label="Search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      </label>
-      <button class="icon-ghost" type="button" aria-label="Notifications" onclick="return false">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-      </button>
-      <div class="profile-menu" id="profileMenu">
-        <button type="button" class="profile-menu-btn" id="profileMenuBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="profileDropdown" aria-label="Account menu">
-          <img class="avatar" src="assets/avatar.png" alt="">
-        </button>
-        <div class="profile-dropdown" id="profileDropdown" role="menu" aria-labelledby="profileMenuBtn">
-          <div class="pd-label">Client view</div>
-          <a class="pd-item" role="menuitem" href="vetting.html">View as internal</a>
-        </div>
-      </div>
-    </div>
-  </header>
-
   <div class="shell">
     <div class="main-col">
-      <div class="subhead">
-        <div class="who-block">
-          <img class="cand-photo" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&amp;h=160&amp;fit=crop&amp;crop=faces" alt="">
+      <header class="subhead">
+        <div class="subhead-main">
+          <button class="back-btn" type="button" aria-label="Back" onclick="return false">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5 8 12l7 7"/></svg>
+          </button>
+          <img class="head-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=96&amp;h=96&amp;fit=crop&amp;crop=faces" alt="">
           <div class="who-copy">
             <h1>Marcelo Dosko</h1>
-            <p class="who-meta">.NET Software Engineer · Aviato</p>
+            <div class="view-tabs" role="tablist" aria-label="Candidate">
+              <button type="button" class="view-tab is-on" id="tab-profile" role="tab" aria-selected="true" aria-controls="panel-profile">Candidate Profile</button>
+              <button type="button" class="view-tab" id="tab-review" role="tab" aria-selected="false" aria-controls="panel-review" tabindex="-1">Client Review</button>
+            </div>
           </div>
         </div>
-        <span class="client-badge">Shared with client</span>
-      </div>
+        <div class="subhead-actions">
+          <button class="cp-btn cp-btn-line" type="button" onclick="return false">Share</button>
+          <button class="cp-btn cp-btn-fill" type="button" onclick="return false">Request interview</button>
+          <button class="cp-btn cp-btn-text" type="button" onclick="return false">More</button>
+          <div class="profile-menu" id="profileMenu">
+            <button type="button" class="profile-menu-btn" id="profileMenuBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="profileDropdown" aria-label="Account menu">
+              <img class="avatar" src="assets/avatar.png" alt="">
+            </button>
+            <div class="profile-dropdown" id="profileDropdown" role="menu" aria-labelledby="profileMenuBtn">
+              <div role="group" aria-labelledby="pdClientLabel">
+                <div class="pd-label" id="pdClientLabel">Client view</div>
+                <a class="pd-item" role="menuitem" href="client-profile.html">Client profile</a>
+                <a class="pd-item is-current" role="menuitem" href="client.html" aria-current="page">Client review</a>
+              </div>
+              <div class="pd-sep" role="separator"></div>
+              <a class="pd-item" role="menuitem" href="interview.html">Interviewer</a>
+              <a class="pd-item" role="menuitem" href="vetting.html">View as internal</a>
+            </div>
+          </div>
+        </div>
+      </header>
 
       <div class="page">
-        <div class="page-inner">
+        <div class="profile-grid" id="panel-profile" role="tabpanel" aria-labelledby="tab-profile">
+          <div class="cp-col">
+            <article class="cp-card cp-hero">
+              <div class="cp-banner" aria-hidden="true"></div>
+              <div class="cp-hero-tools">
+                <a href="https://www.linkedin.com/in/marcelo-dosko" aria-label="LinkedIn" target="_blank" rel="noopener">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.7 3.3A1.8 1.8 0 1 0 4.7 6.9 1.8 1.8 0 0 0 4.7 3.3ZM3.2 8.6h3V20.7h-3V8.6Zm6.1 0h2.9v1.7h.1c.4-.8 1.4-1.6 2.9-1.6 3.1 0 3.7 2 3.7 4.7v7.3h-3v-6.5c0-1.5 0-3.5-2.1-3.5s-2.5 1.7-2.5 3.4v6.6h-3V8.6Z"/></svg>
+                </a>
+                <button class="cp-edit" type="button" aria-label="Edit" onclick="return false">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
+              </div>
+              <div class="cp-hero-body">
+                <img class="cp-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&amp;h=240&amp;fit=crop&amp;crop=faces" alt="Marcelo Dosko">
+              </div>
+              <div class="cp-hero-copy">
+                <h2>Marcelo Dosko</h2>
+                <p class="cp-loc">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>
+                  <span>Córdoba, Argentina · GMT-3</span>
+                </p>
+                <div class="cp-meta">
+                  <div><span>Monthly rate</span><b>$6,400/mo</b></div>
+                  <div><span>Notice</span><b>Available now</b></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="cp-card cp-section">
+              <button class="cp-edit" type="button" aria-label="Edit" onclick="return false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+              <h3>Meet Marcelo</h3>
+              <p class="cp-sub">Senior .NET engineer · 8 years in production, about 3 on this stack</p>
+              <p>Marcelo comes across as a calm senior .NET engineer who answers with the system, not a slogan. On the call he is easy to follow: he listens, then walks the path of the request, the retry, and what broke in production. English is fluent, spoken and written. A U.S. client conversation would not need a translator in the room, and he does not oversell seniority.</p>
+              <p>He spent more of his career on other technologies before moving fully into .NET. He wants clearer ownership of a product area, and a team where he can mentor without being the only senior in the room.</p>
+              <ul class="cp-bullets">
+                <li>Owns the reserve/capture path and the Service Bus consumers that keep settlement in sync.</li>
+                <li>Designed an idempotent capture API so client retries cannot double-charge.</li>
+                <li>On-call for payouts, with runbooks for stuck transactions, and mentors two mid-level engineers.</li>
+              </ul>
+              <div class="cp-author">
+                <img src="assets/avatar.png" alt="">
+                <div>
+                  <b>Patrick</b>
+                  <span>Interviewed Sep 29, 2026</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="cp-card cp-section">
+              <button class="cp-edit" type="button" aria-label="Edit" onclick="return false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+              <h3>Overview</h3>
+              <p>Owns the reserve/capture path and the Service Bus consumers that keep settlement in sync. Hired into a squad that was still fighting duplicate payouts.</p>
+              <h4 class="cp-kicker">Highlights</h4>
+              <div class="cp-hl"><h4>Idempotent capture</h4><p>Designed an idempotent capture API so client retries cannot double-charge.</p></div>
+              <div class="cp-hl"><h4>Service Bus ledger</h4><p>Introduced an outbox + Service Bus for ledger events; duplicate settlement tickets dropped sharply.</p></div>
+              <div class="cp-hl"><h4>On-call runbooks</h4><p>On-call for payouts; wrote the runbooks for stuck transactions.</p></div>
+              <div class="cp-hl"><h4>Mentoring</h4><p>Mentored two mid-level engineers on EF Core and SQL performance.</p></div>
+              <div class="cp-hl"><h4>Live-map performance</h4><p>Cut live-map query time from ~1.2s to ~180ms (indexes + a Redis read path).</p></div>
+            </article>
+
+            <article class="cp-card cp-section">
+              <button class="cp-edit" type="button" aria-label="Edit" onclick="return false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+              <h3>Skills</h3>
+              <div class="cp-chips">
+                <span class="cp-chip">C#</span>
+                <span class="cp-chip">.NET / ASP.NET Core</span>
+                <span class="cp-chip">SQL Server</span>
+                <span class="cp-chip">Azure</span>
+                <span class="cp-chip">Entity Framework Core</span>
+                <span class="cp-chip">Azure Service Bus</span>
+                <span class="cp-chip">REST APIs</span>
+                <span class="cp-chip">Redis</span>
+                <span class="cp-chip">CI / GitHub Actions</span>
+              </div>
+              <div class="cp-eng"><span>English level</span><b>Fluent</b></div>
+            </article>
+
+            <article class="cp-card cp-section" id="work">
+              <button class="cp-edit" type="button" aria-label="Edit" onclick="return false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+              <h3>Work experience</h3>
+              <article class="cp-role">
+                <div class="cp-role-head">
+                  <div><h4>Senior .NET Engineer</h4><p class="cp-org">Harbor Payments</p></div>
+                  <p class="cp-when">Aug 2023 - Present (3 years, 1 month)</p>
+                </div>
+                <p>Owns the reserve/capture path and the Service Bus consumers that keep settlement in sync. Hired into a squad that was still fighting duplicate payouts.</p>
+                <ul>
+                  <li>Designed an idempotent capture API so client retries cannot double-charge.</li>
+                  <li>Introduced an outbox + Service Bus for ledger events; duplicate settlement tickets dropped sharply.</li>
+                  <li>On-call for payouts; wrote the runbooks for stuck transactions.</li>
+                  <li>Mentored two mid-level engineers on EF Core and SQL performance.</li>
+                </ul>
+                <div class="cp-chips">
+                  <span class="cp-chip">C#</span><span class="cp-chip">.NET 8</span><span class="cp-chip">Azure Functions</span><span class="cp-chip">Service Bus</span><span class="cp-chip">SQL Server</span><span class="cp-chip">EF Core</span>
+                </div>
+              </article>
+              <article class="cp-role">
+                <div class="cp-role-head">
+                  <div><h4>Software Engineer</h4><p class="cp-org">Andes Logistics</p></div>
+                  <p class="cp-when">Mar 2018 - Jul 2023 (5 years, 4 months)</p>
+                </div>
+                <p>Dispatch and tracking backend for a regional logistics product used by 200+ operators. Started as the junior on a monolith and left owning the live-map service.</p>
+                <ul>
+                  <li>Shipped the first tracking API and the worker that ingested GPS events.</li>
+                  <li>Cut live-map query time from ~1.2s to ~180ms (indexes + a Redis read path).</li>
+                  <li>Helped lift a monolith module onto a .NET service without a big-bang rewrite.</li>
+                  <li>Paired with ops on the first on-call rotation for the tracking stack.</li>
+                </ul>
+                <div class="cp-chips">
+                  <span class="cp-chip">C#</span><span class="cp-chip">.NET</span><span class="cp-chip">SQL Server</span><span class="cp-chip">Azure</span><span class="cp-chip">Redis</span><span class="cp-chip">REST</span>
+                </div>
+              </article>
+              <div id="exp-more" class="cp-more-wrap" hidden>
+                <article class="cp-role">
+                  <div class="cp-role-head">
+                    <div><h4>Junior Developer</h4><p class="cp-org">Nexo Digital</p></div>
+                    <p class="cp-when">Feb 2016 - Feb 2018 (2 years)</p>
+                  </div>
+                  <p>Line-of-business web apps for local clients. Where he learned C# for real: CRMs, reporting, and the unglamorous SQL that keeps a shop running.</p>
+                  <ul>
+                    <li>Built and maintained ASP.NET MVC apps against SQL Server.</li>
+                    <li>Took support tickets through to production fixes, including data repairs.</li>
+                  </ul>
+                  <div class="cp-chips">
+                    <span class="cp-chip">C#</span><span class="cp-chip">ASP.NET MVC</span><span class="cp-chip">SQL Server</span>
+                  </div>
+                </article>
+              </div>
+              <div class="cp-more-row">
+                <button type="button" class="cp-more" id="expMore" aria-expanded="false" aria-controls="exp-more">
+                  <span id="expMoreLabel">See More</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </div>
+            </article>
+
+            <article class="cp-card cp-section cp-edu">
+              <button class="cp-edit" type="button" aria-label="Edit" onclick="return false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+              <h3>Education</h3>
+              <div class="cp-edu-head">
+                <div><h4>B.S. Computer Science</h4><p class="cp-org">Universidad Nacional de Córdoba</p></div>
+                <p class="cp-when">2014 - 2018</p>
+              </div>
+              <p class="cp-edu-copy">Coursework in algorithms, databases, and distributed systems. Thesis on messaging patterns for unreliable networks, still the mental model he uses for Service Bus work.</p>
+            </article>
+          </div>
+
+          <aside class="cp-col" aria-label="Job and skill match">
+            <article class="cp-card cp-jobcard">
+              <div class="cp-job-top">
+                <span class="cp-mark" aria-hidden="true">A</span>
+                <div>
+                  <h3>.NET Software Engineer</h3>
+                  <p class="cp-co">Aviato</p>
+                </div>
+              </div>
+              <p class="cp-stage"><b>In review</b><span>Step 3 of 5</span></p>
+              <div class="cp-progress" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="In review, step 3 of 5"><i></i></div>
+              <p class="cp-job-desc">This seat owns Aviato’s booking API.</p>
+              <p class="cp-posted">Posted Sep 12, 2026</p>
+            </article>
+
+            <article class="cp-card cp-ai">
+              <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2 13.2 8.2 19.2 9.4 13.2 10.6 12 16.6 10.8 10.6 4.8 9.4 10.8 8.2 12 2.2Z"/></svg>AI fluency</h3>
+              <p class="cp-ai-level">Working with AI</p>
+              <ul>
+                <li>Drafts the first pass of a runbook for stuck transactions, then rewrites it from the on-call path he already owns.</li>
+                <li>Uses generated tests as a starting point for the idempotent capture API, and keeps the cases that match production retries.</li>
+                <li>Sketches a Service Bus consumer with a model, then owns the poison-message and duplicate handling himself.</li>
+              </ul>
+            </article>
+
+            <article class="cp-card cp-section">
+              <h3>Marcelo’s Job Skill Match</h3>
+              <ul class="cp-match">
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>C#</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>.NET / ASP.NET Core</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>SQL Server</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Azure</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Entity Framework Core</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Azure Service Bus</span></li>
+                <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.1 10.3l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>REST APIs</span></li>
+              </ul>
+            </article>
+
+            <article class="cp-card cp-section">
+              <h3>Links</h3>
+              <a class="cp-row" href="https://www.linkedin.com/in/marcelo-dosko" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.7 3.3A1.8 1.8 0 1 0 4.7 6.9 1.8 1.8 0 0 0 4.7 3.3ZM3.2 8.6h3V20.7h-3V8.6Zm6.1 0h2.9v1.7h.1c.4-.8 1.4-1.6 2.9-1.6 3.1 0 3.7 2 3.7 4.7v7.3h-3v-6.5c0-1.5 0-3.5-2.1-3.5s-2.5 1.7-2.5 3.4v6.6h-3V8.6Z"/></svg>
+                <span><b>LinkedIn</b><small>linkedin.com/in/marcelo-dosko</small></span>
+              </a>
+            </article>
+
+            <article class="cp-card cp-section">
+              <h3>Attachments</h3>
+              <button class="cp-row" type="button" onclick="return false">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M8 13h8M8 17h5"/></svg>
+                <span><b>Marcelo-Dosko-Resume.pdf</b><small>PDF</small></span>
+              </button>
+            </article>
+          </aside>
+        </div>
+
+<div class="page-inner" id="panel-review" role="tabpanel" aria-labelledby="tab-review" hidden>
           <article class="vf-doc" id="report">
             <div class="vf-doc-head">
               <div>
@@ -526,6 +961,45 @@ a { color: inherit; }
       setOpen(false);
       btn.focus();
     }
+  });
+})();
+
+(function initClientViews() {
+  const tabs = [
+    { id: "profile", btn: document.getElementById("tab-profile"), panel: document.getElementById("panel-profile") },
+    { id: "review", btn: document.getElementById("tab-review"), panel: document.getElementById("panel-review") }
+  ];
+  if (tabs.some((t) => !t.btn || !t.panel)) return;
+
+  function show(id) {
+    tabs.forEach((t) => {
+      const on = t.id === id;
+      t.btn.classList.toggle("is-on", on);
+      t.btn.setAttribute("aria-selected", on ? "true" : "false");
+      t.btn.tabIndex = on ? 0 : -1;
+      t.panel.hidden = !on;
+    });
+  }
+
+  tabs.forEach((t) => {
+    t.btn.addEventListener("click", () => {
+      show(t.id);
+      history.replaceState(null, "", t.id === "review" ? "#review" : location.pathname + location.search);
+    });
+  });
+
+  show(location.hash === "#review" ? "review" : "profile");
+
+  const moreBtn = document.getElementById("expMore");
+  const more = document.getElementById("exp-more");
+  const moreLabel = document.getElementById("expMoreLabel");
+  if (!moreBtn || !more || !moreLabel) return;
+  moreBtn.addEventListener("click", () => {
+    const open = more.hidden;
+    more.hidden = !open;
+    moreBtn.classList.toggle("is-open", open);
+    moreBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    moreLabel.textContent = open ? "See Less" : "See More";
   });
 })();
 </script>
