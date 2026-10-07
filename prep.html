@@ -552,7 +552,7 @@ try {
 if (editing) {
   document.title = "BetterEngineer · Edit set · Marcelo Dosko";
   const banner = document.getElementById("prepBanner");
-  if (banner) banner.textContent = "Edit the live question set";
+  if (banner) banner.textContent = "Edit the question set";
 }
 
 function selectedPools() { return (state.poolIds || []).map(id => POOLS.find(p => p.id === id)).filter(Boolean); }
@@ -632,7 +632,7 @@ function render() {
       <p class="hint${missingPool() ? " warn" : ""}">${missingPool()
         ? "You must select a talent pool to include cultural or technical."
         : editing
-          ? "Add or remove categories. The live interview updates when you go back to the questions."
+          ? "Add or remove categories. The interview page updates when you go back to the questions."
           : "Cultural and technical need a talent pool Marcelo is already in. A job is optional."}</p>
       <div class="pills">
         ${pill(state.cultural, "Cultural", `data-act="cultural"`)}

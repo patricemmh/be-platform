@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BetterEngineer · Live interview · Marcelo Dosko</title>
+<title>BetterEngineer · Interview · Marcelo Dosko</title>
 <link rel="stylesheet" href="https://use.typekit.net/lhs7vwi.css">
 <style>
 :root {
@@ -160,6 +160,15 @@ body.is-resizing textarea { pointer-events: none; }
   border-bottom: 1px solid var(--line);
 }
 .call { position: relative; margin-bottom: 12px; display: grid; gap: 8px; }
+.profile-hero {
+  display: flex; gap: 12px; align-items: center;
+}
+.profile-hero img {
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: 6px; object-fit: cover;
+  border: 1px solid var(--line);
+}
+.profile-hero-text { min-width: 0; flex: 1; }
 .profile-hero h1 {
   margin: 0 0 2px; font-size: 16px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.25;
 }
@@ -358,7 +367,15 @@ body.is-profile-wide { --profile: 650px; }
   border-bottom: 1px solid var(--line);
 }
 .call { position: relative; margin-bottom: 12px; display: grid; gap: 8px; }
-.profile-hero { display: flex; gap: 12px; align-items: flex-start; }
+.profile-hero {
+  display: flex; gap: 12px; align-items: center;
+}
+.profile-hero img {
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: 6px; object-fit: cover;
+  border: 1px solid var(--line);
+}
+.profile-hero-text { min-width: 0; flex: 1; }
 .profile-hero h1 {
   margin: 0 0 2px; font-size: 18px; letter-spacing: -0.03em; line-height: 1.2;
 }
@@ -505,21 +522,25 @@ body.is-profile-wide { --profile: 650px; }
   width: 320px; z-index: 20;
   background: #fff;
   border: 1px solid var(--line-strong);
-  border-radius: 14px;
+  border-radius: 8px;
   box-shadow: var(--shadow);
-  padding: 8px;
+  padding: 0;
+  overflow: hidden;
 }
 .job-menu p {
-  margin: 0; padding: 8px 10px 6px;
+  margin: 0; padding: 10px 14px 8px;
   font-size: 11px; font-weight: 500; letter-spacing: .06em;
   text-transform: uppercase; color: var(--subtle);
+  border-bottom: 1px solid var(--line);
 }
 .job-opt {
   width: 100%; text-align: left;
   border: 0; background: transparent;
-  padding: 10px 10px; border-radius: 10px;
+  padding: 10px 14px; border-radius: 0;
   display: grid; gap: 2px;
+  box-shadow: none;
 }
+.job-menu .job-opt + .job-opt { border-top: 1px solid var(--line); }
 .job-opt:hover, .job-opt.is-on { background: #f4f5fb; }
 .job-opt b { font-size: 13px; }
 .job-opt span { font-size: 12px; color: var(--muted); }
@@ -755,9 +776,6 @@ body.is-profile-wide { --profile: 650px; }
   background: rgba(10, 12, 18, .72);
   font-size: 11px; font-weight: 500;
   backdrop-filter: blur(8px);
-}
-.tile .label .mic {
-  width: 14px; height: 14px; display: grid; place-items: center;
 }
 .tile.is-talking { outline: 2px solid var(--blue); outline-offset: -2px; }
 .self {
@@ -1099,7 +1117,21 @@ body.is-profile-wide { --profile: 650px; }
 }
 .tr-feed { padding: 0 72px 20px; }
 .tr-head:hover { background: transparent; }
-.q-panel { background: var(--page); }
+.q-panel { background: var(--page); overflow-x: visible; }
+.q-panel > .transcript {
+  border-top: 0;
+  position: relative;
+}
+.q-panel > .transcript::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10px;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+  pointer-events: none;
+}
 .q-head {
   padding: 40px 28px 0 72px;
   min-height: 0;
@@ -1969,6 +2001,85 @@ body.is-ai-open .ai-col { display: flex; }
 .dock .hang.is-rejoin:hover {
   background: var(--brand);
 }
+.dock .join-call {
+  display: none;
+  width: auto;
+  height: 34px;
+  padding: 0 12px;
+  margin-left: 0;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 500;
+  font-size: 13px;
+  align-items: center;
+  border-radius: 8px;
+  border: 0;
+}
+.dock .join-call:hover { filter: brightness(.96); background: var(--brand); }
+body.is-pre-call .live,
+body.is-pre-call #btnHang { display: none !important; }
+body.is-pre-call #btnJoinCall { display: inline-flex !important; }
+body.is-pre-call .profile-sticky .call-wrap { display: none !important; }
+body.is-pre-call .call-dock { display: none !important; }
+.call-lobby {
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  background: var(--stage);
+  display: grid;
+  place-items: center;
+  color: #9aa0b5;
+  font-size: 13px;
+  font-weight: 500;
+}
+.stage-waiting {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  background: #222633;
+  color: #fff;
+  overflow: hidden;
+}
+.stage-waiting-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+}
+.stage-waiting-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #353a4a;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  font-weight: 500;
+  color: #b4b9c9;
+  letter-spacing: -0.03em;
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+.stage-waiting-msg {
+  margin: 0;
+  max-width: 280px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e6e8ef;
+  line-height: 1.4;
+}
+.stage-waiting-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, .12);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: stage-wait-spin .75s linear infinite;
+}
+@keyframes stage-wait-spin { to { transform: rotate(360deg); } }
 body.is-call-ended .live { display: none; }
 body.is-call-ended .call-dock { display: none !important; }
 .call-ended {
@@ -2322,12 +2433,13 @@ body.is-call-ended .close-screen {
   z-index: 8;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: 0 16px 40px rgba(26, 26, 26, .08);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(26, 26, 26, .06);
   max-height: 320px;
   overflow: auto;
+  padding: 0;
 }
-.setup-card .job-opt {
+.setup-card .job-dd-menu .job-opt {
   width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -2335,15 +2447,18 @@ body.is-call-ended .close-screen {
   align-items: start;
   padding: 12px 16px;
   border: 0;
+  border-radius: 0;
+  box-shadow: none;
   background: #fff;
   text-align: left;
 }
-.setup-card .job-opt + .job-opt { border-top: 1px solid var(--line); }
-.setup-card .job-opt:hover { background: #f7f7f4; }
-.setup-card .job-opt b { display: block; font-size: 14px; font-weight: 500; letter-spacing: -0.02em; }
-.setup-card .job-opt .when { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
-.setup-card .job-opt .co { display: block; font-size: 13px; font-weight: 500; color: var(--muted); text-align: right; }
-.setup-card .job-opt .st {
+.setup-card .job-dd-menu .job-opt + .job-opt { border-top: 1px solid var(--line); }
+.setup-card .job-dd-menu .job-opt:hover,
+.setup-card .job-dd-menu .job-opt.is-on { background: #f7f7f4; }
+.setup-card .job-dd-menu .job-opt b { display: block; font-size: 14px; font-weight: 500; letter-spacing: -0.02em; }
+.setup-card .job-dd-menu .job-opt .when { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+.setup-card .job-dd-menu .job-opt .co { display: block; font-size: 13px; font-weight: 500; color: var(--muted); text-align: right; }
+.setup-card .job-dd-menu .job-opt .st {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -2353,7 +2468,7 @@ body.is-call-ended .close-screen {
   font-weight: 500;
   color: #2f9e5f;
 }
-.setup-card .job-opt .st i {
+.setup-card .job-dd-menu .job-opt .st i {
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -2375,6 +2490,7 @@ body.is-call-ended .close-screen {
     justify-content: flex-end;
   }
   .dock .hang,
+  .dock .join-call,
   .dock .close-screen {
     min-height: 40px;
     height: 40px;
@@ -2403,12 +2519,12 @@ body.is-call-ended .close-screen {
   .next-peek b {
     white-space: normal;
   }
-  .setup-card .job-opt {
+  .setup-card .job-dd-menu .job-opt {
     grid-template-columns: 1fr;
     gap: 6px;
   }
-  .setup-card .job-opt .co,
-  .setup-card .job-opt .st {
+  .setup-card .job-dd-menu .job-opt .co,
+  .setup-card .job-dd-menu .job-opt .st {
     justify-content: flex-start;
     text-align: left;
   }
@@ -2422,8 +2538,9 @@ body.is-call-ended .close-screen {
       <img src="assets/logo.svg" alt="BetterEngineer">
     </a>
     <div class="top-right">
-      <span class="live"><i></i> Live · <span id="clock">12:18</span></span>
+      <span class="live" id="liveBadge"><i></i> In progress · <span id="clock">00:00</span></span>
       <nav class="dock" aria-label="Call">
+        <button class="join-call" type="button" id="btnJoinCall">Join call</button>
         <button class="hang" type="button" id="btnHang">End call</button>
         <button class="close-screen" type="button" id="btnCloseScreen">Save and Close</button>
       </nav>
@@ -2447,15 +2564,13 @@ body.is-call-ended .close-screen {
                 <button type="button" data-call="share" title="Share screen" aria-pressed="false" onclick="toggle('share')">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
                 </button>
-                <button type="button" data-call="captions" title="Live transcript" aria-pressed="false" onclick="toggle('captions')">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 14c.4-1.6 1.6-2.4 3.2-2.4 1.4 0 2.3.6 2.3 1.7 0 2.4-5.5 1.4-5.5 4.1h5.6M15.2 14c.3-1.5 1.3-2.3 2.8-2.3"/></svg>
-                </button>
               </nav>
             </div>
           </div>
-          <div class="profile-body">
+          <div class="profile-body candidate-detail">
             <div class="profile-hero">
-              <div>
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=96&h=96&fit=crop&crop=faces" alt="Marcelo Dosko" width="48" height="48">
+              <div class="profile-hero-text">
                 <h1>Marcelo Dosko</h1>
                 <p class="title">Córdoba, Argentina · GMT-3</p>
               </div>
@@ -2603,7 +2718,7 @@ body.is-call-ended .close-screen {
         <div class="next-peek" id="nextPeek"></div>
         <div class="transcript is-collapsed" id="transcriptPanel">
           <button type="button" class="tr-head" id="trToggle" aria-expanded="false" aria-controls="trBody">
-            <h3 id="trLabel">Show live transcript</h3>
+            <h3 id="trLabel">Show transcript</h3>
             <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="tr-body" id="trBody">
@@ -2640,7 +2755,7 @@ body.is-call-ended .close-screen {
 <div class="dev-overlay" id="finishOverlay" hidden>
   <div class="dev-overlay-card" role="dialog" aria-modal="true" aria-labelledby="finishOverlayTitle">
     <h2 id="finishOverlayTitle">End the call and open the summary?</h2>
-    <p>You’ll leave the live questions and go to wrap-up. You can rejoin if you still need Marcelo.</p>
+    <p>You’ll leave the interview questions and go to wrap-up. You can rejoin if you still need Marcelo.</p>
     <div class="dev-overlay-actions">
       <button type="button" class="primary" id="btnWriteSummary">Write summary</button>
       <button type="button" class="ghost" id="btnKeepInterviewing">Keep interviewing</button>
@@ -2649,6 +2764,8 @@ body.is-call-ended .close-screen {
 </div>
 
 <script>
+const CANDIDATE_JOIN_DELAY_MS = 10000;
+
 const CULTURAL = {
   label: "Cultural",
   questions: [
@@ -2853,12 +2970,14 @@ const X = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="c
 const state = {
   jobId: null,
   jobIds: [],
-  poolId: "dotnet",
-  poolIds: ["dotnet"],
-  cultural: true,
-  technical: true,
+  poolId: "",
+  poolIds: [],
+  cultural: false,
+  technical: false,
   jobOpen: false,
   onSetup: true,
+  inCall: false,
+  candidateJoined: false,
   scriptStarted: false,
   answers: {},
   filled: {},
@@ -2868,7 +2987,7 @@ const state = {
   share: false,
   captions: false,
   talking: "them",
-  elapsed: 12 * 60 + 18,
+  elapsed: 0,
   queue: [],
   qIndex: 0,
   detailsOpen: false,
@@ -2954,7 +3073,10 @@ function loadQueue() {
   try {
     saved = JSON.parse(localStorage.getItem("be-interview-set") || "null");
   } catch (e) {}
-  if (saved) {
+  const params = new URLSearchParams(location.search);
+  const fromPrep = /prep\.html/i.test(document.referrer || "");
+  const shouldApplySaved = saved && (params.has("resume") || fromPrep);
+  if (shouldApplySaved) {
     if (typeof saved.cultural === "boolean") state.cultural = saved.cultural;
     else if (saved.ids?.length) state.cultural = saved.ids.some(id => String(id).startsWith("c"));
     if (typeof saved.technical === "boolean") state.technical = saved.technical;
@@ -2974,15 +3096,9 @@ function loadQueue() {
       else if (saved.ids.some(id => /^p\d/.test(id))) state.poolIds = ["dotnet"];
       state.poolId = state.poolIds[0] || "";
     }
-  } else {
-    const job = JOBS.find(j => j.id === "pricefx-sa");
-    if (job) {
-      state.jobIds = [job.id];
-      state.jobId = job.id;
-    }
   }
   applyQueueFromFlags();
-  persistLiveSet();
+  if (shouldApplySaved) persistLiveSet();
 }
 
 function persistLiveSet() {
@@ -3013,13 +3129,54 @@ function openSetup() {
   renderQuestions();
 }
 
+let candidateJoinTimer = null;
+
+function clearCandidateJoinTimer() {
+  if (candidateJoinTimer) {
+    clearTimeout(candidateJoinTimer);
+    candidateJoinTimer = null;
+  }
+}
+
+function markCandidateJoined() {
+  if (state.candidateJoined || !state.inCall || state.done) return;
+  clearCandidateJoinTimer();
+  state.candidateJoined = true;
+  syncCallChrome();
+  renderStage();
+}
+
+function scheduleCandidateJoin(ms = CANDIDATE_JOIN_DELAY_MS) {
+  clearCandidateJoinTimer();
+  if (state.candidateJoined || !state.inCall || state.done) return;
+  candidateJoinTimer = setTimeout(() => markCandidateJoined(), ms);
+}
+
+function joinCall() {
+  if (state.inCall) return;
+  state.inCall = true;
+  state.candidateJoined = false;
+  state.elapsed = 0;
+  const clock = document.getElementById("clock");
+  if (clock) clock.textContent = clockLabel(0);
+  scheduleCandidateJoin();
+  syncCallChrome();
+  renderStage();
+  renderQuestions();
+}
+
 function leaveSetup() {
+  if (!state.inCall) {
+    joinCall();
+    return;
+  }
   if (!canStart()) {
     toast(missingPool()
       ? "Select a talent pool to include cultural or technical."
       : "Choose a category or a job to start.");
     return;
   }
+  markCandidateJoined();
   applyQueueFromFlags();
   persistLiveSet();
   state.onSetup = false;
@@ -3089,6 +3246,11 @@ function renderSetupStage() {
       </section>
     </div>
   `;
+  if (!state.inCall) {
+    peek.classList.add("hidden");
+    peek.innerHTML = "";
+    return;
+  }
   peek.classList.remove("hidden");
   peek.innerHTML = `
     <button type="button" class="q-step" id="qPrev" disabled>Previous</button>
@@ -3134,6 +3296,8 @@ function restoreInterviewSession() {
     if (idx < 0) idx = 0;
     state.qIndex = Math.min(idx, Math.max(0, state.queue.length - 1));
     state.onSetup = false;
+    state.inCall = true;
+    state.candidateJoined = true;
     state.scriptStarted = true;
     return true;
   } catch (e) {
@@ -3778,7 +3942,7 @@ function renderQuestions() {
   root.innerHTML = `
     <div class="q-kicker">${String(n).padStart(2, "0")} · ${q.group}</div>
     <h3 class="q-prompt">${q.prompt}</h3>
-    <div class="q-answer" data-answer="${q.id}" data-placeholder="Answer will land here from the live transcript.">${esc(val)}</div>
+    <div class="q-answer" data-answer="${q.id}" data-placeholder="Answer will land here from the transcript.">${esc(val)}</div>
   `;
   const next = state.queue[state.qIndex + 1];
   peek.classList.remove("hidden");
@@ -3806,6 +3970,7 @@ function goQuestion(i) {
 }
 
 function endInterview(early) {
+  clearCandidateJoinTimer();
   state.done = true;
   state.onSummary = true;
   state.endedEarly = !!early;
@@ -3820,11 +3985,15 @@ function endInterview(early) {
 }
 
 function rejoinCall() {
+  clearCandidateJoinTimer();
   state.done = false;
   state.onSummary = false;
   state.endedEarly = false;
+  state.inCall = true;
+  state.candidateJoined = true;
   state.wrapTab = "questions";
   syncCallChrome();
+  renderStage();
   renderQuestions();
 }
 
@@ -3866,6 +4035,11 @@ function tryCloseScreen() {
 
 function syncCallChrome() {
   document.body.classList.toggle("is-call-ended", !!state.done);
+  document.body.classList.toggle("is-pre-call", !state.inCall && !state.done);
+  document.body.classList.toggle(
+    "is-waiting-participant",
+    state.inCall && !state.candidateJoined && !state.done
+  );
   const hang = document.getElementById("btnHang");
   if (hang) {
     hang.textContent = state.done ? "Rejoin call" : "End call";
@@ -3895,7 +4069,7 @@ function renderStage() {
   const talkingYou = state.talking === "you";
   const cand = `<div class="tile ${talkingThem ? "is-talking" : ""}">
     ${cam ? `<img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=900&h=600&fit=crop&crop=faces" alt="Marcelo Dosko">` : `<div class="ph"><svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>`}
-    <span class="label"><span class="mic">${state.mic && talkingThem ? "●" : "○"}</span> Marcelo Dosko</span>
+    <span class="label">Marcelo Dosko</span>
   </div>`;
   const self = `<div class="self ${talkingYou ? "is-talking" : ""}">
     <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=320&h=240&fit=crop&crop=faces" alt="You">
@@ -3917,6 +4091,11 @@ function renderStage() {
   const stage = document.getElementById("stageInner");
   const wrap = stage.closest(".call-wrap");
   const dock = wrap.querySelector(".call-dock");
+  if (!state.inCall && !state.done) {
+    stage.innerHTML = `<div class="call-lobby" aria-hidden="true">Camera off until you join</div>`;
+    if (dock) wrap.appendChild(dock);
+    return;
+  }
   if (state.done) {
     stage.innerHTML = `<div class="call-ended">
       <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&h=160&fit=crop&crop=faces" alt="">
@@ -3927,6 +4106,20 @@ function renderStage() {
     return;
   }
   if (dock) wrap.appendChild(dock);
+  if (!state.candidateJoined) {
+    const waiting = `<div class="stage-waiting" role="status" aria-live="polite">
+      <div class="stage-waiting-inner">
+        <div class="stage-waiting-avatar" aria-hidden="true">MD</div>
+        <p class="stage-waiting-msg">Waiting for Marcelo Dosko to join…</p>
+        <div class="stage-waiting-spinner" aria-hidden="true"></div>
+      </div>
+      ${self}
+    </div>`;
+    stage.innerHTML = waiting;
+    const host = stage.querySelector(".stage-waiting");
+    if (dock && host) host.appendChild(dock);
+    return;
+  }
   stage.innerHTML = state.share
     ? `${share}<div class="people-row">${cand}${self.replace("self", "tile")}</div>`
     : `${cand}${self}`;
@@ -3943,7 +4136,7 @@ function addLine(entry) {
   feed.appendChild(div);
   feed.parentElement.scrollTop = feed.parentElement.scrollHeight;
   const label = document.getElementById("trLabel");
-  if (label) label.textContent = state.captions ? "Live transcript" : "Show live transcript";
+  if (label) label.textContent = state.captions ? "Transcript" : "Show transcript";
 }
 
 function typeInto(id, text) {
@@ -3976,7 +4169,7 @@ function syncCallButtons() {
     const kind = btn.dataset.call;
     const on = !!state[kind];
     btn.classList.toggle("is-off", (kind === "mic" || kind === "cam") && !on);
-    btn.classList.toggle("is-on", (kind === "share" || kind === "captions") && on);
+    btn.classList.toggle("is-on", kind === "share" && on);
     btn.setAttribute("aria-pressed", String(on));
   });
 }
@@ -4000,7 +4193,7 @@ function syncTranscript() {
   panel.classList.toggle("is-collapsed", !open);
   toggleBtn.setAttribute("aria-expanded", String(open));
   const label = document.getElementById("trLabel");
-  if (label) label.textContent = open ? "Live transcript" : "Show live transcript";
+  if (label) label.textContent = open ? "Transcript" : "Show transcript";
   syncCallButtons();
 }
 
@@ -4174,7 +4367,8 @@ document.addEventListener("keydown", (e) => {
   if (state.onSetup) {
     if (e.key === "ArrowRight") {
       e.preventDefault();
-      leaveSetup();
+      if (!state.inCall) joinCall();
+      else leaveSetup();
     }
     return;
   }
@@ -4216,6 +4410,10 @@ document.getElementById("nextPeek").addEventListener("click", (e) => {
     setFinishOverlay(true);
     return;
   }
+  if (e.target.closest("#btnJoinCall")) {
+    joinCall();
+    return;
+  }
   if (e.target.closest("#qNext")) {
     if (state.onSetup) {
       leaveSetup();
@@ -4226,6 +4424,7 @@ document.getElementById("nextPeek").addEventListener("click", (e) => {
   }
 });
 
+document.getElementById("btnJoinCall").addEventListener("click", () => joinCall());
 document.getElementById("btnHang").addEventListener("click", () => {
   if (state.done) rejoinCall();
   else endInterview(true);
@@ -4251,7 +4450,7 @@ document.getElementById("finishOverlay").addEventListener("click", (e) => {
 });
 
 function tickClock() {
-  if (state.done) return;
+  if (state.done || !state.inCall) return;
   state.elapsed += 1;
   const el = document.getElementById("clock");
   if (el) el.textContent = clockLabel(state.elapsed);
@@ -4303,6 +4502,7 @@ document.getElementById("trToggle").addEventListener("click", () => toggle("capt
 
 loadQueue();
 const resumed = restoreInterviewSession();
+syncCallChrome();
 renderQuestions();
 renderStage();
 syncTranscript();

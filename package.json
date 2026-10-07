@@ -1,0 +1,18 @@
+{
+  "name": "be-platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "serve -l 37689",
+    "dashboard": "node server/linear-dashboard.mjs"
+  },
+  "dependencies": {
+    "@linear/sdk": "^44.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0",
+    "serve": "^14.2.4"
+  }
+}
