@@ -1,14 +1,13 @@
 # Interview UI — Claude Code handoff spec
 
 **Audience:** Implementer using **Claude Code** (terminal agent), not Cursor.  
-**Source of truth:** Static prototypes in this repo — `interview.html` (runtime room) and `prep.html` (pre-join set builder).  
+**Source of truth:** Static prototype in this repo — `interview.html` (runtime room + in-room question set setup).  
 **Visual reference (open side by side while building):**
 
 | Environment | URL |
 |-------------|-----|
 | GitHub Pages | https://patricemmh.github.io/be-platform/interview.html |
 | Local (`npm run dev`, port **37689**) | http://localhost:37689/interview.html |
-| Prep (local) | http://localhost:37689/prep.html |
 
 Match **pixel behavior, spacing, typography, and state transitions** of the prototypes. The HTML files contain duplicate/overridden CSS blocks; **later rules win** (especially the flat “editorial” theme starting ~line 913 in `interview.html`). Do not ship the early “white card + gap” room layout unless you intentionally revert the prototype.
 
@@ -18,7 +17,7 @@ Match **pixel behavior, spacing, typography, and state transitions** of the prot
 
 BetterEngineer **live interview** screen for a fixed demo candidate (**Marcelo Dosko**). The interviewer:
 
-1. Optionally builds a question set (on **prep** or in-room **setup**).
+1. Builds a question set in-room via **setup** (center column before/during call).
 2. **Joins** a mocked video call.
 3. Walks questions with **live transcript simulation** filling answers.
 4. **Ends** the call → **summary / ratings / notes** → **Save and Close** → `vetting.html`.
@@ -46,7 +45,7 @@ Use these names consistently in any refactor (React, etc.):
 | `--text` | `#1a1a1a` | Primary text |
 | `--muted` | `#6b6b6b` | Secondary text |
 | `--subtle` | `#9a9a96` | Labels, kickers |
-| `--line` | `#c8c8c2` (interview) / `#d4d4ce` (prep) | Hairlines |
+| `--line` | `#c8c8c2` | Hairlines |
 | `--line-strong` | `#b8b8b2` | Stronger dividers (older card UI) |
 | `--brand` / `--blue` | `#4C60B2` | Primary actions, focus rings |
 | `--blue-deep` | `#3a4b94` | Deep accent |
@@ -93,64 +92,9 @@ Use these names consistently in any refactor (React, etc.):
 
 ---
 
-## 3. `prep.html` — entry flow
+## 3. `interview.html` — regions in detail
 
-### 3.1 Layout
-
-- **Topbar:** 68px, white, logo left, banner right: `"Prepare the set before you join"` (or `"Edit the question set"` when `?edit`).
-- **Main `.prep`:** `height: calc(100vh - 68px)`; grid `minmax(0, 1fr) 322px`.
-- **Left `.prep-main`:** scrollable; content `.wrap` max ~640px centered (`margin: 48px auto 96px`).
-- **Right `.outline-col`:** border-left; scrollable `#qOutline`.
-
-### 3.2 Profile header (prep)
-
-- 72px round avatar, **h1** name, `.title` location/timezone.
-- `.meet`: interview type bold + scheduled window (demo: `Cultural / Technical`, `Tue, Sep 15, 2026 · 1:00 pm–2:00 pm (America/Chicago)`).
-
-### 3.3 Builder (`#builder`)
-
-Two `.field` sections (border-top separators):
-
-1. **Choose question categories**
-   - Hint warns if cultural/technical on but **no talent pool** selected.
-   - **Pills:** Cultural, Technical, then each pool (`.NET Software Engineer`, `Backend Engineer`).
-   - Pill states: default outline; `.is-on` → brand-soft fill, check icon.
-
-2. **Select job** (optional)
-   - **Job dropdown** `.job-dd`: button `.job-dd-btn` + chevron; `.is-open` on container; menu `.job-dd-menu`.
-   - Options `.job-opt`: grid role + posted date | company + green **Active** dot.
-   - Selected jobs as `.pill.is-on.job-pill` with remove `.x`.
-
-- **Primary CTA:** `.start` — `"Join Interview"` or `"Back to questions"` when `?edit`.
-  - Disabled when `!canStart()` (need at least one category or job **and** pool if cultural/technical).
-
-### 3.4 Outline (prep)
-
-- Kicker: `N questions` or `No questions yet`.
-- Empty copy depends on `missingPool()`.
-- Groups: Cultural | `Talent pool · {label}` | `{company} · {role}`.
-- Items: empty checkbox SVG + prompt text (not clickable jump targets).
-
-### 3.5 Prep data & persistence
-
-- **`localStorage` key:** `be-interview-set`
-- Shape: `{ ids, cultural, technical, poolId, poolIds, jobIds, jobId }`
-- **Join Interview:** writes set, **`removeItem('be-interview-session')`**, navigates to `interview.html`.
-- **Edit mode (`?edit`):** navigates to `interview.html?resume=1` (keeps session).
-- Shared constants: `CULTURAL`, `POOLS`, `JOBS` arrays (mirror `interview.html`).
-
-### 3.6 Prep responsive
-
-| Breakpoint | Behavior |
-|------------|----------|
-| `max-width: 980px` | Single column; outline below; `body overflow: auto` |
-| `max-width: 720px` | Topbar wraps; full-width start button; job-opt single column |
-
----
-
-## 4. `interview.html` — regions in detail
-
-### 4.1 Topbar
+### 3.1 Topbar
 
 - Height **68px**, white, bottom border `--line`, logo **18px** height.
 - **Center:** (prototype has no `who-now` in final DOM — live badge is top-right only.)
@@ -164,7 +108,7 @@ Two `.field` sections (border-top separators):
 **Pre-call:** hide live + hang; show Join.  
 **Ended:** hide live; hang becomes rejoin; show Save and Close.
 
-### 4.2 Profile column (left)
+### 3.2 Profile column (left)
 
 **Structure:**
 
@@ -172,8 +116,8 @@ Two `.field` sections (border-top separators):
 - **`.profile-sticky`:** video stage only (sticks on scroll in card theme; `position: relative` at ≤980px).
 - **`.profile-body`:** hero, tools, stats, sections.
 
-**`.call-wrap` > `#stageInner.call`:** see §5 Call states.  
-**`.call-dock`:** mic / cam / share — see §5.3.
+**`.call-wrap` > `#stageInner.call`:** see §4 Call states.  
+**`.call-dock`:** mic / cam / share — see §4.3.
 
 **Hero:** 48px rounded-rect avatar, name, location.
 
@@ -197,7 +141,7 @@ Two `.field` sections (border-top separators):
 
 **Column resize:** `#split` drag handle; persist width in `be-profile-width` (min 260, max ~62% room or 720px).
 
-### 4.3 Questions column (center)
+### 3.3 Questions column (center)
 
 **`.q-panel`:**
 
@@ -219,17 +163,17 @@ Two `.field` sections (border-top separators):
 
 **AI FAB:** 32px circle, brand fill; `.is-open` → dark gray; opens right AI column.
 
-### 4.4 Outline column (right)
+### 3.4 Outline column (right)
 
 - `#qOutline.outline` inside `.outline-col`
-- Head: kicker `answered of total` + **edit** pencil (`#editSet` → in-room setup via `openSetup()`, not `prep.html`) + **fold** (`#outlineFold`)
-- Groups match prep naming; items are **buttons** with `data-jump="{index}"`
+- Head: kicker `answered of total` + **edit** pencil (`#editSet` → in-room setup via `openSetup()`) + **fold** (`#outlineFold`)
+- Groups: Cultural | `Talent pool · {label}` | `{company} · {role}`; items are **buttons** with `data-jump="{index}"`
 - States: `.is-done` (answered), `.is-now` (current question)
 - Collapsed: `is-outline-collapsed` — 56px rail, ticks only
 
 **Post-call:** `outline-col { display: none }`, `--outline: 0`.
 
-### 4.5 AI column
+### 3.5 AI column
 
 - Hidden unless `is-ai-open`
 - `#aiChat`: thread + composer
@@ -237,9 +181,9 @@ Two `.field` sections (border-top separators):
 
 ---
 
-## 5. Call experience (video stage)
+## 4. Call experience (video stage)
 
-### 5.1 State machine (implement faithfully)
+### 4.1 State machine (implement faithfully)
 
 ```
                     ┌─────────────┐
@@ -262,12 +206,12 @@ Two `.field` sections (border-top separators):
                     └─────────────┘
 ```
 
-Parallel UX flag: **`onSetup`** — when true, `#qStage` shows **setup-card** (same fields as prep) instead of the active question. Default **`onSetup: true`** on fresh load.
+Parallel UX flag: **`onSetup`** — when true, `#qStage` shows **setup-card** (category pills + job dropdown) instead of the active question. Default **`onSetup: true`** on fresh load.
 
 - **First visit:** user sees setup in center; profile shows **call-lobby** until Join.
 - **`leaveSetup()` / Next on setup:** if not in call → `joinCall()`; validates `canStart()`; forces candidate joined; starts mock script; `onSetup = false`.
 
-### 5.2 Stage visuals (`renderStage`)
+### 4.2 Stage visuals (`renderStage`)
 
 | Condition | `#stageInner` content |
 |-----------|------------------------|
@@ -281,7 +225,7 @@ Parallel UX flag: **`onSetup`** — when true, `#qStage` shows **setup-card** (s
 
 **Camera off:** candidate tile shows SVG silhouette placeholder.
 
-### 5.3 Call-dock (on-video controls)
+### 4.3 Call-dock (on-video controls)
 
 - Sibling inside `.call-wrap`, repositioned in JS onto active host element
 - Hidden: `is-pre-call`, `is-call-ended`
@@ -289,27 +233,28 @@ Parallel UX flag: **`onSetup`** — when true, `#qStage` shows **setup-card** (s
 - Buttons `data-call`: mic, cam, share — classes `is-off` (mic/cam off), `is-on` (share on)
 - Dark glass bar: `rgba(18,18,16,.72)`, 36px buttons
 
-### 5.4 Topbar dock vs call-dock
+### 4.4 Topbar dock vs call-dock
 
 - **Topbar `.dock`:** Join / End / Save and Close (call lifecycle)
 - **In-stage `.call-dock`:** A/V controls only
 
 ---
 
-## 6. Setup vs questions (center column)
+## 5. Setup vs questions (center column)
 
-### 6.1 Setup mode (`onSetup === true`)
+### 5.1 Setup mode (`onSetup === true`)
 
 Render `renderSetupStage()` → `.setup-card` inside `#qStage`:
 
-- `.setup-meet` title from selected categories (e.g. `Cultural / Technical`) + same datetime string as prep
-- Same pills + job dropdown as prep (scoped under `.setup-card` in CSS)
+- `.setup-meet` title from selected categories (e.g. `Cultural / Technical`) + demo datetime (`Tue, Sep 15, 2026 · 1:00 pm–2:00 pm (America/Chicago)`)
+- Category pills, talent pool pills, and job dropdown (scoped under `.setup-card` in CSS)
+- Hint warns if cultural/technical on but **no talent pool** selected; `canStart()` gates Next / join
 - **While not in call:** `#nextPeek` hidden
 - **While in call:** peek shows Previous (disabled) + **Next** (enabled when `canStart()`)
 
 Interactions update `state.cultural`, `state.technical`, `state.poolIds`, `state.jobIds` → `applyQueueFromFlags()` → `persistLiveSet()` → re-render.
 
-### 6.2 Active question mode
+### 5.2 Active question mode
 
 When `!onSetup && !done && !scriptOpen && queue non-empty`:
 
@@ -320,11 +265,11 @@ When `!onSetup && !done && !scriptOpen && queue non-empty`:
 
 **Coverage UI** exists in CSS (`.cov`, levels 0–3) but is **not** in current `renderQuestions` output — do not add unless spec’d later.
 
-### 6.3 Script / “see all” mode
+### 5.3 Script / “see all” mode
 
 `state.scriptOpen` — full `.script-list` of all questions; `.script-item.is-now` enlarges current. Toggle wired to `#scriptToggle` in JS but **button absent from HTML** — treat as optional / out of scope unless you add control.
 
-### 6.4 Post-call summary (`done` / `onSummary`)
+### 5.4 Post-call summary (`done` / `onSummary`)
 
 - Tabs switch content:
   - **Summary:** ratings, English proficiency, editable note blocks, per-job fit sections, signals list
@@ -333,7 +278,7 @@ When `!onSetup && !done && !scriptOpen && queue non-empty`:
 - **`#btnCloseScreen`:** validates star ratings → `saveInterviewSession()` → `vetting.html`
 - Missing ratings: scroll to `.wrap-head.is-error`, toast message
 
-### 6.5 Finish overlay
+### 5.5 Finish overlay
 
 `#finishOverlay` — “End the call and open the summary?”  
 - **Write summary** → `endInterview(false)`  
@@ -342,47 +287,47 @@ When `!onSetup && !done && !scriptOpen && queue non-empty`:
 
 ---
 
-## 7. Categories, pools, and jobs (business rules)
+## 6. Categories, pools, and jobs (business rules)
 
-### 7.1 Talent pools (`POOLS`)
+### 6.1 Talent pools (`POOLS`)
 
 | id | label |
 |----|-------|
 | `dotnet` | .NET Software Engineer |
 | `backend` | Backend Engineer |
 
-### 7.2 Cultural questions (`CULTURAL`)
+### 6.2 Cultural questions (`CULTURAL`)
 
-Ids `c1`–`c4` — same copy as prep.
+Ids `c1`–`c4` — see `CULTURAL` array in `interview.html`.
 
-### 7.3 Technical questions
+### 6.3 Technical questions
 
 Pulled from selected pool(s), ids `t1`–`t12` etc.
 
-### 7.4 Jobs (`JOBS`)
+### 6.4 Jobs (`JOBS`)
 
-Same list as prep (Aviato, Wedge, Connective Talent, …). Demo filter on load removes `reliacare` from saved ids in `loadQueue()`.
+Aviato, Wedge, Connective Talent, … (see `JOBS` in `interview.html`). Demo filter on load removes `reliacare` from saved ids in `loadQueue()`.
 
-### 7.5 Queue ordering
+### 6.5 Queue ordering
 
 1. Cultural (if on)  
 2. Technical pool questions in pool order (if technical)  
 3. Each selected job’s questions in job order  
 
-### 7.6 Validation
+### 6.6 Validation
 
 - `missingPool()` = (cultural OR technical) AND `poolIds.length === 0`
 - `canStart()` = !missingPool() AND (cultural OR technical OR jobIds.length > 0)
 
-### 7.7 In-interview category UI (legacy CSS)
+### 6.7 In-interview category UI (legacy CSS)
 
 `.packs`, `.pack`, `.job-trigger`, `.job-menu` styles exist for an alternate chip UI — **not mounted** in current HTML. In-room editing uses **setup-card** only. Do not resurrect pack UI unless product asks.
 
 ---
 
-## 8. Transcript
+## 7. Transcript
 
-### 8.1 Panel (during call)
+### 7.1 Panel (during call)
 
 - `#transcriptPanel` default **`.is-collapsed`**
 - Toggle: `#trToggle` → flips `state.captions` via `toggle('captions')`
@@ -390,7 +335,7 @@ Same list as prep (Aviato, Wedge, Connective Talent, …). Demo filter on load r
 - Expanded (final CSS): **50% height** of q-panel; feed padding horizontal 72px
 - Lines: `.line.you` (brand name color) / `.line.them` (blue-deep)
 
-### 8.2 Mock script (`SCRIPT` array)
+### 7.2 Mock script (`SCRIPT` array)
 
 After `leaveSetup()`, `playScript()` runs timed steps:
 
@@ -400,14 +345,14 @@ After `leaveSetup()`, `playScript()` runs timed steps:
 
 Only steps whose `fillId` exists in current queue run.
 
-### 8.3 Post-call
+### 7.3 Post-call
 
 - Bottom transcript panel **hidden** (`body.is-call-ended .transcript { display: none }`)
 - Use **Transcript tab** in `#qStage` instead
 
 ---
 
-## 9. Keyboard & navigation
+## 8. Keyboard & navigation
 
 | Key | Context | Action |
 |-----|---------|--------|
@@ -421,19 +366,19 @@ Outline / script list: click `data-jump` → `goQuestion(i)`.
 
 ---
 
-## 10. Persistence keys
+## 9. Persistence keys
 
 | Key | Purpose |
 |-----|---------|
-| `be-interview-set` | Question set flags + ids (prep + live edits) |
+| `be-interview-set` | Question set flags + ids (in-room setup + live edits) |
 | `be-interview-session` | Answers, index, ratings, summaries, elapsed, AI chat (`?resume=1`) |
 | `be-profile-width` | Profile column width px |
 
-**Load rules (`loadQueue`):** Apply saved set if `?resume=1` **or** referrer contains `prep.html`.
+**Load rules (`loadQueue`):** Apply `be-interview-set` from `localStorage` when present. **`be-interview-session`** restores only when URL has `?resume=1`.
 
 ---
 
-## 11. Responsive rules (interview)
+## 10. Responsive rules (interview)
 
 | Breakpoint | Changes |
 |------------|---------|
@@ -441,11 +386,9 @@ Outline / script list: click `data-jump` → `goQuestion(i)`.
 | `980px` | Room → single column stack; split hidden; `app` min-height 100vh; body scroll; profile sticky unset; ended layout still 1 col |
 | `720px` | Topbar wraps; dock buttons 40px; reduced horizontal padding (14px); wrap grids single column; setup job-opt stacks |
 
-Prep breakpoints: 980px / 720px (see §3.6).
-
 ---
 
-## 12. Mock content checklist
+## 11. Mock content checklist
 
 Implementer should keep demo copy unless product replaces it:
 
@@ -458,7 +401,7 @@ Implementer should keep demo copy unless product replaces it:
 
 ---
 
-## 13. Explicitly out of scope (unless new ticket)
+## 12. Explicitly out of scope (unless new ticket)
 
 - Real video / WebRTC / Twilio / Daily
 - Backend APIs, auth, multi-candidate
@@ -472,22 +415,16 @@ Implementer should keep demo copy unless product replaces it:
 
 ---
 
-## 14. QA checklist (manual)
+## 13. QA checklist (manual)
 
 Use **local** and **GitHub Pages** URLs.
-
-### Prep
-
-- [ ] Pills toggle cultural / technical / pools; outline updates count and groups
-- [ ] Cultural+technical without pool → warning hint + disabled Join
-- [ ] Job dropdown adds/removes pills; outline gains job group
-- [ ] Join writes `be-interview-set`, clears session, lands on interview
-- [ ] `prep.html?edit` copy + “Back to questions” → `interview.html?resume=1`
-- [ ] 980px / 720px layouts match (stack, outline height)
 
 ### Interview — lifecycle
 
 - [ ] Fresh load: `is-pre-call`, lobby text, Join visible, setup in center, outline editable
+- [ ] Setup: pills toggle cultural / technical / pools; outline updates count and groups
+- [ ] Cultural+technical without pool → warning hint + disabled Next
+- [ ] Job dropdown adds/removes pills; outline gains job group; `be-interview-set` persists
 - [ ] Join → waiting UI ~10s → active video; clock counts
 - [ ] Setup Next without categories → toast; with valid set → questions + script fills c1/c2
 - [ ] Mic/cam/share on hover dock; share layout + toast
@@ -513,23 +450,22 @@ Use **local** and **GitHub Pages** URLs.
 
 ---
 
-## 15. Suggested Claude Code task breakdown
+## 14. Suggested Claude Code task breakdown
 
 1. **Extract** single canonical stylesheet from `interview.html` (resolve overrides).
 2. **Component map:** Topbar, Room, Profile, Stage, QuestionStage, Outline, Transcript, AiChat, Overlays.
-3. **Port state module** from inline script (or TypeScript) — preserve keys and transitions in §5–6.
+3. **Port state module** from inline script (or TypeScript) — preserve keys and transitions in §4–5.
 4. **Share data module** for `CULTURAL`, `POOLS`, `JOBS`, `SCRIPT`, `DETAILS`.
-5. **Wire routes:** `/prep`, `/interview` matching query param behavior.
-6. **Run QA checklist** §14; fix diffs against GitHub Pages reference.
+5. **Wire route:** `/interview` matching query param behavior (`?resume=1`).
+6. **Run QA checklist** §13; fix diffs against GitHub Pages reference.
 
 ---
 
-## 16. File map
+## 15. File map
 
 | File | Role |
 |------|------|
-| `prep.html` | Standalone prep + outline preview |
-| `interview.html` | Full interview room prototype |
+| `interview.html` | Full interview room prototype (setup + room) |
 | `assets/logo.svg` | Brand |
 | `package.json` | `"dev": "serve -l 37689"` |
 | `vetting.html` | Post-close navigation target |

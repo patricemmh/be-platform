@@ -3075,9 +3075,7 @@ function loadQueue() {
   try {
     saved = JSON.parse(localStorage.getItem("be-interview-set") || "null");
   } catch (e) {}
-  const params = new URLSearchParams(location.search);
-  const fromPrep = /prep\.html/i.test(document.referrer || "");
-  const shouldApplySaved = saved && (params.has("resume") || fromPrep);
+  const shouldApplySaved = !!saved;
   if (shouldApplySaved) {
     if (typeof saved.cultural === "boolean") state.cultural = saved.cultural;
     else if (saved.ids?.length) state.cultural = saved.ids.some(id => String(id).startsWith("c"));
@@ -3892,7 +3890,7 @@ function renderQuestions() {
     return;
   }
   if (!q) {
-    root.innerHTML = `<div class="empty-q"><b>No questions in this set</b><a href="prep.html">Build a set first</a></div>`;
+    root.innerHTML = `<div class="empty-q"><b>No questions in this set</b><button type="button" class="q-step" id="emptyOpenSetup">Open setup</button></div>`;
     peek.classList.add("hidden");
     return;
   }
@@ -4209,6 +4207,10 @@ document.getElementById("qStage").addEventListener("input", (e) => {
 });
 
 document.getElementById("qStage").addEventListener("click", (e) => {
+  if (e.target.closest("#emptyOpenSetup")) {
+    openSetup();
+    return;
+  }
   const toggle = e.target.closest("[data-job-toggle]");
   if (toggle) {
     e.stopPropagation();

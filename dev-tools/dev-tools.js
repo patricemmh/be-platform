@@ -545,7 +545,6 @@
       githubRaw:
         "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/interview-ui-handoff-prompt.md",
       pagesInterview: "https://patricemmh.github.io/be-platform/interview.html",
-      pagesPrep: "https://patricemmh.github.io/be-platform/prep.html",
     };
 
     function interviewHandoffStarterPrompt() {
@@ -560,9 +559,8 @@
         "",
         "Visual reference — match pixel behavior, spacing, typography, and state transitions:",
         `- Interview room: ${HANDOFF.pagesInterview}`,
-        `- Prep / question set: ${HANDOFF.pagesPrep}`,
         "",
-        "Source files: interview.html (runtime room), prep.html (pre-join set builder). Post-close target: vetting.html.",
+        "Source file: interview.html (runtime room + in-room question set setup). Post-close target: vetting.html.",
         "",
         "Follow the spec: design tokens, body state classes, localStorage keys, call lifecycle, and QA checklist. Side-by-side with the GitHub Pages interview prototype is required.",
       ].join("\n");
@@ -582,7 +580,6 @@
             <li><a href="${esc(HANDOFF.githubBlob)}" target="_blank" rel="noopener noreferrer">Spec on GitHub (blob)</a></li>
             <li><a href="${esc(HANDOFF.githubRaw)}" target="_blank" rel="noopener noreferrer">Spec raw URL</a></li>
             <li><a href="${esc(HANDOFF.pagesInterview)}" target="_blank" rel="noopener noreferrer">Prototype: interview.html (Pages)</a></li>
-            <li><a href="${esc(HANDOFF.pagesPrep)}" target="_blank" rel="noopener noreferrer">Prototype: prep.html (Pages)</a></li>
           </ul>
           <details class="dt-handoff-details" data-dt-handoff-preview>
             <summary>Spec preview (same origin)</summary>
