@@ -538,9 +538,136 @@
       </div>`;
     }
 
+    const HANDOFF = {
+      specPath: "docs/interview-ui-handoff-prompt.md",
+      githubBlob:
+        "https://github.com/patricemmh/be-platform/blob/main/docs/interview-ui-handoff-prompt.md",
+      githubRaw:
+        "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/interview-ui-handoff-prompt.md",
+      pagesInterview: "https://patricemmh.github.io/be-platform/interview.html",
+      pagesPrep: "https://patricemmh.github.io/be-platform/prep.html",
+    };
+
+    function interviewHandoffStarterPrompt() {
+      return [
+        "Implement the Live AI Interview UI for BetterEngineer using this repo’s handoff spec and static prototypes.",
+        "",
+        "Full spec (read first):",
+        HANDOFF.githubRaw,
+        "",
+        "Spec on GitHub (browse):",
+        HANDOFF.githubBlob,
+        "",
+        "Visual reference — match pixel behavior, spacing, typography, and state transitions:",
+        `- Interview room: ${HANDOFF.pagesInterview}`,
+        `- Prep / question set: ${HANDOFF.pagesPrep}`,
+        "",
+        "Source files: interview.html (runtime room), prep.html (pre-join set builder). Post-close target: vetting.html.",
+        "",
+        "Follow the spec: design tokens, body state classes, localStorage keys, call lifecycle, and QA checklist. Side-by-side with the GitHub Pages interview prototype is required.",
+      ].join("\n");
+    }
+
+    function handoffSection() {
+      const prompt = interviewHandoffStarterPrompt();
+      return `<div class="dt-section dt-handoff">
+          <div class="dt-copy-row">
+            <div>
+              <p class="dt-section-label">Handoff — Live AI Interview UI</p>
+              <p class="dt-note">Starter prompt for Claude Code. Links to spec and prototypes.</p>
+            </div>
+            <button type="button" class="dt-copy" data-dt-handoff-copy>${ICON.copy} Copy prompt</button>
+          </div>
+          <ul class="dt-link-list">
+            <li><a href="${esc(HANDOFF.githubBlob)}" target="_blank" rel="noopener noreferrer">Spec on GitHub (blob)</a></li>
+            <li><a href="${esc(HANDOFF.githubRaw)}" target="_blank" rel="noopener noreferrer">Spec raw URL</a></li>
+            <li><a href="${esc(HANDOFF.pagesInterview)}" target="_blank" rel="noopener noreferrer">Prototype: interview.html (Pages)</a></li>
+            <li><a href="${esc(HANDOFF.pagesPrep)}" target="_blank" rel="noopener noreferrer">Prototype: prep.html (Pages)</a></li>
+          </ul>
+          <details class="dt-handoff-details" data-dt-handoff-preview>
+            <summary>Spec preview (same origin)</summary>
+            <p class="dt-note dt-handoff-md-status" data-dt-handoff-md-status>Loading…</p>
+            <pre class="dt-handoff-md" data-dt-handoff-md hidden spellcheck="false"></pre>
+          </details>
+          <textarea class="dt-export dt-handoff-prompt" readonly spellcheck="false" hidden aria-hidden="true">${esc(prompt)}</textarea>
+        </div>`;
+    }
+
+    let handoffSpecCache;
+
+    function applyHandoffPreview(block) {
+      if (!block) return;
+      const pre = block.querySelector("[data-dt-handoff-md]");
+      const status = block.querySelector("[data-dt-handoff-md-status]");
+      const max = 14000;
+      if (handoffSpecCache) {
+        const slice =
+          handoffSpecCache.length > max
+            ? `${handoffSpecCache.slice(0, max)}\n\n… [truncated]`
+            : handoffSpecCache;
+        if (pre) {
+          pre.textContent = slice;
+          pre.hidden = false;
+        }
+        if (status) status.textContent = "Loaded from /docs/interview-ui-handoff-prompt.md on this host.";
+        return;
+      }
+      if (handoffSpecCache === "") {
+        if (status) status.textContent = "Preview unavailable here — use the GitHub links above.";
+      }
+    }
+
+    function loadHandoffPreview(root) {
+      const block = root && root.querySelector("[data-dt-handoff-preview]");
+      if (!block) return;
+      if (handoffSpecCache !== undefined) {
+        applyHandoffPreview(block);
+        return;
+      }
+      fetch(`/${HANDOFF.specPath}`)
+        .then((res) => {
+          if (!res.ok) throw new Error(String(res.status));
+          return res.text();
+        })
+        .then((text) => {
+          handoffSpecCache = text;
+          applyHandoffPreview(block);
+        })
+        .catch(() => {
+          handoffSpecCache = "";
+          applyHandoffPreview(block);
+        });
+    }
+
+    function copyText(copyBtn, text, labelCopied) {
+      const markCopied = () => {
+        copyBtn.innerHTML = `${ICON.check} ${labelCopied}`;
+        window.clearTimeout(copiedTimer);
+        copiedTimer = window.setTimeout(() => {
+          if (copyBtn.isConnected) copyBtn.innerHTML = `${ICON.copy} Copy prompt`;
+        }, 2000);
+      };
+      const fallback = () => {
+        const area = panel.querySelector(".dt-handoff-prompt");
+        if (!area) return;
+        area.hidden = false;
+        area.focus();
+        area.select();
+        try {
+          if (document.execCommand("copy")) markCopied();
+        } catch {
+          /* ignore */
+        }
+        area.hidden = true;
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(markCopied).catch(fallback);
+      } else fallback();
+    }
+
     function panelBody(current) {
       if (!current) {
-        return `<p class="dt-empty">Nothing selected yet. Click something on the page. The inspect icons stay clickable so you can turn this off.</p>`;
+        return `<p class="dt-empty">Nothing selected yet. Click something on the page. The inspect icons stay clickable so you can turn this off.</p>${handoffSection()}`;
       }
       const flex = current.display === "flex" || current.display === "inline-flex";
       const tw = specToTailwind(current);
@@ -610,6 +737,7 @@
           </div>
           <textarea class="dt-export" readonly spellcheck="false">${esc(exported)}</textarea>
         </div>
+        ${handoffSection()}
       </div>`;
     }
 
@@ -672,6 +800,7 @@
       const scroll = body.scrollTop;
       body.innerHTML = panelBody(spec);
       body.scrollTop = scroll;
+      loadHandoffPreview(body);
       requestAnimationFrame(measurePanel);
     }
 
@@ -754,6 +883,11 @@
         paintPanel();
       });
       panel.addEventListener("click", (event) => {
+        const handoffCopyBtn = event.target.closest("[data-dt-handoff-copy]");
+        if (handoffCopyBtn) {
+          copyText(handoffCopyBtn, interviewHandoffStarterPrompt(), "Copied");
+          return;
+        }
         const copyBtn = event.target.closest("[data-dt-copy]");
         if (!copyBtn || !spec) return;
         const text = buildExport(spec);
