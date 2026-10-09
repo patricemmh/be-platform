@@ -1,6 +1,8 @@
+import { spawn } from "child_process";
 import dotenv from "dotenv";
 import express from "express";
 import fs from "fs/promises";
+import net from "net";
 import path from "path";
 import { fileURLToPath } from "url";
 import { LinearClient } from "@linear/sdk";
@@ -18,6 +20,57 @@ const PORT = Number(process.env.DASHBOARD_PORT || 3001);
 const LOCAL_PROTOTYPE_PORT = Number(process.env.LOCAL_PROTOTYPE_PORT || 37689);
 const GITHUB_PAGES_BASE = "https://patricemmh.github.io/be-platform/";
 
+/** @type {import("child_process").ChildProcess | null} */
+let prototypeChild = null;
+
+function probeTcpPort(port, host = "127.0.0.1") {
+  return new Promise((resolve) => {
+    const socket = net.connect({ port, host });
+    socket.setTimeout(800);
+    const done = (open) => {
+      socket.destroy();
+      resolve(open);
+    };
+    socket.once("connect", () => done(true));
+    socket.once("timeout", () => done(false));
+    socket.once("error", () => done(false));
+  });
+}
+
+async function waitForTcpPort(port, { attempts = 40, intervalMs = 250 } = {}) {
+  for (let i = 0; i < attempts; i++) {
+    if (await probeTcpPort(port)) return true;
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+  return false;
+}
+
+async function ensurePrototypeServer() {
+  if (process.env.SKIP_PROTOTYPE_SERVER === "1") return;
+  const url = `http://localhost:${LOCAL_PROTOTYPE_PORT}`;
+  if (await probeTcpPort(LOCAL_PROTOTYPE_PORT)) {
+    console.log(`Prototype static server: ${url} (already running)`);
+    return;
+  }
+  const npm = process.platform === "win32" ? "npm.cmd" : "npm";
+  prototypeChild = spawn(npm, ["run", "dev"], {
+    cwd: ROOT,
+    stdio: "inherit",
+    env: process.env,
+  });
+  prototypeChild.on("error", (err) => {
+    console.warn(`Could not start prototype server (${url}):`, err.message);
+  });
+  const up = await waitForTcpPort(LOCAL_PROTOTYPE_PORT);
+  if (up) {
+    console.log(`Prototype static server: ${url} (started with dashboard)`);
+  } else {
+    console.warn(
+      `Prototype page links use ${url} but the server is not responding. Run \`npm run dev\` in another terminal.`
+    );
+  }
+}
+
 const PRIORITY_LABELS = {
   0: "No priority",
   1: "Urgent",
@@ -25,6 +78,52 @@ const PRIORITY_LABELS = {
   3: "Medium",
   4: "Low",
 };
+
+const DEFAULT_TEAM_KEY = "BE";
+
+/** @returns {{ teamKey: string, number: number } | null} */
+function parseIssueIdentifier(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s) return null;
+  const withTeam = s.match(/^([A-Za-z]+)[\s-]*(\d+)$/);
+  if (withTeam) {
+    return {
+      teamKey: withTeam[1].toUpperCase(),
+      number: Number.parseInt(withTeam[2], 10),
+    };
+  }
+  const digitsOnly = s.match(/^(\d+)$/);
+  if (digitsOnly) {
+    return {
+      teamKey: DEFAULT_TEAM_KEY,
+      number: Number.parseInt(digitsOnly[1], 10),
+    };
+  }
+  return null;
+}
+
+function formatIdentifier({ teamKey, number }) {
+  return `${teamKey}-${number}`;
+}
+
+async function lookupIssueByIdentifier(client, parsed) {
+  const page = await client.issues({
+    first: 1,
+    filter: {
+      team: { key: { eq: parsed.teamKey } },
+      number: { eq: parsed.number },
+    },
+    includeArchived: false,
+  });
+  if (page.nodes[0]) return page.nodes[0];
+
+  const term = formatIdentifier(parsed);
+  const search = await client.issueSearch({ term, first: 5 });
+  const hit = (search.nodes ?? []).find(
+    (i) => i.identifier?.toUpperCase() === term
+  );
+  return hit ?? null;
+}
 
 function hasApiKey() {
   return Boolean(process.env.LINEAR_API_KEY?.trim());
@@ -124,6 +223,28 @@ async function fetchChildrenForParents(client, parentIds) {
     cursor = page.pageInfo.endCursor;
   }
   return all;
+}
+
+async function fetchOrgUsers(client) {
+  const all = [];
+  let cursor = undefined;
+
+  for (;;) {
+    const page = await client.users({ first: 50, after: cursor });
+    all.push(...page.nodes);
+    if (!page.pageInfo.hasNextPage) break;
+    cursor = page.pageInfo.endCursor;
+  }
+
+  return all
+    .filter((u) => u.active && !u.app)
+    .map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      displayName: u.displayName,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 }
 
 async function hydrateIssue(client, issue) {
@@ -261,6 +382,7 @@ app.get("/api/config", (_req, res) => {
 app.get("/api/pages", async (_req, res) => {
   try {
     const pages = await listRootHtmlPages();
+    res.set("Cache-Control", "no-store");
     res.json({ pages });
   } catch (err) {
     console.error("pages list failed:", err);
@@ -288,6 +410,43 @@ app.get("/api/dashboard", async (_req, res) => {
     res.status(500).json({
       error: "fetch_failed",
       message: err.message || "Failed to load Linear data",
+    });
+  }
+});
+
+app.get("/api/issues/lookup", async (req, res) => {
+  if (!hasApiKey()) {
+    return res.status(503).json({
+      error: "missing_api_key",
+      message:
+        "LINEAR_API_KEY is not set. Copy .env.example to .env and add your key.",
+    });
+  }
+
+  const parsed = parseIssueIdentifier(req.query.identifier);
+  if (!parsed) {
+    return res.status(400).json({
+      error: "invalid_identifier",
+      message: "Enter a ticket ID like BE-689, be689, or 689",
+    });
+  }
+
+  try {
+    const client = getClient();
+    const issue = await lookupIssueByIdentifier(client, parsed);
+    if (!issue) {
+      return res.status(404).json({
+        error: "not_found",
+        message: `No issue ${formatIdentifier(parsed)} found`,
+      });
+    }
+    const hydrated = await hydrateIssue(client, issue);
+    res.json(hydrated);
+  } catch (err) {
+    console.error("issue lookup failed:", err);
+    res.status(500).json({
+      error: "lookup_failed",
+      message: err.message || "Failed to look up issue",
     });
   }
 });
@@ -344,6 +503,85 @@ app.patch("/api/issues/:id/checklist", async (req, res) => {
     res.status(500).json({
       error: "update_failed",
       message: err.message || "Failed to update checklist",
+    });
+  }
+});
+
+app.get("/api/users", async (_req, res) => {
+  if (!hasApiKey()) {
+    return res.status(503).json({
+      error: "missing_api_key",
+      message:
+        "LINEAR_API_KEY is not set. Copy .env.example to .env and add your key.",
+    });
+  }
+
+  try {
+    const client = getClient();
+    const users = await fetchOrgUsers(client);
+    res.json({ users });
+  } catch (err) {
+    console.error("users fetch failed:", err);
+    res.status(500).json({
+      error: "fetch_failed",
+      message: err.message || "Failed to load Linear users",
+    });
+  }
+});
+
+app.patch("/api/issues/:id/assignee", async (req, res) => {
+  if (!hasApiKey()) {
+    return res.status(503).json({
+      error: "missing_api_key",
+      message:
+        "LINEAR_API_KEY is not set. Copy .env.example to .env and add your key.",
+    });
+  }
+
+  let assigneeId = req.body?.assigneeId;
+  if (assigneeId === "") assigneeId = null;
+  if (assigneeId !== null && assigneeId !== undefined && typeof assigneeId !== "string") {
+    return res.status(400).json({
+      error: "invalid_body",
+      message: "Expected { assigneeId: string | null }",
+    });
+  }
+  if (assigneeId === undefined) {
+    return res.status(400).json({
+      error: "invalid_body",
+      message: "Expected { assigneeId: string | null }",
+    });
+  }
+
+  try {
+    const client = getClient();
+    const issue = await client.issue(req.params.id);
+    if (!issue) {
+      return res.status(404).json({
+        error: "not_found",
+        message: "Issue not found",
+      });
+    }
+
+    const updated = await client.updateIssue(issue.id, { assigneeId });
+    if (!updated?.success) {
+      return res.status(500).json({
+        error: "update_failed",
+        message: "Linear did not accept the assignee change",
+      });
+    }
+
+    const outIssue = updated.issue ? await updated.issue : issue;
+    const hydrated = await hydrateIssue(client, outIssue);
+    res.json(hydrated);
+  } catch (err) {
+    console.error("assignee update failed:", err);
+    const msg = err.message || "Failed to update issue assignee";
+    const status =
+      /not found|could not find/i.test(msg) ? 404 : /permission|forbidden|auth/i.test(msg) ? 403 : 500;
+    res.status(status).json({
+      error: "update_failed",
+      message: msg,
     });
   }
 });
@@ -405,9 +643,33 @@ app.get("/", (_req, res) => {
   res.redirect("/dashboard.html");
 });
 
-app.listen(PORT, () => {
-  console.log(`Linear dashboard: http://localhost:${PORT}/dashboard.html`);
-  if (!hasApiKey()) {
-    console.warn("Warning: LINEAR_API_KEY is not set — API routes will return 503.");
+async function main() {
+  await ensurePrototypeServer();
+  app.listen(PORT, () => {
+    console.log(`Linear dashboard: http://localhost:${PORT}/dashboard.html`);
+    if (!hasApiKey()) {
+      console.warn("Warning: LINEAR_API_KEY is not set — API routes will return 503.");
+    }
+  });
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
+
+function shutdownPrototypeChild() {
+  if (prototypeChild && !prototypeChild.killed) {
+    prototypeChild.kill();
   }
+}
+
+process.on("exit", shutdownPrototypeChild);
+process.on("SIGINT", () => {
+  shutdownPrototypeChild();
+  process.exit(0);
+});
+process.on("SIGTERM", () => {
+  shutdownPrototypeChild();
+  process.exit(0);
 });

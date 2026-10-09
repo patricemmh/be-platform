@@ -47,7 +47,28 @@ a:hover { text-decoration: underline; }
 .brand { display: flex; align-items: baseline; gap: 12px; }
 .brand h1 { margin: 0; font-size: 18px; font-weight: 500; color: var(--ink); }
 .brand span { font-size: 13px; color: var(--muted); }
-.tools { display: flex; align-items: center; gap: 12px; }
+.tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+.issue-lookup {
+  display: flex; align-items: center; gap: 6px;
+}
+.issue-lookup-input {
+  width: min(200px, 38vw);
+  height: 38px; padding: 0 12px;
+  border: 1px solid #dcdcdc; border-radius: 4px;
+  font-size: 14px;
+}
+.issue-lookup-input:focus { outline: 2px solid #c8d4ec; outline-offset: 0; border-color: #c8d4ec; }
+.issue-lookup-input.has-error { border-color: #e0a0a0; }
+.issue-lookup-error {
+  position: absolute; top: calc(100% + 4px); right: 0;
+  font-size: 12px; color: #b33; white-space: nowrap;
+  max-width: min(280px, 90vw); overflow: hidden; text-overflow: ellipsis;
+}
+.issue-lookup-wrap { position: relative; }
+.issue-row.issue-highlight, .child-row.issue-highlight {
+  background: #eef3ff !important;
+  box-shadow: inset 0 0 0 2px #c8d4ec;
+}
 .btn {
   height: 38px; padding: 0 16px;
   border-radius: 4px; border: 1px solid #dcdcdc;
@@ -314,7 +335,35 @@ a:hover { text-decoration: underline; }
 .drawer-kv { display: grid; gap: 10px; margin-bottom: 20px; }
 .drawer-kv div { display: flex; gap: 8px; font-size: 13px; }
 .drawer-kv dt { width: 72px; flex-shrink: 0; color: var(--muted); }
-.drawer-kv dd { margin: 0; color: var(--ink); }
+.drawer-kv dd { margin: 0; color: var(--ink); flex: 1; min-width: 0; }
+.assignee-picker { position: relative; width: 100%; max-width: 280px; }
+.assignee-trigger {
+  width: 100%; min-height: 36px; padding: 6px 10px;
+  border: 1px solid #dcdcdc; border-radius: 4px;
+  background: #fff; font-size: 13px; font-weight: 500;
+  text-align: left; display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; color: var(--ink);
+}
+.assignee-trigger:hover { border-color: #c8d4ec; background: #f7f8fc; }
+.assignee-trigger:focus { outline: 2px solid #c8d4ec; outline-offset: 0; border-color: #c8d4ec; }
+.assignee-trigger.is-open { border-color: #c8d4ec; background: #f7f8fc; }
+.assignee-trigger i { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+.assignee-menu {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30;
+  background: #fff; border: 1px solid var(--card-line); border-radius: 6px;
+  box-shadow: var(--shadow); max-height: 280px; display: flex; flex-direction: column;
+}
+.assignee-menu[hidden] { display: none !important; }
+.assignee-menu .assignee-search { margin: 10px 10px 8px; width: calc(100% - 20px); }
+.assignee-options { overflow: auto; flex: 1; list-style: none; margin: 0; padding: 0 0 6px; }
+.assignee-option {
+  display: block; width: 100%; padding: 10px 14px; border: 0; background: transparent;
+  text-align: left; font-size: 13px; cursor: pointer; color: var(--ink);
+}
+.assignee-option:hover, .assignee-option:focus { background: #f7f8fc; color: var(--blue); outline: none; }
+.assignee-option[aria-selected="true"] { background: #eef1f8; color: var(--blue); font-weight: 500; }
+.assignee-option small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.assignee-picker.is-busy .assignee-trigger { opacity: .55; pointer-events: none; }
 .label-chip {
   display: inline-block; font-size: 11px; padding: 2px 8px;
   border-radius: 4px; background: #eef1f8; color: var(--blue);
@@ -336,6 +385,7 @@ a:hover { text-decoration: underline; }
 .pages-search:focus { outline: 2px solid #c8d4ec; outline-offset: 0; border-color: #c8d4ec; }
 .page-list { list-style: none; margin: 0; padding: 0; }
 .page-list li { border-top: 1px solid var(--line); }
+.page-list li[hidden] { display: none; }
 .page-list li:first-child { border-top: 0; }
 .page-link {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -349,6 +399,8 @@ a:hover { text-decoration: underline; }
 .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ccc; border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
+<link rel="stylesheet" href="dev-tools/dev-tools.css">
+<script src="dev-tools/dev-tools.js" defer></script>
 </head>
 <body>
 
@@ -359,6 +411,24 @@ a:hover { text-decoration: underline; }
       <span id="viewerLabel">BetterEngineer</span>
     </div>
     <div class="tools">
+      <form class="issue-lookup" id="issueLookupForm" role="search" aria-label="Open issue by ID">
+        <div class="issue-lookup-wrap">
+          <input
+            type="search"
+            class="issue-lookup-input"
+            id="issueLookupInput"
+            placeholder="Open by ID e.g. BE-689"
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="issueLookupError"
+            title="Open ticket (/) — BE-689, be689, or 689"
+          />
+          <span class="issue-lookup-error" id="issueLookupError" role="alert" hidden></span>
+        </div>
+        <button type="submit" class="btn" id="issueLookupBtn" title="Open ticket">
+          <i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Open
+        </button>
+      </form>
       <button type="button" class="btn btn-toggle" id="hideChecklistDoneBtn" aria-pressed="false" title="Hide completed checklist items in sub-issues">
         <i class="fa-solid fa-list-check"></i> Hide done checklist
       </button>
@@ -425,6 +495,7 @@ let openDrawerIssueId = null;
 /** Right drawer mode: one panel — Pages replaces issue detail (not a second column). */
 let drawerMode = null;
 let cachedPagesList = null;
+let cachedUsersList = null;
 let appConfig = {
   localPrototypeBase: "",
   githubPagesBase: "https://patricemmh.github.io/be-platform/",
@@ -648,6 +719,125 @@ function findIssueById(id) {
     for (const c of p.children || []) if (c.id === id) return c;
   }
   return (state.standalone || []).find((i) => i.id === id) || null;
+}
+
+function normalizeIdentifierForCompare(raw) {
+  const s = String(raw ?? "").trim().toUpperCase();
+  const m = s.match(/^([A-Z]+)[\s-]*(\d+)$/);
+  if (m) return `${m[1]}-${m[2]}`;
+  if (/^\d+$/.test(s)) return `BE-${s}`;
+  return s;
+}
+
+function findIssueByIdentifier(identifier) {
+  const want = normalizeIdentifierForCompare(identifier);
+  for (const p of state.parents || []) {
+    if (normalizeIdentifierForCompare(p.identifier) === want) return p;
+    for (const c of p.children || []) {
+      if (normalizeIdentifierForCompare(c.identifier) === want) return c;
+    }
+  }
+  return (
+    (state.standalone || []).find(
+      (i) => normalizeIdentifierForCompare(i.identifier) === want
+    ) || null
+  );
+}
+
+let issueHighlightTimer = null;
+
+function revealIssueOnBoardIfNeeded(issue) {
+  const status = issue?.status;
+  if (!status || prefs.enabledStatuses.includes(status)) return;
+  prefs.enabledStatuses = [...prefs.enabledStatuses, status].sort((a, b) =>
+    a.localeCompare(b)
+  );
+  writeStoredPrefs();
+  renderStatusFilters();
+  renderBoard();
+}
+
+function highlightIssueOnBoard(issueId) {
+  board.querySelectorAll(".issue-highlight").forEach((el) => {
+    el.classList.remove("issue-highlight");
+  });
+  const row = board.querySelector(`[data-issue-id="${CSS.escape(issueId)}"]`);
+  if (!row) return false;
+  row.classList.add("issue-highlight");
+  row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  clearTimeout(issueHighlightTimer);
+  issueHighlightTimer = setTimeout(() => row.classList.remove("issue-highlight"), 3200);
+  return true;
+}
+
+function setIssueLookupError(message) {
+  const input = document.getElementById("issueLookupInput");
+  const err = document.getElementById("issueLookupError");
+  if (!input || !err) return;
+  if (message) {
+    err.textContent = message;
+    err.hidden = false;
+    input.classList.add("has-error");
+    input.setAttribute("aria-invalid", "true");
+  } else {
+    err.textContent = "";
+    err.hidden = true;
+    input.classList.remove("has-error");
+    input.removeAttribute("aria-invalid");
+  }
+}
+
+async function openIssueByLookup(raw) {
+  const q = String(raw ?? "").trim();
+  if (!q) {
+    setIssueLookupError("Enter a ticket ID");
+    return;
+  }
+  setIssueLookupError("");
+  const btn = document.getElementById("issueLookupBtn");
+  const input = document.getElementById("issueLookupInput");
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+  }
+  try {
+    const onBoard = findIssueByIdentifier(q);
+    if (onBoard) {
+      revealIssueOnBoardIfNeeded(onBoard);
+      highlightIssueOnBoard(onBoard.id);
+      openDrawer(onBoard);
+      return;
+    }
+
+    const res = await fetch(
+      `/api/issues/lookup?identifier=${encodeURIComponent(q)}`
+    );
+    const data = await res.json();
+    if (!res.ok) {
+      const msg =
+        data.message ||
+        (res.status === 404 ? "Issue not found" : "Could not open issue");
+      setIssueLookupError(msg);
+      return;
+    }
+    const synced = findIssueById(data.id);
+    if (synced) {
+      revealIssueOnBoardIfNeeded(synced);
+      highlightIssueOnBoard(synced.id);
+      openDrawer(synced);
+    } else {
+      openDrawer(data);
+    }
+  } catch (err) {
+    setIssueLookupError(err.message || "Could not open issue");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML =
+        '<i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Open';
+    }
+    input?.focus();
+  }
 }
 
 function isIssueDone(issue) {
@@ -958,7 +1148,173 @@ function setPagesBtnPressed(on) {
   pagesBtn.setAttribute("aria-pressed", on ? "true" : "false");
 }
 
+function assigneePickerHtml(issue) {
+  const label = issue.assignee?.name || "Unassigned";
+  return `<div class="assignee-picker" data-assignee-picker data-issue-id="${escapeHtml(issue.id)}">
+    <button type="button" class="assignee-trigger" aria-haspopup="listbox" aria-expanded="false">
+      <span class="assignee-trigger-label">${escapeHtml(label)}</span>
+      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+    </button>
+    <div class="assignee-menu" hidden role="listbox" aria-label="Assignee">
+      <input type="search" class="pages-search assignee-search" placeholder="Search people…" autocomplete="off" />
+      <ul class="assignee-options"></ul>
+    </div>
+  </div>`;
+}
+
+async function loadUsersList() {
+  if (cachedUsersList) return cachedUsersList;
+  const res = await fetch("/api/users");
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to load users");
+  cachedUsersList = data.users || [];
+  return cachedUsersList;
+}
+
+function closeAssigneeMenus(except) {
+  document.querySelectorAll("[data-assignee-picker]").forEach((picker) => {
+    if (except && picker === except) return;
+    const menu = picker.querySelector(".assignee-menu");
+    const trigger = picker.querySelector(".assignee-trigger");
+    if (menu) menu.hidden = true;
+    if (trigger) trigger.classList.remove("is-open");
+    if (trigger) trigger.setAttribute("aria-expanded", "false");
+  });
+}
+
+function renderAssigneeOptions(picker, users, currentAssigneeId) {
+  const list = picker.querySelector(".assignee-options");
+  if (!list) return;
+  const rows = [
+    { id: null, name: "Unassigned", email: "" },
+    ...users,
+  ];
+  list.innerHTML = rows
+    .map((u) => {
+      const selected =
+        (u.id === null && !currentAssigneeId) || u.id === currentAssigneeId;
+      const sub = u.email ? `<small>${escapeHtml(u.email)}</small>` : "";
+      return `<li>
+        <button type="button" class="assignee-option" role="option" data-user-id="${u.id === null ? "" : escapeHtml(u.id)}" aria-selected="${selected ? "true" : "false"}">
+          ${escapeHtml(u.name)}${sub}
+        </button>
+      </li>`;
+    })
+    .join("");
+}
+
+function filterAssigneeOptions(picker, query) {
+  const q = query.trim().toLowerCase();
+  picker.querySelectorAll(".assignee-option").forEach((btn) => {
+    const text = btn.textContent?.toLowerCase() || "";
+    btn.closest("li").hidden = Boolean(q && !text.includes(q));
+  });
+}
+
+async function setIssueAssignee(issueId, assigneeId, pickerEl) {
+  pickerEl.classList.add("is-busy");
+  closeAssigneeMenus();
+  try {
+    const res = await fetch(`/api/issues/${issueId}/assignee`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ assigneeId }),
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.message || "Update failed");
+    const issue = findIssueById(issueId);
+    if (issue) mergeIssueFields(issue, body);
+    renderBoard();
+    if (drawerMode === "issue" && openDrawerIssueId === issueId) {
+      const refreshed = findIssueById(issueId);
+      if (refreshed) openDrawer(refreshed);
+    }
+  } catch (err) {
+    alert(err.message || "Could not update Linear");
+  } finally {
+    pickerEl.classList.remove("is-busy");
+  }
+}
+
+function bindAssigneePicker(picker, issue) {
+  const trigger = picker.querySelector(".assignee-trigger");
+  const menu = picker.querySelector(".assignee-menu");
+  const search = picker.querySelector(".assignee-search");
+  const list = picker.querySelector(".assignee-options");
+  if (!trigger || !menu || !list) return;
+
+  let usersLoaded = false;
+
+  const openMenu = async () => {
+    closeAssigneeMenus(picker);
+    menu.hidden = false;
+    trigger.classList.add("is-open");
+    trigger.setAttribute("aria-expanded", "true");
+    try {
+      if (!usersLoaded) {
+        list.innerHTML = '<li><span class="pages-hint" style="padding:10px 14px;margin:0"><span class="spinner"></span> Loading…</span></li>';
+        const users = await loadUsersList();
+        renderAssigneeOptions(picker, users, issue.assignee?.id ?? null);
+        usersLoaded = true;
+      }
+      filterAssigneeOptions(picker, search?.value || "");
+      search?.focus();
+    } catch (err) {
+      menu.querySelector(".assignee-options").innerHTML =
+        `<li><span class="pages-hint" style="padding:10px 14px;margin:0;color:#b33">${escapeHtml(err.message)}</span></li>`;
+    }
+  };
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!menu.hidden) {
+      closeAssigneeMenus();
+      return;
+    }
+    openMenu();
+  });
+
+  search?.addEventListener("input", () => filterAssigneeOptions(picker, search.value));
+  search?.addEventListener("click", (e) => e.stopPropagation());
+
+  menu.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const btn = e.target.closest(".assignee-option");
+    if (!btn || btn.closest("li")?.hidden) return;
+    const raw = btn.getAttribute("data-user-id");
+    const assigneeId = raw ? raw : null;
+    const current = issue.assignee?.id ?? null;
+    if (assigneeId === current) {
+      closeAssigneeMenus();
+      return;
+    }
+    setIssueAssignee(issue.id, assigneeId, picker);
+  });
+
+  picker.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      closeAssigneeMenus();
+    }
+  });
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-assignee-picker]")) closeAssigneeMenus();
+});
+
 function renderPagesDrawerBody(pages) {
+  if (!pages.length) {
+    drawerBody.innerHTML = `
+      <p class="pages-hint">No prototype HTML files found in the repo root.</p>
+      <button type="button" class="btn" id="pagesRetryBtn">Refresh list</button>
+    `;
+    document.getElementById("pagesRetryBtn")?.addEventListener("click", () => {
+      cachedPagesList = null;
+      reloadPagesDrawer();
+    });
+    return;
+  }
   const base = appConfig.localPrototypeBase?.replace(/\/$/, "");
   const rows = pages
     .map((p) => {
@@ -974,7 +1330,7 @@ function renderPagesDrawerBody(pages) {
     })
     .join("");
   drawerBody.innerHTML = `
-    <p class="pages-hint">Opens on the local prototype server (<code>npm run dev</code>). Links use clean paths like <code>/vetting</code>.</p>
+    <p class="pages-hint">Opens on <code>${escapeHtml(base)}</code> (<code>serve</code>, clean paths like <code>/vetting</code>). <code>npm run dashboard</code> starts that server if it is not already running.</p>
     <input type="search" class="pages-search" id="pagesSearch" placeholder="Filter pages…" autocomplete="off" />
     <ul class="page-list" id="pagesList">${rows}</ul>
   `;
@@ -1003,15 +1359,10 @@ async function togglePagesDrawer() {
   drawer.classList.add("open");
   drawer.setAttribute("aria-hidden", "false");
   try {
-    if (!cachedPagesList) {
-      const res = await fetch("/api/pages");
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to load pages");
-      cachedPagesList = data.pages || [];
-    }
-    renderPagesDrawerBody(cachedPagesList);
+    await ensureAppConfig();
+    renderPagesDrawerBody(await fetchPagesList());
   } catch (err) {
-    drawerBody.innerHTML = `<p class="pages-hint" style="color:#b33">${escapeHtml(err.message)}</p>`;
+    showPagesDrawerError(err);
   }
 }
 
@@ -1028,7 +1379,7 @@ function openDrawer(issue) {
   drawerBody.innerHTML = `
     <dl class="drawer-kv">
       <div><dt>Status</dt><dd>${escapeHtml(issue.status)}</dd></div>
-      <div><dt>Assignee</dt><dd>${escapeHtml(issue.assignee?.name || "—")}</dd></div>
+      <div><dt>Assignee</dt><dd>${assigneePickerHtml(issue)}</dd></div>
       <div><dt>Priority</dt><dd>${escapeHtml(issue.priorityLabel || "—")}</dd></div>
       <div><dt>Labels</dt><dd>${labelHtml}</dd></div>
       ${parentLine}
@@ -1038,9 +1389,12 @@ function openDrawer(issue) {
   `;
   drawer.classList.add("open");
   drawer.setAttribute("aria-hidden", "false");
+  const picker = drawerBody.querySelector("[data-assignee-picker]");
+  if (picker) bindAssigneePicker(picker, issue);
 }
 
 function closeDrawer() {
+  closeAssigneeMenus();
   openDrawerIssueId = null;
   drawerMode = null;
   setPagesBtnPressed(false);
@@ -1051,6 +1405,14 @@ function closeDrawer() {
 document.getElementById("drawerClose").addEventListener("click", closeDrawer);
 pagesBtn.addEventListener("click", togglePagesDrawer);
 document.addEventListener("keydown", (e) => {
+  if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const tag = document.activeElement?.tagName;
+    const editable = document.activeElement?.isContentEditable;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || editable) return;
+    e.preventDefault();
+    document.getElementById("issueLookupInput")?.focus();
+    return;
+  }
   if (e.key !== "Escape") return;
   const confirmRoot = document.getElementById("checklistConfirmRoot");
   if (confirmRoot && !confirmRoot.hidden) {
@@ -1059,6 +1421,16 @@ document.addEventListener("keydown", (e) => {
     return;
   }
   closeDrawer();
+});
+
+const issueLookupForm = document.getElementById("issueLookupForm");
+const issueLookupInput = document.getElementById("issueLookupInput");
+issueLookupForm?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  openIssueByLookup(issueLookupInput?.value);
+});
+issueLookupInput?.addEventListener("input", () => {
+  if (issueLookupInput.classList.contains("has-error")) setIssueLookupError("");
 });
 
 function showSetup(message) {
@@ -1072,6 +1444,65 @@ function showSetup(message) {
 async function loadConfig() {
   const res = await fetch("/api/config");
   return res.json();
+}
+
+async function ensureAppConfig() {
+  if (appConfig.localPrototypeBase) return appConfig;
+  const cfg = await loadConfig();
+  appConfig = {
+    localPrototypeBase: cfg.localPrototypeBase ?? "",
+    githubPagesBase: cfg.githubPagesBase || appConfig.githubPagesBase,
+  };
+  return appConfig;
+}
+
+async function fetchPagesList({ force = false } = {}) {
+  if (!force && cachedPagesList !== null) return cachedPagesList;
+  const res = await fetch("/api/pages", { cache: "no-store" });
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(
+      "Could not read /api/pages. Open http://localhost:3001/dashboard.html (npm run dashboard), not the static dev server."
+    );
+  }
+  if (!res.ok) {
+    const hint =
+      res.status === 404
+        ? " Restart npm run dashboard so /api/pages is registered, then hard-refresh."
+        : "";
+    throw new Error((data.message || "Failed to load pages") + hint);
+  }
+  if (!Array.isArray(data.pages)) {
+    throw new Error("Pages API returned an unexpected response");
+  }
+  cachedPagesList = data.pages;
+  return cachedPagesList;
+}
+
+function showPagesDrawerError(err) {
+  const msg = err?.message || "Failed to load pages";
+  drawerBody.innerHTML = `
+    <p class="pages-hint" style="color:#b33">${escapeHtml(msg)}</p>
+    <p class="pages-hint">Use <code>http://localhost:3001/dashboard.html</code> with <code>npm run dashboard</code> running.</p>
+    <button type="button" class="btn" id="pagesRetryBtn">Try again</button>
+  `;
+  document.getElementById("pagesRetryBtn")?.addEventListener("click", () => {
+    cachedPagesList = null;
+    reloadPagesDrawer();
+  });
+}
+
+async function reloadPagesDrawer() {
+  drawerBody.innerHTML =
+    '<p class="pages-hint"><span class="spinner"></span> Loading pages…</p>';
+  try {
+    await ensureAppConfig();
+    renderPagesDrawerBody(await fetchPagesList({ force: true }));
+  } catch (err) {
+    showPagesDrawerError(err);
+  }
 }
 
 async function loadDashboard() {
@@ -1120,19 +1551,26 @@ hideChecklistDoneBtn.addEventListener("click", () => {
 
 refreshBtn.addEventListener("click", loadDashboard);
 applyPrefsFromStorage();
-loadConfig().then((cfg) => {
-  appConfig = {
-    localPrototypeBase: cfg.localPrototypeBase ?? "",
-    githubPagesBase: cfg.githubPagesBase || appConfig.githubPagesBase,
-  };
-  if (!cfg.hasApiKey) {
+loadConfig()
+  .then(async (cfg) => {
+    appConfig = {
+      localPrototypeBase: cfg.localPrototypeBase ?? "",
+      githubPagesBase: cfg.githubPagesBase || appConfig.githubPagesBase,
+    };
+    fetchPagesList().catch(() => {});
+    if (!cfg.hasApiKey) {
+      showSetup(
+        `<strong>LINEAR_API_KEY not configured.</strong> Copy <code>.env.example</code> → <code>.env</code>, add your key from <a href="https://linear.app/settings/api" target="_blank" rel="noopener">Linear API settings</a>, save, restart <code>npm run dashboard</code>, and reload.`
+      );
+    } else {
+      loadDashboard();
+    }
+  })
+  .catch(() => {
     showSetup(
-      `<strong>LINEAR_API_KEY not configured.</strong> Copy <code>.env.example</code> → <code>.env</code>, add your key from <a href="https://linear.app/settings/api" target="_blank" rel="noopener">Linear API settings</a>, save, restart <code>npm run dashboard</code>, and reload.`
+      `<strong>Dashboard API unreachable.</strong> Run <code>npm run dashboard</code> and open <code>http://localhost:3001/dashboard.html</code> (not <code>npm run dev</code> alone).`
     );
-  } else {
-    loadDashboard();
-  }
-});
+  });
 </script>
 </body>
 </html>
