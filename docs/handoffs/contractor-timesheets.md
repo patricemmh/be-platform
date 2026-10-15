@@ -15,6 +15,16 @@
 
 Paste this file into Claude Code in the **application** repo, not this prototype repo.
 
+This document is the only spec for this task. The work is the contractor profile Timesheets tab, plus the basic Profile tab on `contractor-profile.html`.
+
+Do not read, fetch, or follow any of these. They are a different feature:
+
+- `docs/interview-ui-handoff-prompt.md`
+- `interview.html`
+- The dev-tools panel labeled **Handoff — Live AI Interview UI**
+
+If an older timesheet spec, ticket, or existing screen disagrees with this file or with `contractor-profile.html`, follow this file and that prototype. Do not stop to ask which one wins.
+
 The product already logs contractor hours. Do not rebuild that system. Restyle and restructure the existing contractor timesheet so it matches this prototype. Reuse current components, data, and APIs. The HTML here is a visual and behavior reference only.
 
 Open the prototype side by side while implementing:
@@ -170,6 +180,8 @@ This is a visual and behavior reference. Do not port the HTML. Inspect the exist
 Match spacing, typography, colors, and the interactions in this document. Keep the application’s data layer, routing, and component conventions.
 
 If production still has submit or approval on this contractor screen, hide it. Approval stays out of this UI.
+
+Stay on this feature. Do not open the interview prototype or the interview handoff while doing this work.
 
 ## Acceptance checklist (QA)
 

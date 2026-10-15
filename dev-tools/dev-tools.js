@@ -538,59 +538,102 @@
       </div>`;
     }
 
-    const HANDOFF = {
-      specPath: "docs/interview-ui-handoff-prompt.md",
-      githubBlob:
-        "https://github.com/patricemmh/be-platform/blob/main/docs/interview-ui-handoff-prompt.md",
-      githubRaw:
-        "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/interview-ui-handoff-prompt.md",
-      pagesInterview: "https://patricemmh.github.io/be-platform/interview.html",
+    const HANDOFFS = {
+      interview: {
+        title: "Handoff — Live AI Interview UI",
+        note: "Starter prompt for Claude Code. Links to the interview spec and prototype.",
+        specPath: "docs/interview-ui-handoff-prompt.md",
+        githubBlob:
+          "https://github.com/patricemmh/be-platform/blob/main/docs/interview-ui-handoff-prompt.md",
+        githubRaw:
+          "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/interview-ui-handoff-prompt.md",
+        prototype: "https://patricemmh.github.io/be-platform/interview.html",
+        prototypeLabel: "Prototype: interview.html (Pages)",
+        prompt: [
+          "Implement the Live AI Interview UI for BetterEngineer using this repo’s handoff spec and static prototypes.",
+          "",
+          "Full spec (read first):",
+          "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/interview-ui-handoff-prompt.md",
+          "",
+          "Spec on GitHub (browse):",
+          "https://github.com/patricemmh/be-platform/blob/main/docs/interview-ui-handoff-prompt.md",
+          "",
+          "Visual reference — match pixel behavior, spacing, typography, and state transitions:",
+          "- Interview room: https://patricemmh.github.io/be-platform/interview.html",
+          "",
+          "Source file: interview.html (runtime room + in-room question set setup). Post-close target: vetting.html.",
+          "",
+          "Follow the spec: design tokens, body state classes, localStorage keys, call lifecycle, and QA checklist. Side-by-side with the GitHub Pages interview prototype is required.",
+          "",
+          "This task is only the interview screen. Do not read or apply docs/handoffs/contractor-timesheets.md.",
+        ].join("\n"),
+      },
+      "contractor-profile": {
+        title: "Handoff — Contractor timesheets",
+        note: "Starter prompt for Claude Code. This page only. Not the interview handoff.",
+        specPath: "docs/handoffs/contractor-timesheets.md",
+        githubBlob:
+          "https://github.com/patricemmh/be-platform/blob/main/docs/handoffs/contractor-timesheets.md",
+        githubRaw:
+          "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/handoffs/contractor-timesheets.md",
+        prototype: "https://patricemmh.github.io/be-platform/contractor-profile.html",
+        prototypeLabel: "Prototype: contractor-profile.html (Pages)",
+        prompt: [
+          "Update the existing contractor timesheet UI to match the contractor profile prototype. Do not rebuild hour logging.",
+          "",
+          "This task is only the contractor profile Timesheets tab and the basic Profile tab on that same page.",
+          "Do not read, fetch, or follow the Live AI Interview handoff, interview.html, or docs/interview-ui-handoff-prompt.md.",
+          "If an older timesheet spec disagrees with this document or with contractor-profile.html, follow this document and that prototype.",
+          "",
+          "Full spec (read this file only):",
+          "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/handoffs/contractor-timesheets.md",
+          "",
+          "Spec on GitHub (browse):",
+          "https://github.com/patricemmh/be-platform/blob/main/docs/handoffs/contractor-timesheets.md",
+          "",
+          "Visual reference:",
+          "- https://patricemmh.github.io/be-platform/contractor-profile.html",
+          "",
+          "Source file: contractor-profile.html. Default tab is Timesheets.",
+        ].join("\n"),
+      },
     };
 
-    function interviewHandoffStarterPrompt() {
-      return [
-        "Implement the Live AI Interview UI for BetterEngineer using this repo’s handoff spec and static prototypes.",
-        "",
-        "Full spec (read first):",
-        HANDOFF.githubRaw,
-        "",
-        "Spec on GitHub (browse):",
-        HANDOFF.githubBlob,
-        "",
-        "Visual reference — match pixel behavior, spacing, typography, and state transitions:",
-        `- Interview room: ${HANDOFF.pagesInterview}`,
-        "",
-        "Source file: interview.html (runtime room + in-room question set setup). Post-close target: vetting.html.",
-        "",
-        "Follow the spec: design tokens, body state classes, localStorage keys, call lifecycle, and QA checklist. Side-by-side with the GitHub Pages interview prototype is required.",
-      ].join("\n");
+    function currentHandoff() {
+      const page = (document.body && document.body.dataset.page) || "";
+      const file = (location.pathname.split("/").pop() || "").replace(/\.html$/, "");
+      if (page === "contractor-profile" || file === "contractor-profile") return HANDOFFS["contractor-profile"];
+      if (file === "interview") return HANDOFFS.interview;
+      return null;
     }
 
     function handoffSection() {
-      const prompt = interviewHandoffStarterPrompt();
+      const handoff = currentHandoff();
+      if (!handoff) return "";
       return `<div class="dt-section dt-handoff">
           <div class="dt-copy-row">
             <div>
-              <p class="dt-section-label">Handoff — Live AI Interview UI</p>
-              <p class="dt-note">Starter prompt for Claude Code. Links to spec and prototypes.</p>
+              <p class="dt-section-label">${esc(handoff.title)}</p>
+              <p class="dt-note">${esc(handoff.note)}</p>
             </div>
             <button type="button" class="dt-copy" data-dt-handoff-copy>${ICON.copy} Copy prompt</button>
           </div>
           <ul class="dt-link-list">
-            <li><a href="${esc(HANDOFF.githubBlob)}" target="_blank" rel="noopener noreferrer">Spec on GitHub (blob)</a></li>
-            <li><a href="${esc(HANDOFF.githubRaw)}" target="_blank" rel="noopener noreferrer">Spec raw URL</a></li>
-            <li><a href="${esc(HANDOFF.pagesInterview)}" target="_blank" rel="noopener noreferrer">Prototype: interview.html (Pages)</a></li>
+            <li><a href="${esc(handoff.githubBlob)}" target="_blank" rel="noopener noreferrer">Spec on GitHub (blob)</a></li>
+            <li><a href="${esc(handoff.githubRaw)}" target="_blank" rel="noopener noreferrer">Spec raw URL</a></li>
+            <li><a href="${esc(handoff.prototype)}" target="_blank" rel="noopener noreferrer">${esc(handoff.prototypeLabel)}</a></li>
           </ul>
           <details class="dt-handoff-details" data-dt-handoff-preview>
             <summary>Spec preview (same origin)</summary>
             <p class="dt-note dt-handoff-md-status" data-dt-handoff-md-status>Loading…</p>
             <pre class="dt-handoff-md" data-dt-handoff-md hidden spellcheck="false"></pre>
           </details>
-          <textarea class="dt-export dt-handoff-prompt" readonly spellcheck="false" hidden aria-hidden="true">${esc(prompt)}</textarea>
+          <textarea class="dt-export dt-handoff-prompt" readonly spellcheck="false" hidden aria-hidden="true">${esc(handoff.prompt)}</textarea>
         </div>`;
     }
 
     let handoffSpecCache;
+    let handoffSpecPath;
 
     function applyHandoffPreview(block) {
       if (!block) return;
@@ -606,7 +649,7 @@
           pre.textContent = slice;
           pre.hidden = false;
         }
-        if (status) status.textContent = "Loaded from /docs/interview-ui-handoff-prompt.md on this host.";
+        if (status) status.textContent = "Loaded from /" + (handoffSpecPath || "spec") + " on this host.";
         return;
       }
       if (handoffSpecCache === "") {
@@ -616,12 +659,15 @@
 
     function loadHandoffPreview(root) {
       const block = root && root.querySelector("[data-dt-handoff-preview]");
-      if (!block) return;
-      if (handoffSpecCache !== undefined) {
+      const handoff = currentHandoff();
+      if (!block || !handoff) return;
+      if (handoffSpecPath === handoff.specPath && handoffSpecCache !== undefined) {
         applyHandoffPreview(block);
         return;
       }
-      fetch(`/${HANDOFF.specPath}`)
+      handoffSpecPath = handoff.specPath;
+      handoffSpecCache = undefined;
+      fetch(`/${handoff.specPath}`)
         .then((res) => {
           if (!res.ok) throw new Error(String(res.status));
           return res.text();
@@ -882,7 +928,9 @@
       panel.addEventListener("click", (event) => {
         const handoffCopyBtn = event.target.closest("[data-dt-handoff-copy]");
         if (handoffCopyBtn) {
-          copyText(handoffCopyBtn, interviewHandoffStarterPrompt(), "Copied");
+          const handoff = currentHandoff();
+          if (!handoff) return;
+          copyText(handoffCopyBtn, handoff.prompt, "Copied");
           return;
         }
         const copyBtn = event.target.closest("[data-dt-copy]");
