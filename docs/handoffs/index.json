@@ -1,0 +1,13 @@
+{
+  "contractor-timesheets": {
+    "title": "Contractor timesheets design update",
+    "doc": "docs/handoffs/contractor-timesheets.md",
+    "commit": "PENDING",
+    "pages": [
+      {
+        "page": "contractor-profile.html",
+        "selectors": ["#panel-timesheets", "#panel-profile"]
+      }
+    ]
+  }
+}
