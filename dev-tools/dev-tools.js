@@ -538,147 +538,186 @@
       </div>`;
     }
 
-    const HANDOFFS = {
-      interview: {
-        title: "Handoff — Live AI Interview UI",
-        note: "Starter prompt for Claude Code. Links to the interview spec and prototype.",
-        specPath: "docs/interview-ui-handoff-prompt.md",
-        githubBlob:
-          "https://github.com/patricemmh/be-platform/blob/main/docs/interview-ui-handoff-prompt.md",
-        githubRaw:
-          "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/interview-ui-handoff-prompt.md",
-        prototype: "https://patricemmh.github.io/be-platform/interview.html",
-        prototypeLabel: "Prototype: interview.html (Pages)",
-        prompt: [
-          "Implement the Live AI Interview UI for BetterEngineer using this repo’s handoff spec and static prototypes.",
-          "",
-          "Full spec (read first):",
-          "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/interview-ui-handoff-prompt.md",
-          "",
-          "Spec on GitHub (browse):",
-          "https://github.com/patricemmh/be-platform/blob/main/docs/interview-ui-handoff-prompt.md",
-          "",
-          "Visual reference — match pixel behavior, spacing, typography, and state transitions:",
-          "- Interview room: https://patricemmh.github.io/be-platform/interview.html",
-          "",
-          "Source file: interview.html (runtime room + in-room question set setup). Post-close target: vetting.html.",
-          "",
-          "Follow the spec: design tokens, body state classes, localStorage keys, call lifecycle, and QA checklist. Side-by-side with the GitHub Pages interview prototype is required.",
-          "",
-          "This task is only the interview screen. Do not read or apply docs/handoffs/contractor-timesheets.md.",
-        ].join("\n"),
-      },
-      "contractor-profile": {
-        title: "Handoff — Contractor timesheets",
-        note: "Starter prompt for Claude Code. This page only. Not the interview handoff.",
-        specPath: "docs/handoffs/contractor-timesheets.md",
-        githubBlob:
-          "https://github.com/patricemmh/be-platform/blob/main/docs/handoffs/contractor-timesheets.md",
-        githubRaw:
-          "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/handoffs/contractor-timesheets.md",
-        prototype: "https://patricemmh.github.io/be-platform/contractor-profile.html",
-        prototypeLabel: "Prototype: contractor-profile.html (Pages)",
-        prompt: [
-          "Update the existing contractor timesheet UI to match the contractor profile prototype. Do not rebuild hour logging.",
-          "",
-          "This task is only the contractor profile Timesheets tab and the basic Profile tab on that same page.",
-          "Do not read, fetch, or follow the Live AI Interview handoff, interview.html, or docs/interview-ui-handoff-prompt.md.",
-          "If an older timesheet spec disagrees with this document or with contractor-profile.html, follow this document and that prototype.",
-          "",
-          "Full spec (read this file only):",
-          "https://raw.githubusercontent.com/patricemmh/be-platform/main/docs/handoffs/contractor-timesheets.md",
-          "",
-          "Spec on GitHub (browse):",
-          "https://github.com/patricemmh/be-platform/blob/main/docs/handoffs/contractor-timesheets.md",
-          "",
-          "Visual reference:",
-          "- https://patricemmh.github.io/be-platform/contractor-profile.html",
-          "",
-          "Source file: contractor-profile.html. Default tab is Timesheets.",
-        ].join("\n"),
-      },
-    };
+    const HANDOFF_REPO = "https://github.com/patricemmh/be-platform/blob/main/";
+    const HANDOFF_RAW = "https://raw.githubusercontent.com/patricemmh/be-platform/main/";
+    const HANDOFF_PAGES = "https://patricemmh.github.io/be-platform/";
+    let handoffCatalog = [];
+    const handoffSpecCache = new Map();
 
-    function currentHandoff() {
-      const page = (document.body && document.body.dataset.page) || "";
-      const file = (location.pathname.split("/").pop() || "").replace(/\.html$/, "");
-      if (page === "contractor-profile" || file === "contractor-profile") return HANDOFFS["contractor-profile"];
-      if (file === "interview") return HANDOFFS.interview;
-      return null;
+    function currentPageFile() {
+      let file = decodeURIComponent((location.pathname.split("/").pop() || "").split("?")[0]);
+      if (!file) file = "index.html";
+      if (!/\.html?$/i.test(file)) file += ".html";
+      return file.toLowerCase();
     }
 
-    function handoffSection() {
-      const handoff = currentHandoff();
-      if (!handoff) return "";
-      return `<div class="dt-section dt-handoff">
+    function isPageWide(selectors) {
+      return selectors.every((selector) => selector === "body" || selector === "html");
+    }
+
+    function handoffPrompt(item) {
+      const pages = [...new Set(item.pages.map((entry) => entry.page))];
+      const sections = item.pages.flatMap((entry) =>
+        entry.selectors.filter((selector) => selector !== "body" && selector !== "html")
+      );
+      return [
+        `Implement "${item.title}" only.`,
+        "",
+        `This prompt is valid only on: ${pages.join(", ")}.`,
+        sections.length
+          ? `Only these sections: ${sections.join(", ")}.`
+          : "This prompt covers that whole page.",
+        "If you are on a different page, or outside those sections, do not use this prompt.",
+        "Do not follow any other handoff spec in this repository.",
+        "",
+        "Full spec (read this file only):",
+        HANDOFF_RAW + item.doc,
+        "",
+        "Spec on GitHub:",
+        HANDOFF_REPO + item.doc,
+        "",
+        "Prototype:",
+        ...pages.map((page) => "- " + HANDOFF_PAGES + page),
+      ].join("\n");
+    }
+
+    function recordsForThisPage() {
+      const page = currentPageFile();
+      return handoffCatalog.flatMap((item) => {
+        const hits = item.pages.filter((entry) => entry.page === page);
+        if (!hits.length) return [];
+        return [{
+          id: item.id,
+          title: item.title,
+          doc: item.doc,
+          selectors: hits.flatMap((entry) => entry.selectors),
+          pages: item.pages,
+        }];
+      });
+    }
+
+    function selectorDistance(el, selector) {
+      let hit = null;
+      try { hit = el.closest(selector); } catch { return Infinity; }
+      if (!hit) return Infinity;
+      let distance = 0;
+      let node = el;
+      while (node && node !== hit) {
+        distance += 1;
+        node = node.parentElement;
+      }
+      return distance;
+    }
+
+    function matchingHandoffs(el) {
+      const records = recordsForThisPage();
+      if (!el || !el.isConnected || el.closest("[data-dev-inspect-drawer], [data-dev-inspect-exclude]")) {
+        return records.filter((item) => isPageWide(item.selectors));
+      }
+      const ranked = records.map((item) => ({
+        item,
+        distance: Math.min(...item.selectors.map((selector) => selectorDistance(el, selector))),
+      })).filter((entry) => entry.distance < Infinity);
+      if (!ranked.length) return [];
+      const nearest = Math.min(...ranked.map((entry) => entry.distance));
+      return ranked.filter((entry) => entry.distance === nearest).map((entry) => entry.item);
+    }
+
+    function handoffSection(el) {
+      return matchingHandoffs(el).map((item) => {
+        const sectionNote = isPageWide(item.selectors)
+          ? "This page."
+          : "This section: " + item.selectors.join(", ");
+        const blob = HANDOFF_REPO + item.doc;
+        const raw = HANDOFF_RAW + item.doc;
+        const prototype = HANDOFF_PAGES + currentPageFile();
+        return `<div class="dt-section dt-handoff">
           <div class="dt-copy-row">
             <div>
-              <p class="dt-section-label">${esc(handoff.title)}</p>
-              <p class="dt-note">${esc(handoff.note)}</p>
+              <p class="dt-section-label">Handoff — ${esc(item.title)}</p>
+              <p class="dt-note">${esc(sectionNote)} Not shown on other pages.</p>
             </div>
-            <button type="button" class="dt-copy" data-dt-handoff-copy>${ICON.copy} Copy prompt</button>
+            <button type="button" class="dt-copy" data-dt-handoff-copy data-handoff-id="${esc(item.id)}">${ICON.copy} Copy prompt</button>
           </div>
           <ul class="dt-link-list">
-            <li><a href="${esc(handoff.githubBlob)}" target="_blank" rel="noopener noreferrer">Spec on GitHub (blob)</a></li>
-            <li><a href="${esc(handoff.githubRaw)}" target="_blank" rel="noopener noreferrer">Spec raw URL</a></li>
-            <li><a href="${esc(handoff.prototype)}" target="_blank" rel="noopener noreferrer">${esc(handoff.prototypeLabel)}</a></li>
+            <li><a href="${esc(blob)}" target="_blank" rel="noopener noreferrer">Spec on GitHub (blob)</a></li>
+            <li><a href="${esc(raw)}" target="_blank" rel="noopener noreferrer">Spec raw URL</a></li>
+            <li><a href="${esc(prototype)}" target="_blank" rel="noopener noreferrer">This page</a></li>
           </ul>
-          <details class="dt-handoff-details" data-dt-handoff-preview>
+          <details class="dt-handoff-details" data-dt-handoff-preview data-spec="${esc(item.doc)}">
             <summary>Spec preview (same origin)</summary>
             <p class="dt-note dt-handoff-md-status" data-dt-handoff-md-status>Loading…</p>
             <pre class="dt-handoff-md" data-dt-handoff-md hidden spellcheck="false"></pre>
           </details>
-          <textarea class="dt-export dt-handoff-prompt" readonly spellcheck="false" hidden aria-hidden="true">${esc(handoff.prompt)}</textarea>
+          <textarea class="dt-export dt-handoff-prompt" readonly spellcheck="false" hidden aria-hidden="true">${esc(handoffPrompt(item))}</textarea>
         </div>`;
+      }).join("");
     }
 
-    let handoffSpecCache;
-    let handoffSpecPath;
-
-    function applyHandoffPreview(block) {
-      if (!block) return;
+    function applyHandoffPreview(block, text) {
       const pre = block.querySelector("[data-dt-handoff-md]");
       const status = block.querySelector("[data-dt-handoff-md-status]");
+      const path = block.getAttribute("data-spec") || "spec";
       const max = 14000;
-      if (handoffSpecCache) {
-        const slice =
-          handoffSpecCache.length > max
-            ? `${handoffSpecCache.slice(0, max)}\n\n… [truncated]`
-            : handoffSpecCache;
+      if (text) {
+        const slice = text.length > max ? `${text.slice(0, max)}\n\n… [truncated]` : text;
         if (pre) {
           pre.textContent = slice;
           pre.hidden = false;
         }
-        if (status) status.textContent = "Loaded from /" + (handoffSpecPath || "spec") + " on this host.";
+        if (status) status.textContent = "Loaded from /" + path + " on this host.";
         return;
       }
-      if (handoffSpecCache === "") {
-        if (status) status.textContent = "Preview unavailable here — use the GitHub links above.";
+      if (text === "") {
+        if (status) status.textContent = "Preview unavailable here. Use the GitHub links above.";
       }
     }
 
     function loadHandoffPreview(root) {
-      const block = root && root.querySelector("[data-dt-handoff-preview]");
-      const handoff = currentHandoff();
-      if (!block || !handoff) return;
-      if (handoffSpecPath === handoff.specPath && handoffSpecCache !== undefined) {
-        applyHandoffPreview(block);
-        return;
-      }
-      handoffSpecPath = handoff.specPath;
-      handoffSpecCache = undefined;
-      fetch(`/${handoff.specPath}`)
+      if (!root) return;
+      root.querySelectorAll("[data-dt-handoff-preview]").forEach((block) => {
+        const path = block.getAttribute("data-spec");
+        if (!path) return;
+        if (handoffSpecCache.has(path)) {
+          applyHandoffPreview(block, handoffSpecCache.get(path));
+          return;
+        }
+        fetch("/" + path)
+          .then((res) => {
+            if (!res.ok) throw new Error(String(res.status));
+            return res.text();
+          })
+          .then((text) => {
+            handoffSpecCache.set(path, text);
+            applyHandoffPreview(block, text);
+          })
+          .catch(() => {
+            handoffSpecCache.set(path, "");
+            applyHandoffPreview(block, "");
+          });
+      });
+    }
+
+    function loadHandoffCatalog() {
+      fetch("/docs/handoffs/index.json")
         .then((res) => {
           if (!res.ok) throw new Error(String(res.status));
-          return res.text();
+          return res.json();
         })
-        .then((text) => {
-          handoffSpecCache = text;
-          applyHandoffPreview(block);
+        .then((data) => {
+          handoffCatalog = Object.entries(data || {}).map(([id, item]) => ({
+            id,
+            title: item.title || id,
+            doc: item.doc || "",
+            pages: (item.pages || []).map((entry) => ({
+              page: String(entry.page || "").toLowerCase(),
+              selectors: entry.selectors && entry.selectors.length ? entry.selectors : ["body"],
+            })),
+          })).filter((item) => item.doc && item.pages.length);
+          if (panel) paintPanel();
         })
         .catch(() => {
-          handoffSpecCache = "";
-          applyHandoffPreview(block);
+          handoffCatalog = [];
         });
     }
 
@@ -710,7 +749,7 @@
 
     function panelBody(current) {
       if (!current) {
-        return `<p class="dt-empty">Nothing selected yet. Click something on the page. The inspect icons stay clickable so you can turn this off.</p>${handoffSection()}`;
+        return `<p class="dt-empty">Nothing selected yet. Click something on the page. The inspect icons stay clickable so you can turn this off.</p>${handoffSection(null)}`;
       }
       const flex = current.display === "flex" || current.display === "inline-flex";
       const tw = specToTailwind(current);
@@ -780,7 +819,7 @@
           </div>
           <textarea class="dt-export" readonly spellcheck="false">${esc(exported)}</textarea>
         </div>
-        ${handoffSection()}
+        ${handoffSection(selected)}
       </div>`;
     }
 
@@ -928,9 +967,8 @@
       panel.addEventListener("click", (event) => {
         const handoffCopyBtn = event.target.closest("[data-dt-handoff-copy]");
         if (handoffCopyBtn) {
-          const handoff = currentHandoff();
-          if (!handoff) return;
-          copyText(handoffCopyBtn, handoff.prompt, "Copied");
+          const area = handoffCopyBtn.closest(".dt-handoff") && handoffCopyBtn.closest(".dt-handoff").querySelector(".dt-handoff-prompt");
+          if (area) copyText(handoffCopyBtn, area.value, "Copied");
           return;
         }
         const copyBtn = event.target.closest("[data-dt-copy]");
@@ -996,6 +1034,7 @@
       syncButtons();
       paintOverlay();
       paintPanel();
+      loadHandoffCatalog();
 
       document.addEventListener("click", onClickCapture, true);
       window.addEventListener("scroll", onScroll, true);

@@ -11,7 +11,7 @@ The script places its icons in the page header (top bar, subhead actions, or the
 
 ## Inspect
 
-The code icon turns click-to-inspect on. The panel icon shows or hides the floating panel. Click an element to read its computed layout, type, colors, box model, a Tailwind approximation, and a copyable handoff block. Escape closes the panel. The header of the panel is a drag handle. Clicks on the inspect icons are ignored so you can turn the tool off.
+The code icon turns click-to-inspect on. The panel icon shows or hides the floating panel. Click an element to read its computed layout, type, colors, box model, and a Tailwind approximation. A copyable handoff prompt appears only when `docs/handoffs/index.json` lists this page, and only when the click is inside that handoff's selectors. Escape closes the panel. The header of the panel is a drag handle. Clicks on the inspect icons are ignored so you can turn the tool off.
 
 Mark any region that must stay clickable with `data-dev-inspect-exclude`. To choose the icon slot yourself, add `data-dev-tools-slot` to that element.
 

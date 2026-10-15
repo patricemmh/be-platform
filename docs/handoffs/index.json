@@ -9,5 +9,16 @@
         "selectors": ["#panel-timesheets", "#panel-profile"]
       }
     ]
+  },
+  "interview-ui": {
+    "title": "Live AI Interview UI",
+    "doc": "docs/interview-ui-handoff-prompt.md",
+    "commit": "",
+    "pages": [
+      {
+        "page": "interview.html",
+        "selectors": ["body"]
+      }
+    ]
   }
 }

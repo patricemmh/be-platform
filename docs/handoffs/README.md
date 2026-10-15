@@ -154,8 +154,11 @@ Mirrors the ticket's acceptance criteria. Each item should be checkable against 
 
 ## Conventions
 
-- Wrap new features in the prototype HTML with `data-feature="BE-xxx"` so the agent (and later dev-tools) can find and highlight them.
-- Put the ticket ID in commit messages (e.g. `BE-812: add summary card`) so `git log --grep` finds the history.
+- Wrap a feature in `data-feature` only as a finder. The inspect **Copy prompt** does not use that attribute.
+- A prompt appears only when `docs/handoffs/index.json` lists the **current page**.
+- `selectors` decide where on that page it appears. `["body"]` means the whole page. A list like `["#panel-timesheets"]` means only that section. Several handoffs can list the same page with different selectors. The inspect panel shows the one that contains the element you clicked, and shows nothing when the click is outside every listed section.
+- A prompt never renders on a page that is not in its `pages` list.
+- Put the ticket or feature id in commit messages so `git log --grep` finds the history.
 
 ---
 
@@ -173,9 +176,4 @@ Build on first real use and confirm the approach with the designer first.
 
 ## Existing example to migrate
 
-The **Live AI Interview UI** is the first handoff and predates this structure:
-
-- Spec: `docs/interview-ui-handoff-prompt.md` (a full-page handoff)
-- The hard-coded "Handoff — Live AI Interview UI" section in `dev-tools/dev-tools.js` (`HANDOFF`, `handoffSection()`)
-
-Both should eventually be migrated into this structure: the spec moved or linked as a `docs/handoffs/<ticket>.md` entry with an `index.json` record, and the dev-tools section driven by `?handoff=` instead of being hard-coded.
+The inspect panel reads `docs/handoffs/index.json`. It shows a handoff only on the pages listed for that handoff, and only inside the selectors for that entry. The Live AI Interview spec is listed for `interview.html` only. The contractor timesheet spec is listed for `#panel-timesheets` and `#panel-profile` on `contractor-profile.html` only.
