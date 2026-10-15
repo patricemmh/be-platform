@@ -2,7 +2,7 @@
   "contractor-timesheets": {
     "title": "Contractor timesheets design update",
     "doc": "docs/handoffs/contractor-timesheets.md",
-    "commit": "PENDING",
+    "commit": "1806401",
     "pages": [
       {
         "page": "contractor-profile.html",
