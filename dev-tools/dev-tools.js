@@ -556,7 +556,7 @@
     }
 
     function handoffPrompt(item) {
-      const pages = [...new Set(item.pages.map((entry) => entry.page))];
+      const pages = [...new Set(item.pages.map((entry) => entry.href || entry.page))];
       const sections = item.pages.flatMap((entry) =>
         entry.selectors.filter((selector) => selector !== "body" && selector !== "html")
       );
@@ -577,7 +577,7 @@
         HANDOFF_REPO + item.doc,
         "",
         "Prototype:",
-        ...pages.map((page) => "- " + HANDOFF_PAGES + page),
+        ...item.pages.map((entry) => "- " + HANDOFF_PAGES + (entry.href || entry.page)),
       ].join("\n");
     }
 
@@ -630,7 +630,8 @@
           : "This section: " + item.selectors.join(", ");
         const blob = HANDOFF_REPO + item.doc;
         const raw = HANDOFF_RAW + item.doc;
-        const prototype = HANDOFF_PAGES + currentPageFile();
+        const onThisPage = item.pages.find((entry) => entry.page === currentPageFile());
+        const prototype = HANDOFF_PAGES + ((onThisPage && onThisPage.href) || currentPageFile());
         return `<div class="dt-section dt-handoff">
           <div class="dt-copy-row">
             <div>
@@ -711,6 +712,7 @@
             doc: item.doc || "",
             pages: (item.pages || []).map((entry) => ({
               page: String(entry.page || "").toLowerCase(),
+              href: entry.href ? String(entry.href) : "",
               selectors: entry.selectors && entry.selectors.length ? entry.selectors : ["body"],
             })),
           })).filter((item) => item.doc && item.pages.length);
@@ -749,7 +751,8 @@
 
     function panelBody(current) {
       if (!current) {
-        return `<p class="dt-empty">Nothing selected yet. Click something on the page. The inspect icons stay clickable so you can turn this off.</p>${handoffSection(null)}`;
+        return `<p class="dt-empty">Nothing selected yet. Click something on the page. The inspect icons stay clickable so you can turn this off.</p>
+          <p class="dt-note"><a href="${esc(location.pathname.includes("/my/") ? "../prototype-nav.html" : "prototype-nav.html")}" target="_blank" rel="noopener noreferrer">Prototype navigation hub</a></p>${handoffSection(null)}`;
       }
       const flex = current.display === "flex" || current.display === "inline-flex";
       const tw = specToTailwind(current);

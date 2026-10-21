@@ -176,4 +176,4 @@ Build on first real use and confirm the approach with the designer first.
 
 ## Existing example to migrate
 
-The inspect panel reads `docs/handoffs/index.json`. It shows a handoff only on the pages listed for that handoff, and only inside the selectors for that entry. The Live AI Interview spec is listed for `interview.html` only. The contractor timesheet spec is listed for `#panel-timesheets` and `#panel-profile` on `contractor-profile.html` only.
+The inspect panel reads `docs/handoffs/index.json`. It shows a handoff only on the pages listed for that handoff, and only inside the selectors for that entry. The Live AI Interview spec is listed for `interview.html` only. The contractor hours spec is listed for `#hours` on `my/hours.html` only.

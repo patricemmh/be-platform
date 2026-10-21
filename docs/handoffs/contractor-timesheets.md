@@ -1,52 +1,50 @@
-# Contractor timesheets — design update
+# Contractor hours
 
 ## Ticket
 
 | | |
 |---|---|
-| ID | No Linear ticket yet. This is a design handoff for the contractor hour-logging UI that already exists in the product. |
-| Title | Contractor profile timesheets: match the updated prototype |
-| Linear | Not filed. Existing related surface: team profile timesheets at `/team/<jobApplicationId>/profile/timesheets`. |
-| Prototype | https://patricemmh.github.io/be-platform/contractor-profile.html |
-| Source | https://github.com/patricemmh/be-platform/blob/main/contractor-profile.html |
-| Written against commit | `1806401` |
+| ID | No Linear ticket yet. This is a design handoff for the contractor hour-logging screen that already exists in the product. |
+| Title | Contractor hours: match the updated prototype |
+| Linear | Not filed. The product route is `/my/hours` in the candidate portal. |
+| Prototype | https://patricemmh.github.io/be-platform/my/hours.html |
+| Source | https://github.com/patricemmh/be-platform/blob/main/my/hours.html |
+| Written against commit | Update this hash when the prototype is pushed. |
 
 ## How to use this
 
 Paste this file into Claude Code in the **application** repo, not this prototype repo.
 
-This document is the only spec for this task. The work is the contractor profile Timesheets tab, plus the basic Profile tab on `contractor-profile.html`.
+This document is the only spec for this task. The work is the contractor's own Hours page.
 
 Do not read, fetch, or follow any of these. They are a different feature:
 
 - `docs/interview-ui-handoff-prompt.md`
 - `interview.html`
+- `contractor-profile.html` (an older staff-profile sketch; the hours grid no longer lives there)
 - The dev-tools panel labeled **Handoff — Live AI Interview UI**
 
-If an older timesheet spec, ticket, or existing screen disagrees with this file or with `contractor-profile.html`, follow this file and that prototype. Do not stop to ask which one wins.
+If an older timesheet spec, ticket, or existing screen disagrees with this file or with `my/hours.html`, follow this file and that prototype. Do not stop to ask which one wins.
 
-The product already logs contractor hours. Do not rebuild that system. Restyle and restructure the existing contractor timesheet so it matches this prototype. Reuse current components, data, and APIs. The HTML here is a visual and behavior reference only.
+The product already logs contractor hours. Do not rebuild that system. Restyle and restructure the existing contractor hours screen so it matches this prototype. Reuse current components, data, and APIs. The HTML here is a visual and behavior reference only.
 
 Open the prototype side by side while implementing:
 
 | Environment | URL |
 |-------------|-----|
-| GitHub Pages | https://patricemmh.github.io/be-platform/contractor-profile.html |
-| Local (`npm run dev`, port 37689) | http://localhost:37689/contractor-profile.html |
-
-The page opens on **Timesheets**. `#profile` is the basic contractor profile. From other prototype pages, Account menu → **View as contractor**.
+| GitHub Pages | https://patricemmh.github.io/be-platform/my/hours.html |
+| Local (`npm run dev`, port 37689) | http://localhost:37689/my/hours |
 
 ## Summary
 
-An active contractor opens their profile and lands on a Timesheets tab. They log hours against current assignments only. Week view is a grid: one row per project and task, one column per day. They add a row from a modal, then type hours in the grid. Day view is for a single day, including notes and more than one entry on the same project and task. There is no submit, approval, or lock in this design.
+An active contractor logs hours on their own Hours page in the candidate portal. The page uses the portal chrome and a page title of **Hours**. Week view is the only view: one row per project and task, one column per day. They add a row from a modal, then type hours in the grid. A save is not shown as kept until Harvest confirms it. Billed and locked entries stay visible and cannot be changed.
 
 ## Touchpoints
 
 | Page | Location | Neighboring components (reference only, don't rebuild) |
 |------|----------|--------------------------------------------------------|
-| `contractor-profile.html` | `#panel-timesheets` inside the existing profile shell | Top bar, icon rail, profile subhead, Profile tab |
-| `contractor-profile.html` | `#panel-profile` | Assignments card and “This week” summary. Keep if the contractor profile is in scope; do not restyle the recruiter candidate profile. |
-| `profile.html`, `client.html`, `client-profile.html`, `messages.html`, `vetting.html`, `feedback.html` | Account menu group “View as contractor” | Prototype navigation only. Do not add this menu to production. |
+| Product route `/my/hours` | The hours grid under the portal page title | Candidate portal header, sidebar, and page-title band. The prototype sidebar is a stand-in so the page sits in portal chrome. Do not rebuild navigation from it. |
+| Prototype `my/hours.html` | `#hours` | Same screen. The account menu links back to other prototype views. Do not add that menu to production. |
 
 ## What already exists vs what to change
 
@@ -54,162 +52,134 @@ Keep the real data model, permissions, Harvest linkage, and persistence. Change 
 
 **Remove from this screen**
 
+- The staff profile wrapper, contractor photo subhead, and Profile / Timesheets tabs
+- The Day / Week toggle. Week view only. A day view is a later change, so hide it rather than design around it.
 - Submit week, submit a day, submit a date range
-- Status pills and banners (Not submitted, Partly submitted, Pending, Approved, Locked)
-- Any lock that blocks edit or delete because a week was submitted
+- Status pills and banners for submission or approval
 - Inline project and task dropdowns inside the week grid
+- Saving a zero-hour entry
 
 **Keep or add**
 
-- Week and day views
+- Week grid only, on `/my/hours`
 - Assigned projects and their tasks only
-- Create, edit, and delete time entries
+- Create, edit, and delete time entries, with billed and locked cells left closed
 - Optional note
 - Daily and weekly totals
-- Add a project/task row before typing hours on the week grid
+- Add a project/task row before typing hours
+- A remove control on a row that has no hours
 
 ## What to build
 
 ### Shell
 
-Same profile chrome as the candidate profile: sticky top bar, icon rail, subhead with photo, name, and tabs **Profile** and **Timesheets**. Timesheets is the default tab. Tab text is 15px, active color `#4c60b2`, 3px underline.
+Use the candidate portal chrome that already wraps portal pages. Do not invent a new shell and do not use the staff recruiter layout.
 
-### Profile tab (basic)
+The page title band reads **Hours**. On desktop the title is the page-title style (25px, weight 100, color `#333333`) with 30px below the band. Below 767px the title is 18px / 21px at weight 400, the band's bottom margin is replaced by a 1px faint rule, and the band padding is 13px.
 
-Hero with photo and name, location, phone, email. Meta: Active contractor, timezone, contractor since, assignment count. Assignments list current clients only, each with **Log time**. Side card **This week** shows hours and a 7-bar chart, plus **Open timesheets**. Timezone card under that. No recruiting fields.
+Page background is `#F6F6F6`. Body text is `#333333`. Secondary text is `#707070`. Buttons follow the app button recipe: 45px tall, 16px, weight 500, 4px radius. Primary fill is `#4C60B2`. The green **Save row** button stays `#319243`.
 
-**Log time** opens Timesheets on Day view for today, with that assignment’s row preselected when it already exists on the week.
+### Week toolbar
 
-### Timesheets toolbar
+Inside the white card:
 
-One white card, max width 1180px, radius 8px, page background `#fafafa`.
+- Previous week, the week range, next week.
+- The week's total hours sit under that range.
+- When the visible week is not the current week, **This week** sits under the range and jumps back.
+- Future weeks are open. There is no Day control, no copy-last-week button, no submit control, and no status.
 
-Toolbar padding `18px 20px`, space-between:
-
-- Left: previous week (36px outlined icon button), week title (18px / 500 / `#2a2a2a`), hours under it (13px / `#888`), next week button. When the visible week is not the current week, a **This week** text button sits under the title.
-- Right: a segmented **Day | Week** control only. Week is the default. No status, no submit.
+**Next week** carries the current week's project/task rows forward as empty rows. Hours do not copy. **Previous week** and **This week** do not carry empty rows.
 
 ### Week grid
 
-Table, Monday through Sunday, plus a Total column.
+Monday through Sunday, plus a Total column. Every row is labeled client, then project, then task, ordered by client. There are no client heading rows.
 
-- First column header: **Project / task**
-- Day headers: uppercase weekday, date number. Today is blue with a “Today” tag and a light blue column wash (`#f8f9fd`). Weekend columns are `#fcfcfc`.
-- Each body row is fixed text, not dropdowns: client (12px `#888`), project (15px / 500), task (13px `#707070`).
-- Hour inputs are right-aligned, 14px, tabular numbers, white fill, 1px border `#e4e4e4`, radius 4px, height 36px. Hover border `#cfcfcf`. Focus border `#4c60b2` with a `#c5cee9` ring.
-- A note icon sits to the right of an input that has an entry. Blue when a note exists, gray otherwise.
-- Footer row label **TOTAL**. One total per day, right-aligned in that day’s column, and a week total in the last column. Numbers line up with the hour inputs (extra right padding so they clear the note icon).
-- **Add row** is an outlined button under the table only, with about 20px of space above it. There is no second Add row button in the toolbar, and no helper sentence under the button.
-- An empty pinned row (no hours) shows a remove control.
+- Hour fields accept a number greater than 0, at most 24, with at most two decimal places. A comma is a decimal point.
+- `0`, a negative number, more than 24, and more than two decimal places are each refused. The message names that rule. The cell returns to the last saved value.
+- Clearing a cell removes that entry. It does not ask for confirmation.
+- Enter saves the cell and moves focus to the next day's cell on that row.
+- A cell is disabled while its save is in flight, and it shows **Saving**. Nothing on the grid updates to the new value until Harvest confirms the save. If Harvest refuses or the save fails, the cell returns to the last saved value and a toast names the reason.
+- A billed or locked entry shows its hours, a lock, and the reason (**Billed** or **Locked**). It cannot be edited or deleted.
+- A day that already has several Harvest entries for that project and task is read-only and says **Managed in Harvest**.
+- A row with no hours has a **Remove** control. A row with hours does not.
+- Footer totals stay in the day columns, with the week total in the last column. Today has a **Today** tag and a light blue wash. Weekend columns are tinted. A day total over 24 is red and is still allowed.
+- **Add row** is the outlined button under the grid. It is the only add control.
 
-### Add row modal
+The prototype treats an entry of exactly 13 hours as a failed Harvest save so that state can be reviewed. Do not ship that special case.
 
-Title bar: **Add row to this timesheet** (centered, `#f3f3f3` bar).
+### Add row
 
-Body label: **Project / Task**.
-
-- First select: current assignments, grouped by client, showing the project name.
-- Second select: tasks for that project. If the project has one task, select it automatically.
-- **Save row** is green (`#319243`), white label. **Cancel** is outlined, to the right of Save.
-- Saving adds an empty row on the current week. Duplicate project + task on the same week is rejected.
-- Project and task cannot be changed from the grid after the row exists.
-
-### Day view
-
-Left strip of the seven days (hours on each; “Today” on today) and a week total. On narrow widths the strip becomes a horizontal scroller.
-
-Main column: date heading, that day’s entries (client, project · task, note, hours, edit, delete), then an add form.
-
-The add form only offers rows already on this week (project / task as one select), plus hours and an optional note. If the week has no rows, the empty state tells the contractor to add a row in Week view first.
+**Add row to this timesheet.** Project is grouped under its client, then task. **Save row** and **Cancel**. A project and task already on the week are not offered. One task on a project is selected automatically. The new row is empty. Project and task cannot be changed from the grid after that.
 
 ### Edit entry
 
-Modal title **Edit entry**. Project, client, and task are read-only summary text. Editable fields: hours, date, note. **Delete**, **Cancel**, **Save**. Moving the date follows that entry to the destination week.
+Opened from the note control on a single editable entry. Project, client, and task are read-only. Editable fields are hours, date, and note. **Delete**, **Cancel**, **Save**.
+
+Delete asks for confirmation. Clearing a grid cell does not.
+
+Changing the date moves the entry, and the week view follows it to that week. The same hour rules and the same in-flight save apply. A billed or locked entry never opens this modal.
 
 ## States
 
 - **Empty week:** no rows, footer totals `0.00`, **Add row** still available.
-- **Empty day:** “No time logged for {weekday} yet.” If the week has rows, the add form is still there.
-- **Loading:** use the app’s existing loading pattern. The prototype has none.
-- **Error:** invalid hours toast or inline form error. Copy in the prototype: “Enter hours as a number, like 8 or 7.5.”, “Hours cannot be negative.”, “One entry cannot be more than 24 hours.”, “That project and task already has a row this week.”, “This day has more than one entry. Edit them in Day view.”
-- **Hover / focus:** hour cells and icon buttons as in Visual specs. Segmented control: selected segment background `#f4f6fb`, text `#4c60b2`.
-- **Disabled:** task select in the add-row modal stays disabled until a project is chosen. A week cell with more than one entry for that project and task is read-only and opens Day view on click.
-- **Over 24 hours in a day:** the day total turns `#d7373f`. Do not block the save.
-- **Responsive:** under 800px the day strip stacks above the day detail and the add form becomes two columns. Under 720px the icon rail hides. The week grid scrolls horizontally (`min-width: 920px`).
+- **Empty row:** client, project, and task, blank day cells, and **Remove**.
+- **Saving:** the cell is disabled and reads **Saving** until Harvest confirms.
+- **Refused hours:** toast **Hours must be greater than 0.**, **Hours cannot be more than 24.**, or **Hours can have at most two decimal places.** The previous value returns.
+- **Failed save:** toast **Harvest could not save this entry.** The previous value returns.
+- **Billed / locked:** hours, lock icon, and the reason. No editor and no delete.
+- **Several Harvest entries:** read-only total and the line **Managed in Harvest**.
+- **Over 24 hours in a day:** the day total turns `#d7373f`. The save is not blocked.
 
 ## Behavior and interactions
 
 - Monday is the first day of the week. Dates are local, not UTC.
-- **Next week** copies the current week’s project/task rows into the next week. Hours do not copy. **Previous week** and **This week** do not carry empty rows forward.
-- Typing hours and pressing Enter commits the cell and focuses the next day on that row.
-- Clearing a cell deletes that single entry. Typing `0` saves `0.00` and keeps the entry.
-- Allowed hours per entry: `0` through `24`, up to two decimals. A comma is accepted as a decimal point.
-- One project + task is one row. Two entries on the same project, task, and date sum in the week cell and must be edited in Day view.
-- Notes are edited from the note icon (single entry) or from the day-view edit modal.
-- Only current assignments appear in the add-row modal.
-- A task is required to save a row.
-- Billable vs non-billable is not on this screen.
-- Nothing on this screen submits a timesheet or locks a day.
+- Only current assignments appear in the add-row modal. A task is required.
+- Billable amounts, rates, and approval are not on this screen.
 - Refreshing the prototype resets sample data. Production must persist.
 
 ### Sample data in the prototype (placeholders)
 
-Gabriel Kouyoumdjian, Montevideo, GMT-3. Assignments: Vistera / Platform rebuild (Frontend, API, Code review), Optimus MD / Patient portal (Frontend, Bug fixes), DAC Consulting / Architecture advisory (Consulting). The current week is prefilled so the grid is not empty. Treat names, hours, and notes as mock content.
+Gabriel Kouyoumdjian. Assignments: Vistera / Platform rebuild (Frontend, API, Code review), Optimus MD / Patient portal (Frontend, Bug fixes), DAC Consulting / Architecture advisory (Consulting).
 
-## Visual specs
-
-From `contractor-profile.html` `:root`. Match these; do not import the prototype stylesheet.
-
-| Token | Value | Use |
-|---|---|---|
-| `--page` | `#fafafa` | Page background |
-| `--blue` | `#4c60b2` | Tabs, links, primary buttons, focus, today |
-| `--green` | `#319243` | Save row, active-contractor dot |
-| `--danger` | `#d7373f` | Over-24 totals, destructive hover |
-| `--line` | `#ececec` | Card and toolbar dividers |
-| `--shadow` | `0 1px 2px rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.07), 0 0 0.5px rgba(0,0,0,.14)` | Cards |
-| `--font` | `"runda", system-ui, sans-serif` | Typekit `lhs7vwi` |
-| `--ease` | `cubic-bezier(.4, 0, .2, 1)` | Toasts |
-
-`b, strong` are weight 500, not 700. Hour inputs and totals use tabular numbers.
+The current week shows an editable Frontend row, a Tuesday Frontend cell with two Harvest entries, a locked Optimus Bug fixes cell, a billed Vistera API cell, and an empty DAC Consulting row with **Remove**. Treat names, hours, and notes as mock content.
 
 ## Implementation guidance (Claude Code)
 
-This is a visual and behavior reference. Do not port the HTML. Inspect the existing timesheet components first and reuse them. Only add pieces that do not exist, mainly the add-row modal and the read-only project/task row label.
+This is a visual and behavior reference. Do not port the HTML. Inspect the existing hours screen first and reuse it.
 
-Match spacing, typography, colors, and the interactions in this document. Keep the application’s data layer, routing, and component conventions.
+Put the grid on `/my/hours`, under the portal chrome and the **Hours** title. Hide the day view. Do not accept zero hours. Show billed and locked cells, and do not paint a new value until the save succeeds.
 
-If production still has submit or approval on this contractor screen, hide it. Approval stays out of this UI.
-
-Stay on this feature. Do not open the interview prototype or the interview handoff while doing this work.
+Stay on this feature. Do not open the interview prototype, the interview handoff, or the old contractor profile sketch while doing this work.
 
 ## Acceptance checklist (QA)
 
-- [ ] An active contractor opens their profile on Timesheets, with Profile as the other tab.
-- [ ] Week view is the default. Day and Week switch without leaving the page.
-- [ ] The toolbar is the week navigator plus the Day/Week control. No submit button, status pill, or lock banner.
-- [ ] The contractor can only add rows for current assignments, and must pick a task.
-- [ ] Project and task on a week row are text. They cannot be changed from the grid.
-- [ ] **Add row** appears once, under the grid, and opens the modal. Save row is green.
-- [ ] Hours can be typed per day, including `0`. Enter moves to the next day. Clearing a cell deletes that entry.
-- [ ] A note can be added and edited. Two entries on the same project, task, and day are edited in Day view, not in the summed cell.
-- [ ] An entry can be edited (hours, date, note) and deleted. Project and task stay fixed in the edit modal.
-- [ ] Daily totals sit in the correct day columns and line up with the numbers above. The week total is in the last column.
-- [ ] Next week brings over the previous week’s rows without copying hours.
-- [ ] A day total over 24 is shown in red and is still allowed. A single entry cannot exceed 24.
-- [ ] Desktop and a ~390px width both remain usable: day strip scrolls, week grid scrolls sideways.
+- [ ] `/my/hours` opens in the candidate portal with the title **Hours**. The staff profile and the Timesheets tab are not this screen.
+- [ ] Week view is the only view. There is no Day control.
+- [ ] The toolbar is the week navigator, the total under the week label, and **This week** when needed. No submit control.
+- [ ] Next week carries the current rows forward without hours. Future weeks open.
+- [ ] Add row offers only assignment pairs that are not already on the week, grouped by client, and requires a task.
+- [ ] Project and task on a row are text. They cannot be changed from the grid.
+- [ ] A row with no hours can be removed. A row with hours cannot.
+- [ ] Hours must be greater than 0, at most 24, and at most two decimal places. Each refusal names the rule and restores the last saved value.
+- [ ] Clearing a cell deletes that entry without a confirmation. Delete from the edit modal asks first.
+- [ ] Enter saves and moves to the next day. The cell shows **Saving** and does not show the new value until the save succeeds. A failed save restores the old value and names the reason.
+- [ ] A billed or locked cell shows the hours, a lock, and the reason, and cannot be edited or deleted.
+- [ ] Two Harvest entries in one cell are read-only and say they are managed in Harvest.
+- [ ] Changing the date in the edit modal follows that entry into the other week.
+- [ ] Daily totals sit in the correct columns. Today and weekend columns are marked. A day over 24 is red and still allowed.
 
 ## Out of scope
 
+- A day view
 - Copy-last-week as a separate action beyond the next-week row carry
 - Reminders, approval notifications, personal reports, a running timer, natural-language entry
 - Time off, expenses, billable amounts, rates, invoicing
 - Calendar sync, bulk delete, onboarding, dark mode
 - Changing who approves time, or building an approval inbox
-- The prototype account menu “View as contractor”
+- The prototype account menu and the stand-in portal links
 
 ## References
 
-- Prototype: https://patricemmh.github.io/be-platform/contractor-profile.html
-- File: `contractor-profile.html`
+- Prototype: https://patricemmh.github.io/be-platform/my/hours.html
+- File: `my/hours.html`
 - Handoff: `docs/handoffs/contractor-timesheets.md`

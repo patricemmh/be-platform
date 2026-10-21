@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>if (location.hash !== "#profile") location.replace("my/hours.html");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BetterEngineer · Contractor profile · Gabriel Kouyoumdjian</title>
 <link rel="stylesheet" href="https://use.typekit.net/lhs7vwi.css">
@@ -276,6 +277,114 @@ p, h1, h2, h3 { margin: 0; }
 .btn:hover { filter: brightness(.95); }
 .tz-place { margin-top: 12px; font-size: 16px; color: #2a2a2a; }
 .tz-sub { margin-top: 4px; font-size: 13px; color: #999; }
+.dot.onboard { background: var(--gold); }
+
+.ob-card { padding: 22px 22px 16px; }
+.ob-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.ob-count { font-size: 13px; color: #707070; font-variant-numeric: tabular-nums; }
+.ob-lead { margin-top: 8px; font-size: 14px; line-height: 20px; color: #707070; }
+.ob-bar { margin-top: 14px; height: 4px; border-radius: 99px; background: #eee; overflow: hidden; }
+.ob-bar i { display: block; height: 100%; width: 0; background: var(--blue); border-radius: 99px; }
+.ob-phase { margin: 18px 0 8px; font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #999; }
+.ob-step {
+  display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px;
+  width: 100%; margin: 0 0 6px; padding: 10px;
+  border: 0; border-radius: 8px; background: transparent;
+  text-align: left; color: inherit;
+}
+.ob-step:hover { background: #fafafa; }
+.ob-step.is-current { background: #f8f9fd; }
+.ob-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 13px; font-weight: 500; color: #707070;
+  background: #f3f3f3;
+}
+.ob-step.is-current .ob-num { background: var(--blue); color: #fff; }
+.ob-step.is-done .ob-num { background: #e8f6ec; color: var(--green); }
+.ob-step-title, .ob-step-detail, .ob-status { display: block; }
+.ob-step-title { font-size: 15px; font-weight: 500; color: #333; line-height: 20px; }
+.ob-step-detail { margin-top: 2px; font-size: 13px; line-height: 18px; color: #707070; }
+.ob-status { margin-top: 6px; font-size: 12px; font-weight: 500; color: #999; }
+.ob-step.is-current .ob-status { color: var(--blue); }
+.ob-step.is-done .ob-status { color: var(--green); }
+.ob-step.is-wait .ob-status { color: #8a6d1f; }
+.ob-again {
+  margin: 8px 0 4px; padding: 0; border: 0; background: none;
+  font-size: 13px; font-weight: 500; color: var(--blue);
+}
+.ob-again:hover { text-decoration: underline; }
+
+.ob-modal {
+  width: min(680px, 100%); max-height: min(860px, calc(100vh - 48px));
+  display: flex; flex-direction: column; padding: 0; overflow: hidden;
+}
+.ob-welcome { width: min(560px, 100%); padding: 28px 28px 24px; }
+.ob-kicker { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--blue); }
+.ob-welcome h2, .ob-modal h2 { font-size: 24px; font-weight: 500; color: #333; line-height: 30px; }
+.ob-welcome .lead { margin-top: 8px; font-size: 15px; line-height: 22px; color: #707070; }
+.ob-group { margin-top: 18px; }
+.ob-group h3 { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #999; }
+.ob-path { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+.ob-path li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 14px; line-height: 20px; color: #333; }
+.ob-path b { font-weight: 500; }
+.ob-path span { display: block; margin-top: 2px; color: #707070; }
+.ob-path .n { color: var(--blue); font-weight: 500; }
+
+.ob-modal-bar {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 22px 24px 0;
+}
+.ob-modal-bar p { margin-top: 6px; font-size: 14px; line-height: 20px; color: #707070; max-width: 520px; }
+.ob-x {
+  width: 36px; height: 36px; border: 0; border-radius: 4px; background: transparent;
+  color: #707070; font-size: 22px; line-height: 1;
+}
+.ob-x:hover { background: #f3f3f3; color: #333; }
+.ob-modal-body { flex: 1 1 auto; min-height: 0; padding: 18px 24px 20px; overflow: auto; }
+.ob-modal-foot {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 16px 24px 20px; border-top: 1px solid var(--line); background: #fff;
+}
+.ob-section { margin-top: 22px; }
+.ob-section h3 { font-size: 16px; font-weight: 500; color: #333; }
+.ob-section .hint { margin-top: 4px; font-size: 13px; line-height: 18px; color: #707070; }
+.req { color: var(--danger); }
+.id-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.id-drop {
+  position: relative; width: 100%; min-height: 176px; padding: 14px;
+  border: 1px dashed #d5d5d5; border-radius: 8px; background: #fafafa;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; cursor: pointer; font: inherit;
+}
+.id-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.id-drop:hover, .id-drop.is-over { border-color: var(--blue); background: #f8f9fd; }
+.id-drop.is-bad { border-color: var(--danger); }
+.id-drop i { font-size: 22px; color: #b5b5b5; }
+.id-drop strong { display: block; margin-top: 8px; font-size: 14px; font-weight: 500; color: #333; }
+.id-drop em { display: block; margin-top: 4px; font-style: normal; font-size: 12px; line-height: 16px; color: #707070; }
+.id-drop img { width: 100%; height: 110px; object-fit: cover; border-radius: 4px; }
+.id-drop .replace { margin-top: 8px; font-size: 13px; font-weight: 500; color: var(--blue); }
+.ob-fields { display: grid; gap: 12px; margin-top: 14px; }
+.ob-row { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 12px; }
+.ob-row-3 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ob-row-3 .ob-field:first-child { grid-column: 1 / -1; }
+.ob-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ob-field span { font-size: 13px; font-weight: 500; color: #333; }
+.ob-field input, .ob-field select {
+  width: 100%; height: 45px; border: 1px solid #e5e5e5; border-radius: 4px;
+  padding: 8px 12px; font-size: 16px; color: #333; background: #fff;
+}
+.ob-field input:focus, .ob-field select:focus { outline: 2px solid #c5cee9; border-color: var(--blue); }
+.ob-field input.is-bad, .ob-field select.is-bad { border-color: var(--danger); }
+.choice { display: flex; flex-wrap: wrap; gap: 16px 22px; margin-top: 10px; }
+.choice label { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #333; }
+.choice input { width: 16px; height: 16px; accent-color: var(--blue); }
+.ob-error { margin-top: 12px; font-size: 14px; line-height: 20px; color: var(--danger); }
+.ob-btn { height: 45px; padding: 0 22px; border-radius: 4px; font-size: 16px; font-weight: 500; }
+@media (max-width: 640px) {
+  .id-grid, .ob-row, .ob-row-3 { grid-template-columns: 1fr; }
+}
 
 .ts-page { padding: 28px 24px 80px; }
 .ts-wrap { max-width: 1180px; margin: 0 auto; }
@@ -467,6 +576,31 @@ p, h1, h2, h3 { margin: 0; }
 .modal .lead { margin-top: 8px; font-size: 14px; line-height: 20px; color: #555; }
 .modal-actions { display: flex; justify-content: flex-start; align-items: center; gap: 10px; margin-top: 22px; }
 .modal-actions .push { margin-right: auto; }
+.modal.ob-id {
+  width: min(980px, calc(100vw - 48px));
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+}
+.modal.ob-id h2 { font-size: 22px; font-weight: 500; color: #333; line-height: 28px; }
+.modal.ob-id .ob-modal-bar { padding: 28px 32px 0; }
+.modal.ob-id .ob-modal-bar p { margin-top: 4px; max-width: none; }
+.modal.ob-id .ob-modal-body { overflow: visible; flex: none; padding: 28px 32px 24px; }
+.modal.ob-id .ob-modal-foot { padding: 16px 32px 28px; border-radius: 0 0 8px 8px; }
+.ob-id-cols { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px; align-items: start; }
+.ob-id-col h3 { font-size: 15px; font-weight: 500; color: #333; }
+.ob-id-col .hint { margin-top: 2px; font-size: 13px; line-height: 18px; color: #707070; }
+.ob-id-col .id-grid { margin-top: 10px; }
+.ob-id-col .id-drop { min-height: 148px; padding: 12px; }
+.ob-id-col > .ob-field { margin-top: 18px; }
+.ob-id-col .ob-fields { margin-top: 16px; gap: 16px; }
+.ob-id-col .ob-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.ob-id-col .choice { margin-top: 8px; }
+@media (max-width: 860px) {
+  .modal.ob-id { max-height: calc(100vh - 32px); overflow: hidden; }
+  .modal.ob-id .ob-modal-body { overflow: auto; min-height: 0; }
+  .ob-id-cols { grid-template-columns: 1fr; gap: 20px; }
+}
 .modal-sheet {
   width: min(420px, 100%); padding: 0; overflow: hidden;
   border-radius: 10px; box-shadow: 0 16px 48px rgba(0,0,0,.2);
@@ -582,7 +716,9 @@ p, h1, h2, h3 { margin: 0; }
         <div class="profile-dropdown" id="profileDropdown" role="menu" aria-labelledby="profileMenuBtn">
           <div role="group" aria-labelledby="pdContractorLabel">
             <div class="pd-label" id="pdContractorLabel">Contractor view</div>
-            <a class="pd-item is-current" role="menuitem" href="contractor-profile.html" aria-current="page">Contractor profile</a>
+            <a class="pd-item is-current" role="menuitem" href="contractor-profile.html#profile" aria-current="page">Contractor profile</a>
+            <a class="pd-item" role="menuitem" href="my/profile.html#admin">Onboarding admin (prototype)</a>
+            <a class="pd-item" role="menuitem" href="my/hours.html">Contractor hours</a>
           </div>
           <div class="pd-sep" role="separator"></div>
           <div role="group" aria-labelledby="pdClientLabel">
@@ -672,7 +808,7 @@ p, h1, h2, h3 { margin: 0; }
                   </li>
                 </ul>
                 <div class="meta">
-                  <div><small>Status</small><b><i class="dot" aria-hidden="true"></i>Active contractor</b></div>
+                  <div><small>Status</small><b><i class="dot onboard" aria-hidden="true"></i>Onboarding</b></div>
                   <div><small>Timezone</small><b>GMT-3</b></div>
                   <div><small>Contractor since</small><b>Mar 4, 2024</b></div>
                   <div><small>Assignments</small><b>3 active</b></div>
@@ -712,6 +848,25 @@ p, h1, h2, h3 { margin: 0; }
             </article>
           </main>
           <aside class="col-side">
+            <!--
+              Admin, not shown here:
+              On the job card, saving a status with "Send paperwork email" checked
+              emails this candidate and opens this flow. Other candidates never see it.
+              Staff tracker: ID received, Emptor background check, Slack (Karla),
+              offer letter (Dario, Dropbox Sign), contract (Karla, Dropbox Sign),
+              signed, warm intro, Karla call, post-call documents.
+              The Emptor background check stays off this screen.
+            -->
+            <article class="card ob-card" id="onboardCard">
+              <div class="ob-head">
+                <h2 class="side-title">Onboarding</h2>
+                <span class="ob-count" id="obCount">0 of 6</span>
+              </div>
+              <p class="ob-lead">Your part comes first. We email you when the offer and the contract are ready.</p>
+              <div class="ob-bar" aria-hidden="true"><i id="obBar"></i></div>
+              <div id="obList"></div>
+              <button class="ob-again" type="button" id="obAgain">See the full path</button>
+            </article>
             <article class="card">
               <h2 class="side-title">This week</h2>
               <p class="week-hours"><span id="profileHours">0.00</span> <span>hours</span></p>
@@ -727,7 +882,7 @@ p, h1, h2, h3 { margin: 0; }
         </div>
       </div>
 
-      <div class="page ts-page" id="panel-timesheets" role="tabpanel" aria-labelledby="tab-timesheets">
+      <div class="page ts-page" id="panel-timesheets" role="tabpanel" aria-labelledby="tab-timesheets" hidden>
         <div class="ts-wrap">
           <div class="ts-card" id="tsRoot">
             <div class="ts-toolbar" id="tsToolbar"></div>
@@ -779,6 +934,138 @@ p, h1, h2, h3 { margin: 0; }
       <div class="modal-actions">
         <button class="ts-btn ts-btn-line" type="button" id="confirmCancel">Cancel</button>
         <button class="ts-btn ts-btn-primary" type="button" id="confirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="welcomeModal" hidden>
+    <div class="modal ob-welcome" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+      <p class="ob-kicker">Onboarding</p>
+      <h2 id="welcomeTitle">Welcome, Gabriel</h2>
+      <p class="lead">You are seeing this because we are moving forward with you. These are the steps, in order, and who handles each one.</p>
+      <div class="ob-group">
+        <h3>Before you start</h3>
+        <ol class="ob-path">
+          <li><span class="n">1</span><div><b>Identification</b><span>You upload the front and back of your ID, and the legal details we need for the contract.</span></div></li>
+          <li><span class="n">2</span><div><b>Slack</b><span>Karla adds you to the workspace. You confirm the email she should use.</span></div></li>
+          <li><span class="n">3</span><div><b>Offer letter</b><span>Dario prepares it and sends the PDF through Dropbox Sign.</span></div></li>
+          <li><span class="n">4</span><div><b>Contract</b><span>Karla writes it. You sign through Dropbox Sign. That is when you are hired.</span></div></li>
+        </ol>
+      </div>
+      <div class="ob-group">
+        <h3>After you sign</h3>
+        <ol class="ob-path">
+          <li><span class="n">5</span><div><b>A note from Karla</b><span>She emails to say she will take it from here. That email has no attachments. If her calendar is open, you book the call yourself.</span></div></li>
+          <li><span class="n">6</span><div><b>Your first call</b><span>She explains Harvest, your bank details, and the contractor handbook, then sends those documents for you to complete.</span></div></li>
+        </ol>
+      </div>
+      <div class="modal-actions">
+        <button class="ts-btn ts-btn-primary ob-btn" type="button" id="welcomeStart">Start with your ID</button>
+        <button class="ts-btn ts-btn-line ob-btn" type="button" id="welcomeLater">Not now</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="idModal" hidden>
+    <div class="modal ob-modal ob-id" role="dialog" aria-modal="true" aria-labelledby="idTitle">
+      <div class="ob-modal-bar">
+        <div>
+          <h2 id="idTitle">Your identification</h2>
+          <p>We use this to prepare your contract. A passport, cédula, or driver's license is fine.</p>
+        </div>
+        <button class="ob-x" type="button" id="idClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="ob-modal-body">
+        <div class="ob-id-cols">
+          <div class="ob-id-col">
+            <h3>ID images <i class="req">*</i></h3>
+            <p class="hint">Both sides. JPG or PNG, at least 400 by 400, under 5MB.</p>
+            <div class="id-grid">
+              <button class="id-drop" id="dropFront" type="button">
+                <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+                <strong>Front of ID</strong>
+                <em>Click to add</em>
+              </button>
+              <button class="id-drop" id="dropBack" type="button">
+                <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+                <strong>Back of ID</strong>
+                <em>Click to add</em>
+              </button>
+            </div>
+            <label class="ob-field"><span>Legal name, as it appears on your ID <i class="req">*</i></span><input id="idName" autocomplete="name" value="Gabriel Kouyoumdjian"></label>
+          </div>
+          <div class="ob-id-col">
+            <h3>Tax information</h3>
+            <p class="hint">How should we list you on documents you will sign?</p>
+            <div class="choice">
+              <label><input type="radio" name="signer" value="individual" checked> Individual</label>
+              <label><input type="radio" name="signer" value="company"> Company</label>
+            </div>
+            <div class="ob-fields">
+              <label class="ob-field" id="companyField" hidden><span>Company name <i class="req">*</i></span><input id="idCompany" autocomplete="organization"></label>
+              <div class="ob-row">
+                <label class="ob-field"><span>Address <i class="req">*</i></span><input id="idAddress" autocomplete="address-line1"></label>
+                <label class="ob-field"><span>Apt, suite (optional)</span><input id="idApt" autocomplete="address-line2"></label>
+              </div>
+              <div class="ob-row">
+                <label class="ob-field"><span>City <i class="req">*</i></span><input id="idCity" autocomplete="address-level2" value="Montevideo"></label>
+                <label class="ob-field"><span>Province / state <i class="req">*</i></span><input id="idRegion" autocomplete="address-level1" value="Montevideo"></label>
+              </div>
+              <div class="ob-row">
+                <label class="ob-field"><span>Country <i class="req">*</i></span>
+                  <select id="idCountry" autocomplete="country-name">
+                    <option value="Uruguay" selected>Uruguay</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Chile">Chile</option>
+                    <option value="Colombia">Colombia</option>
+                    <option value="Mexico">Mexico</option>
+                    <option value="Spain">Spain</option>
+                    <option value="United States">United States</option>
+                  </select>
+                </label>
+                <label class="ob-field"><span>Zip code <i class="req">*</i></span><input id="idZip" autocomplete="postal-code"></label>
+              </div>
+              <label class="ob-field"><span id="taxLabel">Local tax ID <i class="req">*</i></span><input id="idTax" autocomplete="off"></label>
+            </div>
+          </div>
+        </div>
+        <p class="ob-error" id="idError" hidden></p>
+      </div>
+      <div class="ob-modal-foot">
+        <button class="ts-btn ts-btn-line ob-btn" type="button" id="idCancel">Cancel</button>
+        <button class="ts-btn ts-btn-primary ob-btn" type="button" id="idSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="slackModal" hidden>
+    <div class="modal ob-modal" role="dialog" aria-modal="true" aria-labelledby="slackTitle" style="width:min(480px,100%)">
+      <div class="ob-modal-bar">
+        <div>
+          <h2 id="slackTitle">Slack</h2>
+          <p>Karla adds you to the BetterEngineer workspace. Confirm the email she should invite.</p>
+        </div>
+        <button class="ob-x" type="button" data-close="slackModal" aria-label="Close">&times;</button>
+      </div>
+      <div class="ob-modal-body">
+        <label class="ob-field"><span>Email for Slack</span><input id="slackEmail" type="email" autocomplete="email" value="GabrielK@devworks.com"></label>
+        <p class="ob-error" id="slackError" hidden></p>
+      </div>
+      <div class="ob-modal-foot">
+        <button class="ts-btn ts-btn-line ob-btn" type="button" data-close="slackModal">Cancel</button>
+        <button class="ts-btn ts-btn-primary ob-btn" type="button" id="slackSave">Confirm email</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="stepModal" hidden>
+    <div class="modal ob-welcome" role="dialog" aria-modal="true" aria-labelledby="stepTitle">
+      <p class="ob-kicker" id="stepKicker">Onboarding</p>
+      <h2 id="stepTitle"></h2>
+      <p class="lead" id="stepBody"></p>
+      <div class="modal-actions">
+        <button class="ts-btn ts-btn-primary ob-btn" type="button" data-close="stepModal">Got it</button>
       </div>
     </div>
   </div>
@@ -1355,13 +1642,8 @@ function showTab(name) {
   if (profile) renderProfileSummary();
   else renderAll();
 }
-function openLog(assignmentId) {
-  cursor = new Date(thisMonday);
-  pinned = [];
-  selectedDay = new Date(today);
-  view = "day";
-  pendingProject = assignmentId || "";
-  showTab("timesheets");
+function openLog() {
+  location.href = "my/hours.html";
 }
 
 document.getElementById("tsRoot").addEventListener("click", (e) => {
@@ -1464,13 +1746,14 @@ document.getElementById("confirmModal").addEventListener("click", (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
-  ["editModal", "confirmModal", "addRowModal"].forEach((id) => {
-    if (!document.getElementById(id).hidden) closeModal(id);
+  ["editModal", "confirmModal", "addRowModal", "welcomeModal", "idModal", "slackModal", "stepModal"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el && !el.hidden) closeModal(id);
   });
 });
 
 document.getElementById("tab-profile").addEventListener("click", () => showTab("profile"));
-document.getElementById("tab-timesheets").addEventListener("click", () => showTab("timesheets"));
+document.getElementById("tab-timesheets").addEventListener("click", () => { location.href = "my/hours.html"; });
 document.querySelector(".tabs").addEventListener("keydown", (e) => {
   if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
   const next = document.activeElement.id === "tab-profile" ? "timesheets" : "profile";
@@ -1496,7 +1779,190 @@ document.getElementById("openTimesheets").addEventListener("click", () => openLo
   document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") setOpen(false); });
 })();
 
-showTab(location.hash === "#profile" ? "profile" : "timesheets");
+const onboard = { id: false, slack: false, files: { front: null, back: null } };
+const ONBOARD_INFO = {
+  offer: {
+    kicker: "Waiting on Dario",
+    title: "Offer letter",
+    body: "Dario prepares your offer from our template, including the rate. He sends it as a PDF through Dropbox Sign. You do not fill anything out here. We will email you when it is ready."
+  },
+  contract: {
+    kicker: "Waiting on Karla",
+    title: "Contract",
+    body: "After the offer is settled, Karla writes the contract and sends it through Dropbox Sign. You sign that document. Signing is what makes you a hired contractor."
+  },
+  karla: {
+    kicker: "After you sign",
+    title: "A note from Karla",
+    body: "Signing triggers a short email from Karla. It introduces her and says she will take it from here. That email does not include documents. If she has opened her calendar, you book the call yourself."
+  },
+  setup: {
+    kicker: "On the call",
+    title: "Hours, bank details, and the handbook",
+    body: "Karla explains what Harvest is and how to log hours, how to complete your bank details, and what the contractor handbook is for. She shows you the documents, then sends them so you can complete them after the call."
+  }
+};
+
+function onboardSteps() {
+  return [
+    { id: "id", phase: "Before you start", title: "Identification", detail: "Front and back of your ID, plus the details for your contract.", state: onboard.id ? "done" : "current", status: onboard.id ? "Done" : "To do" },
+    { id: "slack", phase: "Before you start", title: "Slack", detail: "Karla connects the workspace. You confirm your email.", state: onboard.slack ? "done" : onboard.id ? "current" : "later", status: onboard.slack ? "Done" : onboard.id ? "To do" : "Up next" },
+    { id: "offer", phase: "Before you start", title: "Offer letter", detail: "Dario sends a PDF through Dropbox Sign.", state: onboard.slack ? "wait" : "later", status: onboard.slack ? "Waiting on Dario" : "Later" },
+    { id: "contract", phase: "Before you start", title: "Contract", detail: "Karla sends it. You sign to join.", state: "later", status: "After the offer" },
+    { id: "karla", phase: "After you sign", title: "Note from Karla", detail: "A short email, with no attachments. Then you can book the call.", state: "later", status: "After you sign" },
+    { id: "setup", phase: "After you sign", title: "Call with Karla", detail: "Harvest, bank details, and the contractor handbook.", state: "later", status: "After the call" }
+  ];
+}
+
+function renderOnboarding() {
+  const steps = onboardSteps();
+  const done = steps.filter((step) => step.state === "done").length;
+  document.getElementById("obCount").textContent = done + " of " + steps.length;
+  document.getElementById("obBar").style.width = (done / steps.length * 100) + "%";
+  let phase = "";
+  document.getElementById("obList").innerHTML = steps.map((step) => {
+    const heading = step.phase !== phase ? (phase = step.phase, '<p class="ob-phase">' + esc(step.phase) + "</p>") : "";
+    const mark = step.state === "done" ? "&#10003;" : String(steps.indexOf(step) + 1);
+    return heading + '<button type="button" class="ob-step is-' + step.state + '" data-ob="' + step.id + '">' +
+      '<span class="ob-num">' + mark + "</span>" +
+      '<span><span class="ob-step-title">' + esc(step.title) + "</span>" +
+      '<span class="ob-step-detail">' + esc(step.detail) + "</span>" +
+      '<span class="ob-status">' + esc(step.status) + "</span></span></button>";
+  }).join("");
+}
+
+function openOnboardStep(id) {
+  if (id === "id") { openIdModal(); return; }
+  if (id === "slack") {
+    if (!onboard.id) { openInfo("slack-locked"); return; }
+    document.getElementById("slackError").hidden = true;
+    openModal("slackModal");
+    document.getElementById("slackEmail").focus();
+    return;
+  }
+  const info = ONBOARD_INFO[id];
+  if (!info) return;
+  document.getElementById("stepKicker").textContent = info.kicker;
+  document.getElementById("stepTitle").textContent = info.title;
+  document.getElementById("stepBody").textContent = info.body;
+  openModal("stepModal");
+}
+
+function openInfo(kind) {
+  const copy = kind === "slack-locked"
+    ? { kicker: "Up next", title: "Slack comes after your ID", body: "Upload your identification first. Then you confirm the email Karla should use to add you to Slack." }
+    : null;
+  if (!copy) return;
+  document.getElementById("stepKicker").textContent = copy.kicker;
+  document.getElementById("stepTitle").textContent = copy.title;
+  document.getElementById("stepBody").textContent = copy.body;
+  openModal("stepModal");
+}
+
+function taxLabel() {
+  const country = document.getElementById("idCountry").value;
+  const company = document.querySelector('input[name="signer"]:checked').value === "company";
+  const name = country === "Argentina"
+    ? (company ? "Local tax ID (CUIT)" : "Local tax ID (CDI)")
+    : "Local tax ID";
+  document.getElementById("taxLabel").innerHTML = esc(name) + ' <i class="req">*</i>';
+}
+
+function syncSigner() {
+  const company = document.querySelector('input[name="signer"]:checked').value === "company";
+  document.getElementById("companyField").hidden = !company;
+  taxLabel();
+}
+
+function sampleIdUrl(which) {
+  const front = which === "front";
+  const svg = front
+    ? '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400"><rect width="640" height="400" rx="28" fill="#eef2fb"/><rect x="36" y="36" width="168" height="210" rx="12" fill="#d5dced"/><circle cx="120" cy="118" r="36" fill="#b7c2df"/><rect x="72" y="172" width="96" height="12" rx="6" fill="#c5cee4"/><rect x="84" y="196" width="72" height="10" rx="5" fill="#c5cee4"/><text x="232" y="78" fill="#4c60b2" font-family="Arial,sans-serif" font-size="18" font-weight="700">IDENTITY CARD</text><text x="232" y="128" fill="#333" font-family="Arial,sans-serif" font-size="22" font-weight="700">GABRIEL</text><text x="232" y="158" fill="#333" font-family="Arial,sans-serif" font-size="22" font-weight="700">KOUYOUMDJIAN</text><text x="232" y="214" fill="#707070" font-family="Arial,sans-serif" font-size="16">ID 4.123.456-7</text><text x="232" y="246" fill="#707070" font-family="Arial,sans-serif" font-size="16">URUGUAY</text></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400"><rect width="640" height="400" rx="28" fill="#f4f5f7"/><rect x="0" y="48" width="640" height="54" fill="#2a2a2a"/><text x="36" y="168" fill="#333" font-family="Arial,sans-serif" font-size="18">IDURY41234567&lt;8KOUYOUMDJIAN&lt;&lt;</text><text x="36" y="198" fill="#333" font-family="Arial,sans-serif" font-size="18">GABRIEL&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</text><text x="36" y="228" fill="#333" font-family="Arial,sans-serif" font-size="18">8401019M3001018URY&lt;&lt;&lt;&lt;&lt;&lt;&lt;08</text><text x="36" y="320" fill="#707070" font-family="Arial,sans-serif" font-size="16">BACK OF ID</text></svg>';
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+
+function useSampleId(which) {
+  onboard.files[which] = "sample";
+  const drop = document.getElementById(which === "front" ? "dropFront" : "dropBack");
+  const title = which === "front" ? "Front of ID" : "Back of ID";
+  drop.classList.remove("is-bad");
+  drop.innerHTML = '<img alt="" src="' + sampleIdUrl(which) + '"><strong>' + title + '</strong><span class="replace">Replace</span>';
+}
+
+function openIdModal() {
+  document.getElementById("idError").hidden = true;
+  openModal("idModal");
+  document.getElementById("idName").focus();
+}
+
+function fillIfEmpty(id, value) {
+  const el = document.getElementById(id);
+  if (!el.value.trim()) el.value = value;
+  el.classList.remove("is-bad");
+}
+
+function saveId() {
+  if (!onboard.files.front) useSampleId("front");
+  if (!onboard.files.back) useSampleId("back");
+  fillIfEmpty("idName", "Gabriel Kouyoumdjian");
+  fillIfEmpty("idAddress", "Av. Brasil 2468");
+  fillIfEmpty("idCity", "Montevideo");
+  fillIfEmpty("idRegion", "Montevideo");
+  fillIfEmpty("idZip", "11300");
+  fillIfEmpty("idTax", "4.123.456-7");
+  if (document.querySelector('input[name="signer"]:checked').value === "company") fillIfEmpty("idCompany", "Kouyoumdjian Studio");
+  document.getElementById("idError").hidden = true;
+  onboard.id = true;
+  closeModal("idModal");
+  renderOnboarding();
+  toast("Identification saved. Slack is next.");
+}
+
+document.getElementById("obList").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-ob]");
+  if (btn) openOnboardStep(btn.dataset.ob);
+});
+document.getElementById("obAgain").addEventListener("click", () => openModal("welcomeModal"));
+document.getElementById("welcomeStart").addEventListener("click", () => { closeModal("welcomeModal"); openIdModal(); });
+document.getElementById("welcomeLater").addEventListener("click", () => closeModal("welcomeModal"));
+document.getElementById("welcomeModal").addEventListener("click", (e) => { if (e.target.id === "welcomeModal") closeModal("welcomeModal"); });
+document.getElementById("idClose").addEventListener("click", () => closeModal("idModal"));
+document.getElementById("idCancel").addEventListener("click", () => closeModal("idModal"));
+document.getElementById("idSave").addEventListener("click", saveId);
+document.getElementById("idModal").addEventListener("click", (e) => { if (e.target.id === "idModal") closeModal("idModal"); });
+document.getElementById("dropFront").addEventListener("click", () => useSampleId("front"));
+document.getElementById("dropBack").addEventListener("click", () => useSampleId("back"));
+document.querySelectorAll('input[name="signer"]').forEach((input) => input.addEventListener("change", syncSigner));
+document.getElementById("idCountry").addEventListener("change", taxLabel);
+document.querySelectorAll("[data-close]").forEach((btn) => btn.addEventListener("click", () => closeModal(btn.dataset.close)));
+document.getElementById("slackModal").addEventListener("click", (e) => { if (e.target.id === "slackModal") closeModal("slackModal"); });
+document.getElementById("stepModal").addEventListener("click", (e) => { if (e.target.id === "stepModal") closeModal("stepModal"); });
+document.getElementById("slackSave").addEventListener("click", () => {
+  const email = document.getElementById("slackEmail");
+  const err = document.getElementById("slackError");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+    email.classList.add("is-bad");
+    err.textContent = "Enter the email Karla should use.";
+    err.hidden = false;
+    return;
+  }
+  onboard.slack = true;
+  closeModal("slackModal");
+  renderOnboarding();
+  toast("Email confirmed. Karla will send the Slack invite.");
+});
+["idName", "idCompany", "idAddress", "idCity", "idRegion", "idZip", "idTax", "slackEmail"].forEach((id) => {
+  document.getElementById(id).addEventListener("input", (e) => e.target.classList.remove("is-bad"));
+});
+
+renderOnboarding();
+syncSigner();
+
+if (location.hash === "#profile") {
+  showTab("profile");
+  openModal("welcomeModal");
+}
 </script>
 </body>
 </html>

@@ -1,12 +1,13 @@
 {
   "contractor-timesheets": {
-    "title": "Contractor timesheets design update",
+    "title": "Contractor hours",
     "doc": "docs/handoffs/contractor-timesheets.md",
-    "commit": "1806401",
+    "commit": "",
     "pages": [
       {
-        "page": "contractor-profile.html",
-        "selectors": ["#panel-timesheets", "#panel-profile"]
+        "page": "hours.html",
+        "href": "my/hours.html",
+        "selectors": ["#hours"]
       }
     ]
   },

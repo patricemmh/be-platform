@@ -1,0 +1,3094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+(function () {
+  var h = (location.hash || "").replace(/^#/, "").toLowerCase();
+  var stage = "signup";
+  var view = "profile";
+  var signed = false;
+  try {
+    var raw = localStorage.getItem("be.proto.onboarding.v1");
+    if (raw) {
+      var data = JSON.parse(raw);
+      signed = !!(data && data.tasks && data.tasks.contract && data.tasks.contract.status === "signed");
+    }
+  } catch (e) {}
+  if (h === "admin") { stage = "admin"; view = "admin"; }
+  else if (h === "onboarding" || h.indexOf("ob-") === 0) { stage = signed ? "active" : "onboarding"; view = "onboarding"; }
+  else if (h === "onboarding-profile") { stage = "onboarding"; view = "profile"; }
+  else if (h === "onboarding-docs") { stage = signed ? "active" : "onboarding"; view = "documents"; }
+  else if (h === "active" || h === "hours") { stage = "active"; view = "hours"; }
+  else if (h === "documents") { stage = "active"; view = "documents"; }
+  else if (h === "active-profile") { stage = "active"; view = "profile"; }
+  document.documentElement.dataset.stage = stage;
+  document.documentElement.dataset.view = view;
+  if (stage === "onboarding" || (signed && stage !== "signup" && stage !== "admin")) document.documentElement.dataset.showOnboarding = "1";
+})();
+</script>
+<title>BetterEngineer · Profile</title>
+<link rel="stylesheet" href="https://use.typekit.net/lhs7vwi.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --page: #f6f6f6;
+  --text: #333333;
+  --secondary: #707070;
+  --line: #e5e5e5;
+  --card-line: #dddddd;
+  --blue: #4c60b2;
+  --green: #319243;
+  --gold: #c9a443;
+  --danger: #d7373f;
+  --font: "runda", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: var(--font);
+  font-weight: 400;
+  color: var(--text);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+}
+b, strong { font-weight: 500; }
+button, input, select, textarea { font-family: inherit; color: inherit; }
+button { cursor: pointer; }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+p, h1, h2, h3 { margin: 0; }
+[hidden] { display: none !important; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 30;
+  height: 70px;
+  background: #fff;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px 0 20px;
+}
+.logo-link { display: flex; align-items: center; text-decoration: none; }
+.logo { width: 140px; height: 19px; object-fit: contain; object-position: left center; }
+.top-tools { display: flex; align-items: center; gap: 16px; }
+.profile-menu { position: relative; }
+.profile-menu-btn {
+  display: flex; align-items: center; gap: 12px;
+  height: 44px; padding: 0;
+  border: 0; background: transparent; color: var(--text);
+  border-radius: 6px;
+}
+.profile-menu-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.pm-name { font-size: 14px; color: var(--text); white-space: nowrap; }
+.pm-avatar { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; }
+.pm-chev { color: #b5b5b5; transition: transform .2s var(--ease); }
+.profile-menu.is-open .pm-chev { transform: rotate(180deg); }
+.profile-dropdown {
+  position: absolute; top: calc(100% + 12px); right: -6px;
+  min-width: 228px; background: #fff;
+  border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(17, 17, 17, 0.12);
+  padding: 6px 0; z-index: 50; display: none;
+}
+.profile-menu.is-open .profile-dropdown { display: block; }
+.profile-dropdown::before {
+  content: ""; position: absolute; top: -6px; right: 22px;
+  width: 12px; height: 12px; background: #fff;
+  border-left: 1px solid var(--line); border-top: 1px solid var(--line);
+  transform: rotate(45deg);
+}
+.pd-label {
+  padding: 10px 14px 6px;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--secondary);
+}
+.pd-item {
+  display: block; width: 100%; margin: 0; padding: 10px 14px;
+  border: 0; background: transparent; text-align: left; text-decoration: none;
+  color: var(--text); font: inherit; font-size: 14px; cursor: pointer;
+}
+.pd-item:hover, .pd-item:focus-visible { background: #f6f7fb; outline: none; }
+.pd-sep { height: 1px; margin: 6px 0; background: var(--line); }
+.pd-item.is-current { position: relative; padding-right: 38px; color: var(--blue); font-weight: 500; }
+.pd-item.is-current::after {
+  content: ""; position: absolute; right: 17px; top: 50%;
+  width: 5px; height: 10px;
+  border: solid var(--blue); border-width: 0 2px 2px 0;
+  transform: translateY(-65%) rotate(45deg);
+}
+
+.shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: calc(100vh - 70px); }
+.side {
+  background: #fff;
+  border-right: 1px solid var(--line);
+  padding: 8px 0;
+}
+.side a, .side button.side-link {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; min-height: 32px; padding: 2px 20px;
+  border: 0; background: transparent;
+  color: rgba(0, 0, 0, 0.6);
+  text-decoration: none; font: inherit; font-size: 16px; font-weight: 400;
+  text-align: left; position: relative;
+}
+.side a i, .side button.side-link i { width: 20px; text-align: center; font-size: 16px; }
+.side a:hover, .side button.side-link:hover { background: rgba(0, 0, 0, 0.03); color: rgba(0, 0, 0, 0.95); }
+.side a.is-on, .side button.side-link.is-on { color: var(--blue); box-shadow: inset -4px 0 0 var(--blue); }
+html[data-view="profile"] #navProfile,
+html[data-view="hours"] #navHours,
+html[data-view="documents"] #navDocs,
+html[data-view="documents"] #navDocsOb,
+html[data-view="onboarding"] #navOnboarding { color: var(--blue); box-shadow: inset -4px 0 0 var(--blue); }
+html[data-view="hours"] #navProfile,
+html[data-view="documents"] #navProfile,
+html[data-view="onboarding"] #navProfile { color: rgba(0, 0, 0, 0.6); box-shadow: none; }
+.only-active, .only-onboarding { display: none !important; }
+html[data-stage="active"] .only-active { display: flex !important; }
+html[data-stage="onboarding"] .only-onboarding,
+html[data-show-onboarding="1"] .only-onboarding { display: flex !important; }
+
+.main { min-width: 0; padding: 28px 32px 80px; }
+.page-title-band { margin: 0 0 30px; }
+.page-title {
+  font-size: 25px; font-weight: 100; line-height: 1.3;
+  color: var(--text); margin: 0;
+}
+
+.ts-wrap { max-width: 1180px; }
+.ts-card {
+  background: #fff; border: 1px solid var(--card-line); border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); min-width: 0;
+}
+.ts-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.ts-nav { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.ts-icon {
+  width: 36px; height: 36px; border-radius: 4px;
+  border: 1px solid var(--line); background: #fff; color: var(--secondary);
+  display: grid; place-items: center; flex: 0 0 auto;
+}
+.ts-icon:hover { border-color: #999; color: var(--text); }
+.ts-week-label { font-size: 18px; font-weight: 500; color: var(--text); line-height: 22px; }
+.ts-week-sub { margin-top: 4px; font-size: 13px; line-height: 16px; color: var(--secondary); font-variant-numeric: tabular-nums; }
+.ts-jump {
+  border: 0; background: none; padding: 0; margin-top: 2px;
+  font-size: 13px; color: var(--blue); font-weight: 500;
+}
+.ts-jump:hover { text-decoration: underline; }
+
+.ts-btn {
+  height: 45px; padding: 0 24px; border-radius: 4px;
+  border: 1px solid transparent; background: #fff; color: var(--text);
+  font-size: 16px; font-weight: 500; line-height: 1;
+}
+.ts-btn:disabled { opacity: .45; cursor: not-allowed; }
+.ts-btn-primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+.ts-btn-primary:hover:not(:disabled) { background: #4054a5; border-color: #4054a5; }
+.ts-btn-success { background: var(--green); border-color: var(--green); color: #fff; }
+.ts-btn-success:hover:not(:disabled) { filter: brightness(.95); }
+.ts-btn-line { border-color: #d9d9d9; }
+.ts-btn-line:hover:not(:disabled) { border-color: #999; }
+.ts-btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.ts-btn-danger:hover:not(:disabled) { filter: brightness(.95); }
+.ts-btn-text {
+  background: none; border: 0; color: var(--danger); padding: 0 8px; height: 45px;
+}
+.ts-btn-text:hover { text-decoration: underline; }
+
+.ts-scroll { overflow-x: auto; }
+.ts-table { width: 100%; border-collapse: collapse; min-width: 920px; table-layout: fixed; }
+.ts-table th {
+  font-size: 12px; font-weight: 500; color: var(--secondary); text-align: center;
+  padding: 10px 6px; background: #fafafa; border-bottom: 1px solid var(--line);
+  vertical-align: bottom;
+}
+.ts-table th.proj, .ts-table td.proj { text-align: left; width: 268px; padding-left: 16px; padding-right: 12px; }
+.ts-table th .dow { display: block; letter-spacing: .04em; text-transform: uppercase; }
+.ts-table th .dom { display: block; margin-top: 2px; font-size: 14px; color: var(--text); font-weight: 500; }
+.ts-table th .tag { display: block; margin-top: 3px; font-size: 10px; font-weight: 500; color: var(--blue); letter-spacing: 0; text-transform: none; }
+.ts-table th.today { box-shadow: inset 0 -2px 0 var(--blue); }
+.ts-table th.today .dow, .ts-table th.today .dom { color: var(--blue); }
+.ts-table td { border-bottom: 1px solid #eee; padding: 8px 6px; vertical-align: top; background: #fff; }
+.ts-table td.weekend, .ts-table th.weekend { background: #fcfcfc; }
+.ts-table td.today { background: #f8f9fd; }
+.ts-table tbody tr:hover td { background: #fafafa; }
+.ts-table tbody tr:hover td.weekend { background: #f7f7f7; }
+.ts-table tbody tr:hover td.today { background: #f3f5fb; }
+.ts-table tfoot td {
+  border-bottom: 0; border-top: 1px solid #ddd;
+  font-weight: 500; font-variant-numeric: tabular-nums;
+  padding: 10px 6px; background: #fff; vertical-align: middle;
+}
+.ts-table tfoot td.proj {
+  text-align: left; color: var(--secondary); font-size: 12px; letter-spacing: .04em;
+  text-transform: uppercase; padding-left: 16px;
+}
+.ts-table tfoot td.foot-day {
+  text-align: right; font-size: 14px; color: var(--text);
+  padding-right: 40px;
+}
+.ts-table tfoot td.foot-day.weekend { background: #fcfcfc; }
+.ts-table tfoot td.foot-day.today { background: #f8f9fd; }
+.ts-table tfoot td.foot-day.is-over, .is-over { color: var(--danger); }
+.cell { display: flex; align-items: flex-start; gap: 2px; flex-wrap: wrap; }
+.ts-hours {
+  flex: 1 1 auto; width: auto; min-width: 0;
+  height: 36px; border: 1px solid #e4e4e4; border-radius: 4px;
+  text-align: right; font: inherit; font-size: 14px; color: var(--text);
+  font-variant-numeric: tabular-nums; padding: 0 8px; background: #fff;
+}
+.ts-hours:hover:not(:disabled):not([readonly]) { border-color: #cfcfcf; }
+.ts-hours:focus { outline: 2px solid #c5cee9; outline-offset: 0; border-color: var(--blue); }
+.ts-hours:disabled, .ts-hours.is-static {
+  color: var(--secondary); cursor: not-allowed;
+  border-color: #ececec; background: #fafafa;
+}
+.ts-hours.is-saving { border-color: var(--blue); color: var(--text); background: #f8f9fd; }
+.ts-hours[readonly] { cursor: default; border-color: #e8e8e8; background: #fafafa; color: var(--text); }
+.ts-hours.is-static {
+  display: flex; align-items: center; justify-content: flex-end;
+}
+.cell-side { width: 32px; height: 32px; flex: 0 0 32px; display: grid; place-items: center; color: #c8c8c8; }
+.cell-note { color: #c8c8c8; }
+.cell-note.has-note { color: var(--blue); }
+.icon-btn {
+  width: 32px; height: 32px; border: 0; border-radius: 4px;
+  background: transparent; color: inherit; display: grid; place-items: center; padding: 0;
+}
+.icon-btn:hover { background: #f3f3f3; color: var(--text); }
+.lock-mark { color: var(--secondary); font-size: 12px; }
+.cell-caption, .save-state {
+  flex: 1 0 100%;
+  text-align: right;
+  font-size: 11px; line-height: 14px; color: var(--secondary);
+  padding-right: 34px;
+}
+.save-state { display: none; color: var(--blue); }
+.cell.is-saving .save-state { display: block; }
+.row-label { display: flex; flex-direction: column; gap: 2px; padding: 4px 0; min-width: 0; }
+.row-label .row-client { font-size: 12px; color: var(--secondary); line-height: 16px; }
+.row-label .row-project { font-size: 15px; font-weight: 500; color: var(--text); line-height: 20px; }
+.row-label .row-task { font-size: 13px; color: var(--secondary); line-height: 18px; }
+.row-label-wrap { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.row-remove {
+  border: 0; background: none; padding: 4px 0; margin-top: 2px;
+  font-size: 13px; font-weight: 500; color: var(--secondary); flex: 0 0 auto;
+}
+.row-remove:hover { color: var(--danger); }
+.row-total { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; padding-right: 8px !important; color: var(--text); }
+.ts-table tfoot td.row-total { padding-right: 8px !important; font-size: 14px; }
+.ts-week-actions { padding: 20px 18px 16px; }
+.empty-week { padding: 8px 16px 0; font-size: 14px; color: var(--secondary); }
+
+.modal-back {
+  position: fixed; inset: 0; z-index: 80;
+  background: rgba(17, 17, 17, .35);
+  display: grid; place-items: center; padding: 24px;
+}
+.modal {
+  width: min(480px, 100%); background: #fff; border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .18); padding: 24px;
+}
+.modal h2 { font-size: 20px; font-weight: 500; color: var(--text); line-height: 26px; }
+.modal .lead { margin-top: 8px; font-size: 14px; line-height: 20px; color: var(--secondary); }
+.modal-actions { display: flex; justify-content: flex-start; align-items: center; gap: 10px; margin-top: 22px; }
+.modal-actions .push { margin-right: auto; }
+.modal-sheet {
+  width: min(420px, 100%); padding: 0; overflow: hidden;
+  border-radius: 8px; box-shadow: 0 16px 48px rgba(0, 0, 0, .2);
+}
+.modal-sheet .modal-banner {
+  padding: 18px 22px; text-align: center;
+  font-size: 17px; font-weight: 500; color: var(--text);
+  background: #f3f3f3; border-bottom: 1px solid #e8e8e8;
+}
+.modal-sheet .modal-body { padding: 22px 22px 24px; }
+.modal-sheet .picker-label {
+  display: block; margin-bottom: 12px;
+  font-size: 15px; font-weight: 500; color: var(--text);
+}
+.modal-sheet .picker-project,
+.modal-sheet .picker-task {
+  width: 100%; height: 45px; border: 1px solid #e5e5e5; border-radius: 4px;
+  background: #fff; color: var(--text); font-size: 16px; padding: 0 12px;
+}
+.modal-sheet .picker-project { margin-bottom: 12px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; margin-top: 12px; }
+.field > span { font-size: 12px; color: var(--secondary); }
+.field input, .field textarea {
+  width: 100%; height: 45px;
+  border: 1px solid #e5e5e5; border-radius: 4px;
+  padding: 8px 12px; font-size: 16px; color: var(--text); background: #fff;
+}
+.field textarea { height: auto; min-height: 80px; resize: vertical; }
+.field input:focus, .field textarea:focus,
+.modal-sheet select:focus, .ts-hours:focus {
+  outline: 2px solid #c5cee9; border-color: var(--blue);
+}
+.form-error { margin-top: 12px; font-size: 14px; color: var(--danger); }
+.edit-row-summary { padding-bottom: 4px; }
+.edit-row-summary .row-client { font-size: 12px; color: var(--secondary); }
+.edit-row-summary .row-project { margin-top: 2px; font-size: 16px; font-weight: 500; color: var(--text); }
+.edit-row-summary .row-task { margin-top: 4px; font-size: 14px; color: var(--secondary); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(12px);
+  background: #333; color: #fff; padding: 12px 18px; border-radius: 8px;
+  font-size: 14px; font-weight: 500; opacity: 0; pointer-events: none;
+  transition: .25s var(--ease); z-index: 90; max-width: min(420px, calc(100% - 32px));
+  text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.profile-layout { max-width: 800px; margin-inline: auto; }
+.profile-main { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+#viewHours, #viewDocs, #viewOnboarding, #viewAdmin { display: none; }
+html[data-view="hours"] #viewProfile,
+html[data-view="documents"] #viewProfile,
+html[data-view="onboarding"] #viewProfile,
+html[data-view="admin"] #viewProfile { display: none; }
+html[data-view="hours"] #viewHours,
+html[data-view="documents"] #viewDocs,
+html[data-view="onboarding"] #viewOnboarding,
+html[data-view="admin"] #viewAdmin { display: block; }
+html[data-view="admin"] .shell { grid-template-columns: minmax(0, 1fr); }
+html[data-view="admin"] .side { display: none; }
+
+.card {
+  background: #fff; border: 1px solid var(--card-line); border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); min-width: 0;
+}
+.card-title { font-size: 22px; font-weight: 400; color: #333333; line-height: 24px; }
+.hero { overflow: hidden; position: relative; }
+.banner {
+  height: 140px;
+  background: linear-gradient(135deg, #a1acdb 0%, #8c99c5 30.8%, #9aa7d4 30.8%, #8f9cc9 46.5%, #9caad5 46.5%, #808db7 100%);
+}
+.hero-photo {
+  position: absolute; left: 32px; top: 52px;
+  width: 112px; height: 112px; border-radius: 6px; object-fit: cover;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+}
+.hero-body { padding: 40px 32px 0; }
+.hero-name { font-size: 24px; font-weight: 500; line-height: 28px; color: #333333; }
+.contact { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
+.contact li { display: flex; align-items: center; gap: 12px; font-size: 15px; color: #333333; line-height: 20px; }
+.contact svg { color: #707070; width: 16px; flex: 0 0 16px; }
+.contact a { text-decoration: none; }
+.contact a:hover { color: var(--blue); }
+.meta {
+  display: flex; margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding: 22px 0 24px;
+}
+.meta > div { padding: 0 20px; border-left: 1px solid var(--line); min-width: 0; }
+.meta > div:first-child { padding-left: 0; border-left: 0; }
+.meta > div:last-child { flex: 1; }
+.meta small { display: block; font-size: 12px; color: #707070; line-height: 16px; }
+.meta b { display: block; margin-top: 4px; font-size: 14px; font-weight: 500; color: #333333; line-height: 18px; }
+
+.overview, .skills, .xp, .edu { padding: 28px 32px 32px; }
+.overview h2, .skills h2, .xp h2, .edu h2 { font-size: 22px; font-weight: 400; line-height: 26px; color: #333333; }
+.ov-text { margin-top: 12px; max-width: 680px; font-size: 15px; line-height: 22px; color: #333333; }
+.overview hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+.hl { display: grid; gap: 16px; }
+.hl b { display: block; font-size: 16px; font-weight: 500; line-height: 22px; color: #333333; }
+.hl p { margin-top: 2px; font-size: 15px; line-height: 21px; color: #333333; }
+.chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.chip {
+  height: 32px; padding: 0 16px;
+  border: 1px solid #e3e3e3; border-radius: 16px;
+  display: inline-flex; align-items: center;
+  font-size: 14px; color: #333333; background: #fff;
+}
+.skills hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0 20px; }
+.skills h3 { font-size: 18px; font-weight: 500; line-height: 24px; color: #333333; }
+.skills .lvl { margin-top: 6px; font-size: 14px; color: #333333; }
+.job-list { margin-top: 20px; }
+.job { padding: 0 0 24px; }
+.job + .job { border-top: 1px solid var(--line); padding-top: 24px; }
+.job h3 { font-size: 18px; font-weight: 500; line-height: 24px; color: #333333; }
+.job .org { margin-top: 4px; font-size: 14px; line-height: 18px; color: #333333; }
+.job .when { margin-top: 4px; font-size: 13px; line-height: 18px; color: #707070; }
+.job .desc { margin-top: 12px; font-size: 15px; line-height: 22px; color: #333333; max-width: 680px; }
+.job .desc p + p { margin-top: 6px; }
+.edu .job:last-child { padding-bottom: 0; }
+.card-foot { display: flex; justify-content: flex-end; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+.more-link {
+  border: 0; background: none; padding: 0;
+  font-size: 14px; font-weight: 500; color: var(--blue);
+}
+.more-link:hover { text-decoration: underline; }
+
+.ob-page { max-width: 800px; margin-inline: auto; }
+.ob-page .page-title-band { margin-bottom: 12px; }
+.ob-page-lead { margin: 0 0 24px; max-width: 640px; font-size: 15px; line-height: 22px; color: #707070; }
+.ob-count { margin: 0 0 22px; font-size: 13px; color: #707070; font-variant-numeric: tabular-nums; }
+.ob-list { display: flex; flex-direction: column; gap: 12px; }
+.ob-phase { margin: 10px 0 0; font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #999; }
+.ob-phase:first-child { margin-top: 0; }
+.ob-step {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; align-items: start;
+  width: 100%; margin: 0; padding: 20px 22px;
+  border: 1px solid var(--card-line); border-radius: 8px; background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  text-align: left; color: inherit; font: inherit; cursor: pointer;
+}
+button.ob-step { appearance: none; }
+.ob-step.is-later, .ob-step.is-wait { background: #fafafa; box-shadow: none; }
+.ob-step.is-later .ob-step-title, .ob-step.is-wait .ob-step-title { font-weight: 400; color: #555555; }
+.ob-step.is-current { background: #fff; border-color: #c5cee9; box-shadow: 0 2px 8px rgba(76, 96, 178, 0.1); }
+.ob-step.is-done .ob-num { background: #e8f6ec; color: var(--green); }
+.ob-num {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 16px; font-weight: 500; color: #707070;
+  background: #f3f3f3;
+}
+.ob-step.is-current .ob-num { background: var(--blue); color: #fff; }
+.ob-step-title { margin: 0; font-size: 18px; font-weight: 500; color: #333333; line-height: 24px; }
+.ob-step-detail { margin: 6px 0 0; font-size: 15px; line-height: 22px; color: #707070; }
+.ob-status { margin: 8px 0 0; font-size: 13px; font-weight: 500; color: #999; }
+.ob-step.is-current .ob-status { color: var(--blue); }
+.ob-step.is-done .ob-status { color: var(--green); }
+.ob-step.is-wait .ob-status { color: #8a6d1f; }
+.ob-action {
+  margin-top: 16px; height: 45px; padding: 0 22px;
+  border: 0; border-radius: 4px; background: var(--blue); color: #fff;
+  font-size: 16px; font-weight: 500;
+}
+.ob-action:hover { filter: brightness(1.06); }
+
+.ob-modal {
+  width: min(680px, 100%); max-height: min(860px, calc(100vh - 48px));
+  display: flex; flex-direction: column; padding: 0; overflow: hidden;
+}
+.ob-welcome { width: min(560px, 100%); padding: 28px 28px 24px; }
+.ob-kicker { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--blue); }
+.ob-welcome h2, .ob-modal h2 { font-size: 24px; font-weight: 500; color: #333333; line-height: 30px; }
+.ob-welcome .lead { margin-top: 8px; font-size: 15px; line-height: 22px; color: #707070; }
+.ob-group { margin-top: 18px; }
+.ob-group h3 { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #999; }
+.ob-path { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+.ob-path li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 14px; line-height: 20px; color: #333333; }
+.ob-path b { font-weight: 500; }
+.ob-path span { display: block; margin-top: 2px; color: #707070; }
+.ob-path .n { color: var(--blue); font-weight: 500; }
+.ob-modal-bar {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 22px 24px 0;
+}
+.ob-modal-bar p { margin-top: 6px; font-size: 14px; line-height: 20px; color: #707070; max-width: 520px; }
+.ob-x {
+  width: 36px; height: 36px; border: 0; border-radius: 4px; background: transparent;
+  color: #707070; font-size: 22px; line-height: 1; flex: 0 0 auto;
+}
+.ob-x:hover { background: #f3f3f3; color: #333333; }
+.ob-modal-body { flex: 1 1 auto; min-height: 0; padding: 18px 24px 20px; overflow: auto; }
+.ob-modal-foot {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 16px 24px 20px; border-top: 1px solid var(--line); background: #fff;
+}
+.req { color: var(--danger); }
+abbr.req { text-decoration: none; }
+.id-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.id-drop {
+  position: relative; width: 100%; min-height: 176px; padding: 14px;
+  border: 1px dashed #d5d5d5; border-radius: 8px; background: #fafafa;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; cursor: pointer; font: inherit;
+}
+.id-drop:hover { border-color: var(--blue); background: #f8f9fd; }
+.id-drop.is-bad { border-color: var(--danger); }
+.id-drop i { font-size: 22px; color: #b5b5b5; }
+.id-drop strong { display: block; margin-top: 8px; font-size: 14px; font-weight: 500; color: #333333; }
+.id-drop em { display: block; margin-top: 4px; font-style: normal; font-size: 12px; line-height: 16px; color: #707070; }
+.id-drop img { width: 100%; height: 110px; object-fit: cover; border-radius: 4px; }
+.id-drop .replace { margin-top: 8px; font-size: 13px; font-weight: 500; color: var(--blue); }
+.ob-fields { display: grid; gap: 12px; margin-top: 14px; }
+.ob-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.ob-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ob-field span { font-size: 13px; font-weight: 500; color: #333333; }
+.ob-field input, .ob-field select {
+  width: 100%; height: 45px; border: 1px solid #e5e5e5; border-radius: 4px;
+  font-size: 16px; color: #333333; background-color: #fff;
+}
+.ob-field input, .ob-field select { padding: 8px 12px; }
+#obApp .ob-field select,
+#obApp .ob-form select {
+  padding: 8px 40px 8px 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' fill='none' stroke='%23707070' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 12px;
+}
+.ob-field input:focus, .ob-field select:focus { outline: 2px solid #c5cee9; border-color: var(--blue); }
+.ob-field input.is-bad, .ob-field select.is-bad { border-color: var(--danger); }
+.choice { display: flex; flex-wrap: wrap; gap: 16px 22px; margin-top: 10px; }
+.choice label { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #333333; }
+.choice input { width: 16px; height: 16px; accent-color: var(--blue); }
+.ob-error { margin-top: 12px; font-size: 14px; line-height: 20px; color: var(--danger); }
+.ob-btn { height: 45px; padding: 0 22px; border-radius: 4px; font-size: 16px; font-weight: 500; }
+.modal.ob-id {
+  width: min(980px, calc(100vw - 48px));
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+}
+.modal.ob-id h2 { font-size: 22px; font-weight: 500; color: #333333; line-height: 28px; }
+.modal.ob-id .ob-modal-bar { padding: 28px 32px 0; }
+.modal.ob-id .ob-modal-bar p { margin-top: 4px; max-width: none; }
+.modal.ob-id .ob-modal-body { overflow: visible; flex: none; padding: 28px 32px 24px; }
+.modal.ob-id .ob-modal-foot { padding: 16px 32px 28px; border-radius: 0 0 8px 8px; }
+.ob-id-cols { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px; align-items: start; }
+.ob-id-col h3 { font-size: 15px; font-weight: 500; color: #333333; }
+.ob-id-col .hint { margin-top: 2px; font-size: 13px; line-height: 18px; color: #707070; }
+.ob-id-col .id-grid { margin-top: 10px; }
+.ob-id-col .id-drop { min-height: 148px; padding: 12px; }
+.ob-id-col > .ob-field { margin-top: 18px; }
+.ob-id-col .ob-fields { margin-top: 16px; gap: 16px; }
+.ob-id-col .ob-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.ob-id-col .choice { margin-top: 8px; }
+.ob-slack { width: min(480px, 100%); }
+.doc-wrap { max-width: 720px; }
+.doc-card { padding: 28px 28px 12px; }
+.doc-lead { font-size: 15px; line-height: 22px; color: #707070; max-width: 520px; }
+.doc-list { list-style: none; margin: 18px 0 0; padding: 0; }
+.doc-list li {
+  display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px; align-items: start;
+  padding: 16px 0; border-top: 1px solid var(--line);
+}
+.doc-type { font-size: 12px; font-weight: 500; letter-spacing: .04em; padding-top: 3px; }
+.doc-list b { display: block; font-size: 16px; font-weight: 500; color: #333333; line-height: 22px; }
+.doc-list span { display: block; margin-top: 2px; font-size: 14px; line-height: 20px; color: #707070; }
+
+@media (max-width: 860px) {
+  .modal.ob-id { max-height: calc(100vh - 32px); overflow: hidden; }
+  .modal.ob-id .ob-modal-body { overflow: auto; min-height: 0; }
+  .ob-id-cols { grid-template-columns: 1fr; gap: 20px; }
+}
+@media (max-width: 640px) {
+  .id-grid, .ob-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 767px) {
+  .pm-name { display: none; }
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .side {
+    display: flex; overflow-x: auto; border-right: 0;
+    border-bottom: 1px solid var(--line); padding: 0;
+  }
+  .side a, .side button.side-link { flex: 0 0 auto; width: auto; }
+  .side a.is-on, .side button.side-link.is-on,
+  html[data-view="profile"] #navProfile,
+  html[data-view="hours"] #navHours,
+  html[data-view="documents"] #navDocs,
+  html[data-view="documents"] #navDocsOb,
+  html[data-view="onboarding"] #navOnboarding { box-shadow: inset 0 -4px 0 var(--blue); }
+  html[data-view="hours"] #navProfile,
+  html[data-view="documents"] #navProfile,
+  html[data-view="onboarding"] #navProfile { box-shadow: none; }
+  .main { padding: 0 12px 80px; }
+  .page-title-band {
+    margin: 0;
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(214, 214, 214, 0.4);
+  }
+  .page-title { font-size: 18px; font-weight: 400; line-height: 21px; }
+  .banner { height: 110px; }
+  .hero-photo { width: 88px; height: 88px; left: 18px; top: 40px; }
+  .hero-body { padding: 28px 18px 0; }
+  .hero-name { font-size: 20px; }
+  .meta { flex-wrap: wrap; row-gap: 14px; }
+  .meta > div { flex: 1 1 40%; padding: 0 12px 0 0; border-left: 0; }
+  .meta > div:last-child { flex-basis: 100%; }
+  .overview, .skills, .xp, .edu { padding: 22px 18px 24px; }
+  .contact li { align-items: flex-start; }
+  .ob-phase-card, .ob-form, .adm-banner { padding-left: 16px; padding-right: 16px; }
+  .ob-row, .ob-upload-grid, .adm-filters { grid-template-columns: 1fr; }
+  .ob-path-step.is-focus { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+  .ob-path-main { grid-template-columns: 36px minmax(0, 1fr); }
+  .ob-path-aside { grid-column: 2; grid-row: 2; align-items: stretch; width: 100%; }
+  .ob-path-foot { grid-row: 3; }
+  .ob-path-aside .ts-btn { width: 100%; }
+  .ob-form-actions .ts-btn { width: 100%; }
+  .adm-page { padding-bottom: 48px; }
+}
+.ob-help, .ob-locked-note { font-size: 13px; line-height: 18px; color: var(--secondary); }
+.ob-docs-link, .ob-text-btn {
+  border: 0; background: none; padding: 0; color: var(--blue); font-size: 14px; font-weight: 500; text-decoration: none;
+}
+.ob-docs-link:hover, .ob-text-btn:hover { text-decoration: underline; }
+.ob-tools { display: flex; justify-content: flex-end; margin: 8px 0 0; }
+.ob-phase-card {
+  background: #fff; border: 1px solid #e5e5e5; border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); padding: 28px 28px 8px; margin-top: 18px;
+}
+.ob-phase-card.is-ready { box-shadow: inset 0 3px 0 var(--green), 0 2px 6px rgba(0, 0, 0, 0.06); }
+.ob-phase-card.is-ready.is-locked { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); }
+.ob-phase-card.is-ready.is-locked .ob-phase-kicker { color: var(--secondary); }
+.ob-phase-card.is-locked { background: #fff; }
+.ob-phase-kicker { font-size: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--blue); }
+.ob-phase-card.is-ready .ob-phase-kicker { color: var(--green); }
+.ob-phase-card h2 { margin-top: 4px; margin-bottom: 0; font-size: 22px; font-weight: 400; line-height: 26px; }
+.ob-phase-card .ob-phase-lead { margin-top: 4px; font-size: 14px; line-height: 20px; color: var(--secondary); }
+.ob-task-path,
+.ob-task-path.ob-tasks { margin-top: 32px; }
+.ob-path-step.ob-task {
+  display: block;
+  padding: 0; border: 0; border-radius: 0;
+  background: transparent; box-shadow: none;
+  --ob-main-pad-y: 22px;
+}
+.ob-path-step.ob-task.is-focus { --ob-main-pad-y: 26px; }
+.ob-path-step.ob-task.is-done { --ob-main-pad-y: 17px; }
+.ob-path-step.ob-task .ob-path-main {
+  padding-top: var(--ob-main-pad-y);
+  padding-bottom: var(--ob-main-pad-y);
+}
+.ob-path-step.ob-task:first-child:not(.is-focus) .ob-path-main { padding-top: 0; }
+.ob-path-step.ob-task:last-child .ob-path-main { padding-bottom: 22px; }
+.ob-path-step.ob-task:not(:first-child) .ob-path-main {
+  border-top: 1px solid var(--line);
+}
+.ob-path-step.ob-task.is-focus + .ob-path-step.ob-task .ob-path-main {
+  border-top-color: #e8ebf5;
+}
+.ob-path-step.is-focus {
+  margin: 0 -28px; padding-left: 28px; padding-right: 28px;
+  background: #f8f9fd;
+}
+.ob-path-step.is-alert .ob-path-marker { box-shadow: 0 0 0 2px var(--danger); }
+.ob-path-step.is-later h3,
+.ob-path-step.is-locked h3 { font-weight: 400; color: #555555; }
+.ob-path-step.is-later .ob-path-desc,
+.ob-path-step.is-locked .ob-path-desc { color: #999999; }
+.ob-path-step.is-done .ob-path-desc,
+.ob-path-step.is-done .ob-subtimeline { display: none; }
+.ob-path-rail {
+  position: relative; display: flex; justify-content: center; align-items: center;
+  align-self: center; min-height: 32px; overflow: visible;
+}
+.ob-path-rail::before {
+  content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+  background: #e5e5e5; transform: translateX(-50%); z-index: 0;
+}
+.ob-path-step:first-child .ob-path-rail::before { top: 18px; }
+.ob-path-step:last-child .ob-path-rail::before { bottom: calc(50% + 2px); }
+.ob-path-step:not(:first-child) .ob-path-rail::before { top: calc(-1 * var(--ob-main-pad-y, 22px)); }
+.ob-path-step:not(:last-child) .ob-path-rail::before { bottom: calc(-1 * var(--ob-main-pad-y, 22px)); }
+.ob-path-marker {
+  position: relative; z-index: 1; flex: 0 0 auto;
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 14px;
+  background: #fff; color: #707070; border: 2px solid #d8d8d8;
+}
+.ob-path-marker.is-done { background: var(--green); border-color: var(--green); color: #fff; }
+.ob-path-marker.is-active { background: var(--blue); border-color: var(--blue); color: #fff; }
+.ob-path-marker.is-progress { background: #fff; border-color: var(--green); color: var(--green); }
+.ob-path-marker.is-muted { background: #fafafa; border-color: #d0d0d0; color: #b0b0b0; }
+.ob-path-main {
+  min-width: 0;
+  display: grid; grid-template-columns: 36px minmax(0, 1fr) auto;
+  column-gap: 16px; row-gap: 10px; align-items: center;
+}
+.ob-path-head { display: contents; }
+.ob-path-rail { grid-column: 1; grid-row: 1; }
+.ob-path-copy { grid-column: 2; grid-row: 1; min-width: 0; }
+.ob-path-aside { grid-column: 3; grid-row: 1; align-self: center; }
+.ob-path-foot { grid-column: 2; }
+.ob-path-copy { min-width: 0; }
+.ob-task-path .ob-path-desc {
+  margin-top: 3px; font-size: 14px; line-height: 20px; color: var(--secondary);
+}
+.ob-path-aside {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0;
+}
+.ob-path-aside .ts-btn { white-space: nowrap; }
+.ob-path-foot {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px;
+}
+.ob-path-step.is-focus .ob-path-foot { display: none; }
+.ob-task h3 { font-size: 16px; font-weight: 500; line-height: 22px; }
+.ob-path-step.is-focus h3 { font-size: 17px; }
+.ob-path-step.is-done h3 { font-size: 15px; }
+.ob-task-top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pill {
+  display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: 4px;
+  font-size: 12px; font-weight: 500; background: #f3f3f3; color: #555;
+}
+.pill.wait { background: #f3f3f3; color: #707070; }
+.pill.done { background: #e8f6ec; color: var(--green); }
+.pill.ready { background: #eef1fa; color: var(--blue); }
+.pill.alert { background: #fdecec; color: var(--danger); }
+.pill.neutral { background: #f3f3f3; color: #555; }
+.ob-subtimeline {
+  list-style: none; margin: 11px 0 0; padding: 0 0 0 4px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.ob-subtimeline li {
+  display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 10px; align-items: start;
+  font-size: 13px; line-height: 18px; color: var(--secondary); position: relative; padding: 0;
+}
+.ob-subtimeline li.is-on { color: var(--text); font-weight: 500; }
+.ob-subtimeline li.is-done { color: #555; }
+.ob-sub-dot {
+  width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; justify-self: center;
+  background: var(--green); flex-shrink: 0;
+}
+.ob-sub-dot.is-pending {
+  background: #fff; border: 2px solid var(--green); width: 10px; height: 10px;
+}
+.ob-sub-dot.is-muted {
+  background: #fff; border: 2px solid #ccc;
+}
+.ob-subtimeline li::before {
+  content: ""; position: absolute; left: 6px; top: 14px; bottom: -8px; width: 2px; background: #e5e5e5;
+}
+.ob-subtimeline li:last-child::before { display: none; }
+.ob-task-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+.ob-phase-title-row {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.ob-phase-title-row h2 { flex: 1; min-width: 0; }
+.ob-phase-card.is-locked .ob-phase-head .ob-locked-note {
+  margin-top: 4px; font-size: 14px; line-height: 20px; padding: 0;
+}
+.ob-locked-note { color: #707070; margin: 0; padding: 4px 0 18px; }
+.ob-phase-card.is-ready.is-locked.is-collapsed { padding-bottom: 22px; }
+.ob-phase-expand {
+  flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; margin: -9px -10px -9px 0; padding: 0; border: 0; border-radius: 8px;
+  background: none; color: #707070; cursor: pointer;
+}
+.ob-phase-expand:hover { color: var(--text); background: #f3f3f3; }
+.ob-phase-expand:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.ob-phase-expand i { font-size: 14px; transition: transform .2s var(--ease); }
+.ob-phase-card.is-ready.is-locked.is-expanded .ob-phase-expand i { transform: rotate(180deg); }
+.ob-phase-tasks { margin-top: 0; }
+.ob-phase-card.is-locked .ob-path-marker { opacity: 0.85; }
+.ob-form { background: #fff; border: 1px solid var(--card-line); border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06); padding: 22px 22px 24px; }
+.ob-back {
+  margin: 0 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.ob-btn[data-act="back"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.ob-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.ob-section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.ob-section h2 { font-size: 18px; font-weight: 500; line-height: 24px; }
+.ob-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.ob-upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.id-slot {
+  min-height: 168px; padding: 16px; border: 1px dashed #d5d5d5; border-radius: 8px; background: #fafafa;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px;
+}
+.id-slot img { width: 100%; height: 110px; object-fit: cover; border-radius: 4px; }
+.id-slot strong { font-size: 14px; font-weight: 500; }
+.id-slot em { font-style: normal; font-size: 12px; color: var(--secondary); }
+.id-actions { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.id-actions span { font-size: 12px; color: var(--secondary); }
+#adminApp .ob-section > p { margin-top: 8px; }
+.ob-file {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); border: 0;
+}
+.ob-check { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; font-size: 14px; line-height: 20px; }
+.ob-check input { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--blue); flex: 0 0 auto; }
+.ob-form-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+#obApp .ob-form {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+#obApp .ob-form.is-summary { gap: 24px; }
+#obApp .ob-form > form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+#obApp .ob-form .ob-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+#obApp .ob-form .ob-section:first-child { padding-top: 0; border-top: 0; }
+#obApp .ob-form .ob-section h2 + .ob-help { margin-top: -8px; }
+#obApp .ob-form .ob-section > p + p { margin-top: -8px; }
+#obApp .ob-row { gap: 16px; }
+#obApp .ob-field { gap: 8px; }
+#obApp .ob-form .ob-upload-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 0;
+}
+#obApp .ob-form .ob-note,
+#obApp .ob-form .ob-error,
+#obApp .ob-form .ob-check,
+#obApp .ob-form .ob-readonly,
+#obApp .ob-form .choice,
+#obApp .ob-form .ob-paper,
+#obApp .ob-form .ob-upload-grid { margin-top: 0; }
+#obApp .ob-form .ob-form-actions { margin-top: 8px; }
+#obApp .ob-form.is-summary .ob-form-actions { margin-top: 0; }
+#obApp .ob-form [data-pay-panel],
+#obApp .ob-form #businessFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ob-sum-status { display: flex; align-items: center; }
+.ob-summary { display: flex; flex-direction: column; gap: 28px; }
+.ob-summary h2 { margin: 0 0 12px; font-size: 16px; font-weight: 500; line-height: 22px; color: #333333; }
+.ob-summary h3 {
+  margin: 20px 0 12px;
+  font-size: 13px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #707070;
+}
+.ob-summary h2 + h3 { margin-top: 0; }
+.ob-summary dl { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.ob-summary dl + dl { margin-top: 14px; }
+.ob-sum-row { display: grid; grid-template-columns: minmax(140px, 200px) minmax(0, 1fr); gap: 4px 16px; align-items: baseline; }
+.ob-sum-row dt { margin: 0; font-size: 14px; line-height: 20px; color: #707070; font-weight: 400; }
+.ob-sum-row dd { margin: 0; font-size: 16px; line-height: 22px; color: #333333; font-weight: 500; }
+.ob-sum-badge {
+  display: inline-flex; align-items: center; width: fit-content;
+  margin: 14px 0 0; padding: 4px 10px; border-radius: 4px;
+  background: #eef1fa; color: var(--blue); font-size: 13px; font-weight: 500;
+}
+.ob-identity-summary .id-slot {
+  border-style: solid; border-color: var(--line); cursor: default; min-height: 148px;
+}
+.ob-identity-summary .id-slot img { height: 120px; object-fit: contain; background: #fff; }
+.ob-note {
+  margin-top: 12px; padding: 12px 14px; border-radius: 8px; background: #fbf6ea; color: #6d5818; font-size: 14px; line-height: 20px;
+}
+.ob-note.is-alert { background: #fdecec; color: #9d242b; }
+.ob-note.is-ok { background: #e8f6ec; color: #1f6b32; }
+.ob-paper { margin-top: 14px; padding: 22px 22px 26px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.ob-paper h2, .ob-paper h3 { font-size: 20px; font-weight: 500; line-height: 26px; }
+.ob-paper p, .ob-paper li { margin-top: 8px; font-size: 14px; line-height: 22px; }
+.ob-paper ul, .ob-paper ol { margin: 8px 0 0; padding-left: 18px; }
+.ob-script {
+  min-height: 52px; margin-top: 8px; padding: 8px 2px 0; border-bottom: 1px solid var(--line);
+  font-family: "Segoe Script", "Brush Script MT", cursive; font-size: 32px; line-height: 1.2; color: #24356d;
+}
+.ob-steps { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 8px; }
+.ob-steps li { font-size: 14px; line-height: 20px; color: var(--secondary); }
+.ob-steps li.is-on { color: var(--text); font-weight: 500; }
+.ob-mini { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+.ob-mini th, .ob-mini td { border-bottom: 1px solid var(--line); padding: 8px; text-align: right; }
+.ob-mini th:first-child, .ob-mini td:first-child { text-align: left; }
+.ob-mini th { color: var(--secondary); font-weight: 500; font-size: 12px; }
+.ob-choice { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.ob-choice label, .choice label { font-size: 15px; }
+.ob-gcal {
+  margin-top: 8px; border: 1px solid #dadce0; border-radius: 8px; overflow: hidden;
+  background: #fff; box-shadow: 0 1px 2px rgba(60, 64, 67, .15);
+}
+.ob-gcal-head {
+  display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px;
+  border-bottom: 1px solid #e8eaed; background: #f8f9fa;
+}
+.ob-gcal-mark {
+  width: 40px; height: 40px; border-radius: 8px; flex: 0 0 auto;
+  display: grid; place-items: center; font-size: 18px; font-weight: 500;
+  color: #fff; background: linear-gradient(135deg, #4285f4, #34a853 50%, #fbbc04 85%, #ea4335);
+}
+.ob-gcal-head h2 { margin: 0; font-size: 18px; font-weight: 500; color: #202124; line-height: 24px; }
+.ob-gcal-head p { margin: 4px 0 0; font-size: 13px; line-height: 18px; color: #5f6368; }
+.ob-gcal-badge {
+  margin-left: auto; font-size: 11px; font-weight: 500; letter-spacing: .02em;
+  text-transform: uppercase; color: #5f6368; background: #e8eaed; border-radius: 4px; padding: 4px 8px;
+}
+.ob-gcal-body { padding: 16px 18px 18px; }
+.ob-gcal-tz {
+  display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5f6368; margin-bottom: 14px;
+}
+.ob-gcal-tz i { color: #4285f4; }
+.ob-gcal-days {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px;
+}
+.ob-gcal-day {
+  flex: 0 0 auto; min-width: 72px; padding: 10px 8px; border: 1px solid #dadce0; border-radius: 8px;
+  background: #fff; font: inherit; text-align: center; cursor: pointer; color: #3c4043;
+}
+.ob-gcal-day span { display: block; font-size: 11px; text-transform: uppercase; color: #5f6368; }
+.ob-gcal-day b { display: block; margin-top: 4px; font-size: 16px; font-weight: 500; }
+.ob-gcal-day.is-on { border-color: #1a73e8; background: #e8f0fe; color: #1a73e8; }
+.ob-gcal-day.is-on span { color: #1a73e8; }
+.ob-gcal-slots { display: grid; gap: 8px; }
+.ob-gcal-slot {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  border: 1px solid #dadce0; border-radius: 8px; background: #fff; font-size: 15px; cursor: pointer;
+}
+.ob-gcal-slot input { width: 16px; height: 16px; accent-color: #1a73e8; flex: 0 0 auto; }
+.ob-gcal-slot:has(input:checked) { border-color: #1a73e8; background: #e8f0fe; }
+.ob-gcal-foot { margin-top: 16px; display: flex; justify-content: flex-end; gap: 10px; align-items: center; }
+.ob-gcal-foot .ob-help { margin: 0; flex: 1 1 auto; }
+.ob-readonly { margin-top: 12px; }
+.ob-readonly span { display: block; font-size: 13px; font-weight: 500; }
+.ob-readonly b { display: block; margin-top: 4px; font-size: 16px; font-weight: 500; }
+.doc-group { margin-top: 16px; }
+.doc-group h2 { font-size: 13px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--secondary); }
+.doc-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: center;
+  padding: 14px 0; border-top: 1px solid var(--line);
+}
+.doc-row b { display: block; font-size: 16px; font-weight: 500; line-height: 22px; }
+.doc-row .meta-line { display: block; margin-top: 2px; font-size: 13px; color: var(--secondary); }
+.doc-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+.adm-page { max-width: 1080px; }
+.adm-banner {
+  margin-bottom: 16px; padding: 12px 14px; border-radius: 8px; background: #fbf6ea; border: 1px solid #ead9a8;
+  font-size: 14px; line-height: 20px;
+}
+.adm-filters { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 220px); gap: 12px; margin: 14px 0; }
+.adm-scroll { overflow-x: auto; }
+.adm-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+.adm-table th { text-align: left; font-size: 12px; font-weight: 500; color: var(--secondary); padding: 12px; border-bottom: 1px solid var(--line); }
+.adm-table td { padding: 14px 12px; border-bottom: 1px solid var(--line); font-size: 14px; vertical-align: top; line-height: 20px; }
+.adm-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.adm-actions .ts-btn { height: 40px; padding: 0 14px; font-size: 14px; }
+.adm-log { list-style: none; margin: 12px 0 0; padding: 0; }
+.adm-log li { padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; line-height: 20px; }
+.adm-log span { display: block; color: var(--secondary); font-size: 12px; }
+.ob-dialog { width: min(560px, 100%); max-height: min(720px, calc(100vh - 48px)); overflow: auto; position: relative; }
+.ob-dialog.is-wide { width: min(720px, 100%); }
+.ob-dialog .ob-x { position: absolute; top: 10px; right: 10px; }
+.ob-field textarea {
+  width: 100%; min-height: 88px; border: 1px solid #e5e5e5; border-radius: 4px;
+  padding: 8px 12px; font-size: 16px; resize: vertical;
+}
+.ob-field textarea:focus { outline: 2px solid #c5cee9; border-color: var(--blue); }
+#obApp button:focus-visible, #obApp a:focus-visible, #docApp a:focus-visible, #docApp button:focus-visible,
+#adminApp button:focus-visible, #adminApp a:focus-visible, #adminApp select:focus-visible {
+  outline: 2px solid var(--blue); outline-offset: 2px;
+}
+@media (max-width: 767px) {
+  .ob-phase-card, .ob-form, .adm-banner { padding-left: 16px; padding-right: 16px; }
+  .ob-row, .ob-upload-grid, .adm-filters { grid-template-columns: 1fr; }
+  .ob-path-step.is-focus { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+  .ob-path-main { grid-template-columns: 36px minmax(0, 1fr); }
+  .ob-path-aside { grid-column: 2; grid-row: 2; align-items: stretch; width: 100%; }
+  .ob-path-foot { grid-row: 3; }
+  .ob-path-aside .ts-btn { width: 100%; }
+  .ob-form-actions .ts-btn, .adm-actions .ts-btn { width: 100%; }
+  #obApp .ob-form { padding: 24px 16px; }
+  #obApp .ob-row, #obApp .ob-upload-grid { grid-template-columns: 1fr; }
+  .ob-sum-row { grid-template-columns: 1fr; gap: 2px; }
+  .doc-row { grid-template-columns: minmax(0, 1fr); }
+  .doc-actions { justify-content: flex-start; }
+}
+</style>
+<link rel="stylesheet" href="../dev-tools/dev-tools.css">
+<script src="../dev-tools/dev-tools.js" defer></script>
+</head>
+<body data-page="profile">
+  <header class="topbar">
+    <a class="logo-link" href="#" onclick="return false" aria-label="BetterEngineer">
+      <img class="logo" src="../assets/logo.svg" width="140" height="19" alt="betterengineer">
+    </a>
+    <div class="top-tools">
+      <div class="profile-menu" id="profileMenu">
+        <button type="button" class="profile-menu-btn" id="profileMenuBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="profileDropdown" aria-label="Account menu">
+          <span class="pm-name">Gabriel Kouyoumdjian</span>
+          <img class="pm-avatar" src="../assets/gabriel.png" alt="">
+          <svg class="pm-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 9 7 7 7-7"/></svg>
+        </button>
+        <div class="profile-dropdown" id="profileDropdown" role="menu" aria-labelledby="profileMenuBtn">
+          <div class="pd-label">Preview</div>
+          <a class="pd-item" role="menuitem" href="#signup" data-preview="signup">Signup</a>
+          <a class="pd-item" role="menuitem" href="#onboarding" data-preview="onboarding">Onboarding</a>
+          <a class="pd-item" role="menuitem" href="#active" data-preview="active">Active</a>
+          <a class="pd-item" role="menuitem" href="#admin" data-preview="admin">Preview as admin</a>
+          <div class="pd-sep" role="separator"></div>
+          <div class="pd-label">Demo</div>
+          <button class="pd-item" type="button" role="menuitem" data-scenario="new">New candidate</button>
+          <button class="pd-item" type="button" role="menuitem" data-scenario="verifying">Verification in progress</button>
+          <button class="pd-item" type="button" role="menuitem" data-scenario="awaiting">Awaiting signature</button>
+          <button class="pd-item" type="button" role="menuitem" data-scenario="signed">Contract signed</button>
+          <button class="pd-item" type="button" role="menuitem" data-scenario="done">Fully onboarded</button>
+          <button class="pd-item" type="button" role="menuitem" data-scenario="reset">Reset demo</button>
+          <div class="pd-sep" role="separator"></div>
+          <a class="pd-item" role="menuitem" href="../profile.html">View as internal</a>
+          <a class="pd-item" role="menuitem" href="../client.html">View as client</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <nav class="side" aria-label="Portal">
+      <a href="#signup" id="navProfile"><i class="fa-regular fa-user" aria-hidden="true"></i> Profile</a>
+      <a class="only-onboarding" href="#onboarding" id="navOnboarding"><i class="fa-regular fa-clipboard" aria-hidden="true"></i> Onboarding</a>
+      <a class="only-onboarding" href="#onboarding-docs" id="navDocsOb"><i class="fa-regular fa-file-lines" aria-hidden="true"></i> Documents</a>
+      <a class="only-active" href="#active" id="navHours"><i class="fa-regular fa-clock" aria-hidden="true"></i> Timesheets</a>
+      <a class="only-active" href="#documents" id="navDocs"><i class="fa-regular fa-file-lines" aria-hidden="true"></i> Documents</a>
+      <button class="side-link" type="button" id="navCalendar"><i class="fa-regular fa-calendar" aria-hidden="true"></i> Calendar</button>
+    </nav>
+
+    <main class="main">
+      <section id="viewProfile">
+        <div class="profile-layout" id="profileLayout">
+          <div class="profile-main">
+            <article class="card hero">
+              <div class="banner"></div>
+              <img class="hero-photo" src="../assets/gabriel.png" alt="Gabriel Kouyoumdjian">
+              <div class="hero-body">
+                <h2 class="hero-name">Gabriel Kouyoumdjian</h2>
+                <ul class="contact">
+                  <li>
+                    <svg height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 21s-6.5-6.1-6.5-11a6.5 6.5 0 0 1 13 0c0 4.9-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>
+                    <span>Montevideo, Uruguay (GMT-3)</span>
+                  </li>
+                  <li>
+                    <svg height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M5 4h3.5l1.5 4-2.2 1.4a11 11 0 0 0 6.8 6.8L16 14l4 1.5V19a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+                    <a href="tel:+16022761773"><span>1 (602) 276-1773 (WhatsApp)</span></a>
+                  </li>
+                  <li>
+                    <svg height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>
+                    <a href="mailto:GabrielK@devworks.com"><span>GabrielK@devworks.com</span></a>
+                  </li>
+                </ul>
+                <div class="meta">
+                  <div><small>Desired Hourly</small><b>$75</b></div>
+                  <div><small>Desired Monthly</small><b>$9,000</b></div>
+                  <div><small>Notice Period</small><b>2 Weeks</b></div>
+                  <div><small>Open to</small><b>Full-time, part-time, short-term, contract</b></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card skills">
+              <h2 class="card-title">Skills</h2>
+              <div class="chips">
+                <span class="chip">Android</span>
+                <span class="chip">iOS</span>
+                <span class="chip">Objective-C</span>
+                <span class="chip">JavaScript</span>
+                <span class="chip">Flutter</span>
+                <span class="chip">Swift</span>
+                <span class="chip">Wordpress</span>
+                <span class="chip">Kotlin</span>
+                <span class="chip">Cocoa</span>
+              </div>
+              <hr>
+              <h3>English Level</h3>
+              <p class="lvl">Proficient</p>
+            </article>
+
+            <article class="card xp">
+              <h2 class="card-title">Work Experience</h2>
+              <div class="job-list">
+                <div class="job">
+                  <h3>Lead Android Developer</h3>
+                  <p class="org">GlamST by Ulta Beauty</p>
+                  <p class="when">Jun 2018 to present (3 years, 3 months)</p>
+                  <div class="desc"><p>Led the construction, from scratch, of an AR solution allowing users to try on makeup virtually on Android devices, now 100% used in Ulta and the Ulta Beauty app.</p></div>
+                </div>
+                <div class="job">
+                  <h3>Consultant: Android, Google App Engine, Mobile Architecture</h3>
+                  <p class="org">Freelance</p>
+                  <p class="when">Nov 2011 to present (9 years, 9 months)</p>
+                  <div class="desc">
+                    <p>Android development for Ducks Apps (Mixed, Dorbit)</p>
+                    <p>Architect and consultant on Google App Engine projects at Blue Sapphire Software Engineering (Montevideo, Uruguay) for corporate customers in Latam.</p>
+                    <p>Android app development at HuCan (Buenos Aires, Argentina)</p>
+                    <p>Android app development at Embarcadero Studio (Austin, Texas)</p>
+                    <p>Mobile architect for fintech startup Rosamel Bank (Lima, Peru)</p>
+                  </div>
+                </div>
+                <div class="job">
+                  <h3>Founder, Organizer, Speaker</h3>
+                  <p class="org">Google Developers Group Uruguay</p>
+                  <p class="when">Mar 2010 to present (11 years, 4 months)</p>
+                  <div class="desc"><p>Founded Google Developer Group (GDG) for collaboration on and discussion of the Android and App Engine platforms, product APIs such as the YouTube API and the Google Calendar API, and initiatives such as OpenSocial.</p></div>
+                </div>
+              </div>
+              <div class="card-foot">
+                <button class="more-link" type="button" onclick="toast('6 more roles would load here.')">See 6 More</button>
+              </div>
+            </article>
+
+            <article class="card edu">
+              <h2 class="card-title">Education</h2>
+              <div class="job-list">
+                <div class="job">
+                  <h3>Universidad ORT Uruguay</h3>
+                  <p class="org">Software Engineering</p>
+                  <p class="when">2004 to 2008</p>
+                  <div class="desc"><p>Studied intensely as a software architect and worked as a teaching assistant for the last few years of my degree.</p></div>
+                </div>
+                <div class="job">
+                  <h3>Universidad ORT Uruguay</h3>
+                  <p class="org">History</p>
+                  <p class="when">2009 to 2010</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="viewOnboarding">
+        <div id="obApp"></div>
+      </section>
+
+      <section id="viewHours">
+        <div class="page-title-band">
+          <h1 class="page-title">Timesheets</h1>
+        </div>
+        <div class="ts-wrap">
+          <div class="ts-card" id="tsRoot">
+            <div class="ts-toolbar" id="tsToolbar"></div>
+            <div id="tsBody"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="viewDocs">
+        <div class="page-title-band">
+          <h1 class="page-title">Documents</h1>
+        </div>
+        <div class="doc-wrap" id="docApp"></div>
+      </section>
+
+      <section id="viewAdmin" aria-label="Onboarding admin">
+        <div id="adminApp"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-back" id="addRowModal" hidden>
+    <div class="modal modal-sheet" role="dialog" aria-modal="true" aria-labelledby="addRowTitle">
+      <div class="modal-banner" id="addRowTitle">Add row to this timesheet</div>
+      <div class="modal-body">
+        <label class="picker-label" for="addRowProject">Project / Task</label>
+        <select id="addRowProject" class="picker-project" aria-label="Project"></select>
+        <select id="addRowTask" class="picker-task" aria-label="Task" disabled></select>
+        <p class="form-error" id="addRowError" hidden></p>
+        <div class="modal-actions">
+          <button class="ts-btn ts-btn-success" type="button" id="addRowSave">Save row</button>
+          <button class="ts-btn ts-btn-line" type="button" id="addRowCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="editModal" hidden>
+    <div class="modal modal-sheet" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <div class="modal-banner" id="editTitle">Edit entry</div>
+      <div class="modal-body">
+        <div class="edit-row-summary" id="editRowSummary"></div>
+        <label class="field"><span>Hours</span><input id="editHours" inputmode="decimal" autocomplete="off"></label>
+        <label class="field"><span>Date</span><input id="editDate" type="date"></label>
+        <label class="field"><span>Note</span><textarea id="editNote" rows="3" maxlength="500" placeholder="Optional"></textarea></label>
+        <p class="form-error" id="editError" hidden></p>
+        <div class="modal-actions">
+          <button class="ts-btn ts-btn-text push" type="button" id="editDelete">Delete</button>
+          <button class="ts-btn ts-btn-line" type="button" id="editCancel">Cancel</button>
+          <button class="ts-btn ts-btn-primary" type="button" id="editSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="confirmModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <h2 id="confirmTitle"></h2>
+      <p class="lead" id="confirmBody"></p>
+      <div class="modal-actions">
+        <button class="ts-btn ts-btn-line" type="button" id="confirmCancel">Cancel</button>
+        <button class="ts-btn ts-btn-primary" type="button" id="confirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="obDialog" hidden>
+    <div class="modal ob-dialog" role="dialog" aria-modal="true" aria-labelledby="obDialogTitle">
+      <button class="ob-x" type="button" id="obDialogClose" aria-label="Close">&times;</button>
+      <p class="ob-kicker" id="obDialogKicker"></p>
+      <h2 id="obDialogTitle"></h2>
+      <div id="obDialogBody"></div>
+      <div class="modal-actions" id="obDialogActions"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const ASSIGNMENTS = [
+  { id: "vistera", client: "Vistera", project: "Platform rebuild", tasks: ["Frontend", "API", "Code review"] },
+  { id: "optimus", client: "Optimus MD", project: "Patient portal", tasks: ["Frontend", "Bug fixes"] },
+  { id: "dac", client: "DAC Consulting", project: "Architecture advisory", tasks: ["Consulting"] }
+];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const SAVE_MS = 700;
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const thisMonday = startOfWeek(today);
+
+const entries = [];
+let nextId = 1;
+let cursor = new Date(thisMonday);
+let pinned = [];
+let editingId = null;
+let confirmAction = null;
+let modalProjects = [];
+
+function startOfWeek(date) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const day = d.getDay();
+  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+  return d;
+}
+function addDays(date, n) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  d.setDate(d.getDate() + n);
+  return d;
+}
+function iso(d) {
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function parseIso(s) {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+function daysOfWeek(monday) {
+  return [0, 1, 2, 3, 4, 5, 6].map((n) => addDays(monday, n));
+}
+function mondayOffset(weeks) {
+  return addDays(thisMonday, weeks * 7);
+}
+function assignment(id) {
+  return ASSIGNMENTS.find((a) => a.id === id);
+}
+function rowKey(a, task) {
+  return a + "||" + task;
+}
+function parseRowKey(key) {
+  const i = key.indexOf("||");
+  return { assignmentId: key.slice(0, i), task: key.slice(i + 2) };
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function formatHours(n) {
+  return (Math.round(n * 100) / 100).toFixed(2);
+}
+function formatWeekTitle(monday) {
+  const sunday = addDays(monday, 6);
+  if (monday.getMonth() === sunday.getMonth() && monday.getFullYear() === sunday.getFullYear()) {
+    return MONTHS[monday.getMonth()] + " " + monday.getDate() + " to " + sunday.getDate() + ", " + sunday.getFullYear();
+  }
+  if (monday.getFullYear() === sunday.getFullYear()) {
+    return MONTHS[monday.getMonth()] + " " + monday.getDate() + " to " + MONTHS[sunday.getMonth()] + " " + sunday.getDate() + ", " + sunday.getFullYear();
+  }
+  return MONTHS[monday.getMonth()] + " " + monday.getDate() + ", " + monday.getFullYear() + " to " + MONTHS[sunday.getMonth()] + " " + sunday.getDate() + ", " + sunday.getFullYear();
+}
+function formatLong(d) {
+  return DAYS[d.getDay()] + ", " + MONTHS[d.getMonth()] + " " + d.getDate();
+}
+function sameDay(a, b) {
+  return iso(a) === iso(b);
+}
+function isFuture(d) {
+  return d.getTime() > today.getTime();
+}
+function pushEntry(date, assignmentId, task, hours, note, lock) {
+  entries.push({
+    id: nextId++,
+    date: iso(date),
+    assignmentId,
+    task,
+    hours,
+    note: note || "",
+    lock: lock || ""
+  });
+}
+function lockReason(lock) {
+  if (lock === "billed") return "Billed";
+  if (lock === "locked") return "Locked";
+  return "";
+}
+function seed() {
+  const mon = thisMonday;
+  if (!isFuture(mon)) pushEntry(mon, "vistera", "Frontend", 8, "Auth flow polish");
+  const tue = addDays(mon, 1);
+  if (!isFuture(tue)) {
+    pushEntry(tue, "vistera", "Frontend", 4, "Dashboard empty states");
+    pushEntry(tue, "vistera", "Frontend", 2, "Second Harvest entry");
+    pushEntry(tue, "optimus", "Bug fixes", 2, "Login redirect", "locked");
+  }
+  const wed = addDays(mon, 2);
+  if (!isFuture(wed)) pushEntry(wed, "vistera", "API", 8, "Timesheet endpoints", "billed");
+  const thu = addDays(mon, 3);
+  if (!isFuture(thu)) pushEntry(thu, "vistera", "Frontend", 3.5, "Review comments");
+
+  for (let i = 0; i < 5; i++) {
+    pushEntry(addDays(mondayOffset(-1), i), "vistera", "Frontend", 8, i === 0 ? "Sprint work" : "");
+  }
+  for (let i = 0; i < 3; i++) {
+    pushEntry(addDays(mondayOffset(-2), i), "vistera", "Frontend", 4, "");
+    pushEntry(addDays(mondayOffset(-2), i), "dac", "Consulting", 4, i === 0 ? "Architecture review" : "", i === 0 ? "billed" : "");
+  }
+  pinned.push({ assignmentId: "dac", task: "Consulting" });
+}
+seed();
+
+function matches(a, task, dateIso) {
+  return entries.filter((e) => e.assignmentId === a && e.task === task && e.date === dateIso);
+}
+function hoursFor(a, task, dateIso) {
+  return matches(a, task, dateIso).reduce((sum, e) => sum + e.hours, 0);
+}
+function dayTotal(dateIso) {
+  return entries.reduce((sum, e) => e.date === dateIso ? sum + e.hours : sum, 0);
+}
+function weekEntries(monday) {
+  const set = new Set(daysOfWeek(monday).map(iso));
+  return entries.filter((e) => set.has(e.date));
+}
+function weekHours(monday) {
+  return weekEntries(monday).reduce((sum, e) => sum + e.hours, 0);
+}
+function parseHours(raw) {
+  const t = String(raw).trim().replace(",", ".");
+  if (!t) return { empty: true };
+  if (!/^\d+(\.\d+)?$/.test(t)) return { error: "Enter hours as a number, like 8 or 7.5." };
+  const decimals = t.split(".")[1] || "";
+  if (decimals.length > 2) return { error: "Hours can have at most two decimal places." };
+  const n = Math.round(parseFloat(t) * 100) / 100;
+  if (n <= 0) return { error: "Hours must be greater than 0." };
+  if (n > 24) return { error: "Hours cannot be more than 24." };
+  return { hours: n };
+}
+function collectRows() {
+  const dates = new Set(daysOfWeek(cursor).map(iso));
+  const map = new Map();
+  entries.forEach((e) => {
+    if (!dates.has(e.date)) return;
+    map.set(rowKey(e.assignmentId, e.task), { assignmentId: e.assignmentId, task: e.task });
+  });
+  pinned.forEach((p) => map.set(rowKey(p.assignmentId, p.task), p));
+  return [...map.values()].sort((a, b) => {
+    const aa = assignment(a.assignmentId);
+    const bb = assignment(b.assignmentId);
+    return aa.client.localeCompare(bb.client) || aa.project.localeCompare(bb.project) || a.task.localeCompare(b.task);
+  });
+}
+function toast(msg) {
+  const n = document.getElementById("toast");
+  n.textContent = msg;
+  n.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => n.classList.remove("show"), 3200);
+}
+
+function renderToolbar() {
+  const onThis = sameDay(cursor, thisMonday);
+  document.getElementById("tsToolbar").innerHTML =
+    '<div class="ts-nav">' +
+      '<button class="ts-icon" type="button" data-act="shift-week" data-by="-1" aria-label="Previous week"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m14 6-6 6 6 6"/></svg></button>' +
+      '<div><div class="ts-week-label">' + esc(formatWeekTitle(cursor)) + '</div><div class="ts-week-sub" id="toolbarHours">' + esc(formatHours(weekHours(cursor))) + " hours</div>" +
+      (onThis ? "" : '<button class="ts-jump" type="button" data-act="shift-week" data-by="0">This week</button>') +
+      "</div>" +
+      '<button class="ts-icon" type="button" data-act="shift-week" data-by="1" aria-label="Next week"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10 6 6 6-6 6"/></svg></button>' +
+    "</div>";
+}
+
+function cellHtml(row, d) {
+  const dateIso = iso(d);
+  const found = matches(row.assignmentId, row.task, dateIso);
+  const cls = [d.getDay() === 0 || d.getDay() === 6 ? "weekend" : "", sameDay(d, today) ? "today" : ""].filter(Boolean).join(" ");
+  const label = DAYS[d.getDay()] + " hours, " + assignment(row.assignmentId).client + " " + row.task;
+  const side = '<span class="cell-side" aria-hidden="true"></span>';
+  if (found.length > 1) {
+    const value = formatHours(found.reduce((s, e) => s + e.hours, 0));
+    return '<td class="' + cls + '"><div class="cell"><input class="ts-hours" readonly tabindex="0" aria-label="' + esc(label) + '" data-a="' + esc(row.assignmentId) + '" data-task="' + esc(row.task) + '" data-date="' + dateIso + '" data-multi="1" value="' + value + '" title="These entries are managed in Harvest.">' +
+      side + '<span class="cell-caption">Managed in Harvest</span></div></td>';
+  }
+  if (found.length === 1 && found[0].lock) {
+    const reason = lockReason(found[0].lock);
+    return '<td class="' + cls + '"><div class="cell"><span class="ts-hours is-static" aria-label="' + esc(label + ", " + reason) + '">' + formatHours(found[0].hours) + '</span>' +
+      '<span class="cell-side lock-mark" title="' + esc(reason) + '"><i class="fa-solid fa-lock" aria-hidden="true"></i></span>' +
+      '<span class="cell-caption">' + esc(reason) + "</span></div></td>";
+  }
+  const value = found.length ? formatHours(found[0].hours) : "";
+  const note = found.length ? found[0].note : "";
+  const noteBtn = found.length
+    ? '<button class="icon-btn cell-note' + (note ? " has-note" : "") + '" type="button" data-act="cell-note" data-id="' + found[0].id + '" aria-label="Edit note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5h14v10H8l-3 3z"/></svg></button>'
+    : side;
+  return '<td class="' + cls + '"><div class="cell"><input class="ts-hours" inputmode="decimal" autocomplete="off" aria-label="' + esc(label) + '" data-a="' + esc(row.assignmentId) + '" data-task="' + esc(row.task) + '" data-date="' + dateIso + '" value="' + value + '">' +
+    noteBtn + '<span class="save-state">Saving</span></div></td>';
+}
+
+function renderWeek() {
+  const days = daysOfWeek(cursor);
+  const rows = collectRows();
+  const head = days.map((d) => {
+    const cls = [d.getDay() === 0 || d.getDay() === 6 ? "weekend" : "", sameDay(d, today) ? "today" : ""].filter(Boolean).join(" ");
+    return '<th class="' + cls + '" scope="col"><span class="dow">' + DAYS[d.getDay()] + '</span><span class="dom">' + d.getDate() + "</span>" +
+      (sameDay(d, today) ? '<span class="tag">Today</span>' : "") + "</th>";
+  }).join("");
+  const body = rows.map((row) => {
+    const key = rowKey(row.assignmentId, row.task);
+    const cells = days.map((d) => cellHtml(row, d)).join("");
+    const rowHours = days.reduce((s, d) => s + hoursFor(row.assignmentId, row.task, iso(d)), 0);
+    const a = assignment(row.assignmentId);
+    const remove = rowHours === 0
+      ? '<button class="row-remove" type="button" data-act="unpin" data-key="' + esc(key) + '">Remove</button>'
+      : "";
+    const label = '<div class="row-label-wrap"><div class="row-label"><span class="row-client">' + esc(a.client) + '</span><span class="row-project">' + esc(a.project) + '</span><span class="row-task">' + esc(row.task) + "</span></div>" + remove + "</div>";
+    return "<tr><td class=\"proj\">" + label + "</td>" + cells +
+      '<td class="row-total">' + formatHours(rowHours) + "</td></tr>";
+  }).join("");
+  const totals = days.map((d) => {
+    const n = dayTotal(iso(d));
+    const cls = [n > 24 ? "is-over" : "", d.getDay() === 0 || d.getDay() === 6 ? "weekend" : "", sameDay(d, today) ? "today" : ""].filter(Boolean).join(" ");
+    return '<td class="foot-day ' + cls + '">' + formatHours(n) + "</td>";
+  }).join("");
+  const empty = rows.length ? "" : '<p class="empty-week">No rows this week yet.</p>';
+  document.getElementById("tsBody").innerHTML =
+    empty +
+    '<div class="ts-scroll"><table class="ts-table"><thead><tr><th class="proj" scope="col">Project / task</th>' + head + '<th scope="col">Total</th></tr></thead><tbody>' +
+    body + "</tbody><tfoot><tr><td class=\"proj\">Total</td>" + totals + '<td class="row-total" id="weekTotal">' + formatHours(weekHours(cursor)) + "</td></tr></tfoot></table></div>" +
+    '<div class="ts-week-actions"><button type="button" class="ts-btn ts-btn-line" data-act="open-add-row">Add row</button></div>';
+}
+
+function renderAll() {
+  renderToolbar();
+  renderWeek();
+}
+
+function focusCell(a, task, date) {
+  const days = daysOfWeek(cursor).map(iso);
+  let i = days.indexOf(date);
+  if (i < 0) return;
+  for (let n = i; n < days.length; n++) {
+    const el = document.querySelector('.ts-hours[data-a="' + CSS.escape(a) + '"][data-task="' + CSS.escape(task) + '"][data-date="' + days[n] + '"]');
+    if (el && !el.disabled && !el.classList.contains("is-static")) {
+      el.focus();
+      return;
+    }
+  }
+}
+
+function finishSave(input) {
+  const cell = input.closest(".cell");
+  input.disabled = false;
+  input.classList.remove("is-saving");
+  delete input.dataset.saving;
+  if (cell) cell.classList.remove("is-saving");
+}
+
+function commitHoursInput(input, moveNext) {
+  if (!input || !input.isConnected || input.readOnly || input.disabled || input.dataset.saving === "1") return;
+  if (input.dataset.multi === "1") {
+    toast("These entries are managed in Harvest.");
+    return;
+  }
+  const a = input.dataset.a;
+  const task = input.dataset.task;
+  const date = input.dataset.date;
+  const parsed = parseHours(input.value);
+  const found = matches(a, task, date).filter((e) => !e.lock);
+  const previous = found.length === 1 ? formatHours(found[0].hours) : "";
+  if (parsed.empty && !found.length) return;
+  if (!parsed.empty && !parsed.error && found.length === 1 && found[0].hours === parsed.hours) {
+    input.value = formatHours(parsed.hours);
+    if (moveNext) focusCell(a, task, nextDate(date));
+    return;
+  }
+  input.dataset.saving = "1";
+  input.disabled = true;
+  input.classList.add("is-saving");
+  const cell = input.closest(".cell");
+  if (cell) cell.classList.add("is-saving");
+  const snapshot = found[0] || null;
+  window.setTimeout(() => {
+    if (!input.isConnected) return;
+    finishSave(input);
+    if (parsed.error) {
+      input.value = previous;
+      toast(parsed.error);
+      return;
+    }
+    if (!parsed.empty && parsed.hours === 13) {
+      input.value = previous;
+      toast("Harvest could not save this entry.");
+      return;
+    }
+    if (parsed.empty) {
+      const idx = entries.indexOf(snapshot);
+      if (idx >= 0) entries.splice(idx, 1);
+      const still = daysOfWeek(cursor).some((d) => hoursFor(a, task, iso(d)) > 0);
+      if (!still && !pinned.some((p) => p.assignmentId === a && p.task === task)) {
+        pinned.push({ assignmentId: a, task });
+      }
+      renderAll();
+      if (moveNext) focusCell(a, task, nextDate(date));
+      return;
+    }
+    if (snapshot) snapshot.hours = parsed.hours;
+    else pushEntry(parseIso(date), a, task, parsed.hours, "");
+    renderAll();
+    if (moveNext) focusCell(a, task, nextDate(date));
+  }, SAVE_MS);
+}
+
+function nextDate(date) {
+  const days = daysOfWeek(cursor).map(iso);
+  return days[days.indexOf(date) + 1] || "";
+}
+
+function openAddRowModal() {
+  const taken = new Set(collectRows().map((r) => rowKey(r.assignmentId, r.task)));
+  modalProjects = ASSIGNMENTS.map((a) => ({
+    ...a,
+    tasks: a.tasks.filter((t) => !taken.has(rowKey(a.id, t)))
+  })).filter((a) => a.tasks.length);
+  const project = document.getElementById("addRowProject");
+  const task = document.getElementById("addRowTask");
+  const err = document.getElementById("addRowError");
+  project.innerHTML = '<option value="">Select a project</option>' + modalProjects.map((a) =>
+    '<optgroup label="' + esc(a.client) + '"><option value="' + esc(a.id) + '">' + esc(a.project) + "</option></optgroup>"
+  ).join("");
+  task.innerHTML = '<option value="">Select a task</option>';
+  task.disabled = true;
+  const none = !modalProjects.length;
+  err.textContent = none ? "Every project and task for this week already has a row." : "";
+  err.hidden = !none;
+  document.getElementById("addRowSave").disabled = none;
+  openModal("addRowModal");
+  project.focus();
+}
+function syncAddRowTask() {
+  const projectId = document.getElementById("addRowProject").value;
+  const task = document.getElementById("addRowTask");
+  const a = modalProjects.find((item) => item.id === projectId);
+  const tasks = a ? a.tasks : [];
+  task.innerHTML = '<option value="">Select a task</option>' + tasks.map((t) => '<option value="' + esc(t) + '">' + esc(t) + "</option>").join("");
+  task.disabled = !projectId;
+  if (tasks.length === 1) task.value = tasks[0];
+}
+function saveAddRow() {
+  const err = document.getElementById("addRowError");
+  const projectId = document.getElementById("addRowProject").value;
+  const taskName = document.getElementById("addRowTask").value;
+  const a = modalProjects.find((item) => item.id === projectId);
+  if (!a) {
+    err.textContent = "Choose a project.";
+    err.hidden = false;
+    return;
+  }
+  if (!taskName || !a.tasks.includes(taskName)) {
+    err.textContent = "Choose a task.";
+    err.hidden = false;
+    return;
+  }
+  if (collectRows().some((r) => r.assignmentId === projectId && r.task === taskName)) {
+    err.textContent = "That project and task already has a row this week.";
+    err.hidden = false;
+    return;
+  }
+  pinned.push({ assignmentId: projectId, task: taskName });
+  closeModal("addRowModal");
+  renderAll();
+  const input = document.querySelector('.ts-hours[data-a="' + CSS.escape(projectId) + '"][data-task="' + CSS.escape(taskName) + '"]:not([readonly])');
+  if (input) input.focus();
+}
+
+function openModal(id) { document.getElementById(id).hidden = false; }
+function closeModal(id) { document.getElementById(id).hidden = true; }
+
+function openEditor(id) {
+  const e = entries.find((x) => x.id === Number(id));
+  if (!e || e.lock) {
+    if (e && e.lock) toast(lockReason(e.lock) + " entries cannot be edited.");
+    return;
+  }
+  editingId = e.id;
+  const a = assignment(e.assignmentId);
+  document.getElementById("editRowSummary").innerHTML =
+    '<span class="row-client">' + esc(a.client) + '</span><div class="row-project">' + esc(a.project) + '</div><div class="row-task">' + esc(e.task) + "</div>";
+  document.getElementById("editHours").value = formatHours(e.hours);
+  document.getElementById("editDate").value = e.date;
+  document.getElementById("editNote").value = e.note;
+  document.getElementById("editError").hidden = true;
+  document.getElementById("editSave").disabled = false;
+  openModal("editModal");
+  document.getElementById("editHours").focus();
+}
+function saveEditor() {
+  const e = entries.find((x) => x.id === editingId);
+  const err = document.getElementById("editError");
+  const saveBtn = document.getElementById("editSave");
+  if (!e || e.lock) return;
+  const parsed = parseHours(document.getElementById("editHours").value);
+  const date = document.getElementById("editDate").value;
+  const note = document.getElementById("editNote").value.trim();
+  if (parsed.empty || parsed.error) {
+    err.textContent = parsed.error || "Hours must be greater than 0.";
+    err.hidden = false;
+    return;
+  }
+  if (!date) {
+    err.textContent = "Choose a date.";
+    err.hidden = false;
+    return;
+  }
+  saveBtn.disabled = true;
+  const previousHours = e.hours;
+  window.setTimeout(() => {
+    saveBtn.disabled = false;
+    if (parsed.hours === 13) {
+      document.getElementById("editHours").value = formatHours(previousHours);
+      toast("Harvest could not save this entry.");
+      return;
+    }
+    e.hours = parsed.hours;
+    e.date = date;
+    e.note = note;
+    closeModal("editModal");
+    editingId = null;
+    const moved = startOfWeek(parseIso(date));
+    if (!sameDay(moved, cursor)) {
+      cursor = moved;
+      pinned = [];
+    }
+    renderAll();
+  }, SAVE_MS);
+}
+function askDelete(id) {
+  const e = entries.find((x) => x.id === Number(id));
+  if (!e || e.lock) return;
+  const a = assignment(e.assignmentId);
+  openConfirm(
+    "Delete this entry?",
+    formatHours(e.hours) + " hours on " + formatLong(parseIso(e.date)) + " for " + a.client + ", " + a.project + ", " + e.task + ".",
+    "Delete",
+    true,
+    () => {
+      const idx = entries.findIndex((x) => x.id === e.id);
+      if (idx >= 0) entries.splice(idx, 1);
+      const still = daysOfWeek(cursor).some((d) => hoursFor(e.assignmentId, e.task, iso(d)) > 0);
+      if (!still && !pinned.some((p) => p.assignmentId === e.assignmentId && p.task === e.task)) {
+        pinned.push({ assignmentId: e.assignmentId, task: e.task });
+      }
+      closeModal("editModal");
+      editingId = null;
+      renderAll();
+    }
+  );
+}
+function openConfirm(title, body, label, danger, action) {
+  document.getElementById("confirmTitle").textContent = title;
+  document.getElementById("confirmBody").textContent = body;
+  const ok = document.getElementById("confirmOk");
+  ok.textContent = label;
+  ok.className = "ts-btn " + (danger ? "ts-btn-danger" : "ts-btn-primary");
+  confirmAction = action;
+  openModal("confirmModal");
+  ok.focus();
+}
+
+document.getElementById("tsRoot").addEventListener("click", (e) => {
+  const multi = e.target.closest(".ts-hours[data-multi]");
+  if (multi) {
+    toast("These entries are managed in Harvest.");
+    return;
+  }
+  const btn = e.target.closest("[data-act]");
+  if (!btn) return;
+  const act = btn.dataset.act;
+  if (act === "shift-week") {
+    const by = Number(btn.dataset.by);
+    let carry = [];
+    if (by === 1) carry = collectRows().map((r) => ({ assignmentId: r.assignmentId, task: r.task }));
+    cursor = by === 0 ? new Date(thisMonday) : addDays(cursor, by * 7);
+    pinned = by === 1 ? carry : [];
+    renderAll();
+  } else if (act === "open-add-row") {
+    openAddRowModal();
+  } else if (act === "unpin") {
+    const { assignmentId, task } = parseRowKey(btn.dataset.key);
+    const hasHours = daysOfWeek(cursor).some((d) => hoursFor(assignmentId, task, iso(d)) > 0);
+    if (hasHours) return;
+    pinned = pinned.filter((p) => !(p.assignmentId === assignmentId && p.task === task));
+    entries.slice().forEach((entry) => {
+      if (entry.assignmentId === assignmentId && entry.task === task && daysOfWeek(cursor).some((d) => iso(d) === entry.date)) {
+        const idx = entries.indexOf(entry);
+        if (idx >= 0) entries.splice(idx, 1);
+      }
+    });
+    renderAll();
+  } else if (act === "cell-note") {
+    openEditor(btn.dataset.id);
+  }
+});
+document.getElementById("tsRoot").addEventListener("focusout", (e) => {
+  if (e.target.classList && e.target.classList.contains("ts-hours")) commitHoursInput(e.target, false);
+});
+document.getElementById("tsRoot").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" || !e.target.classList || !e.target.classList.contains("ts-hours")) return;
+  e.preventDefault();
+  commitHoursInput(e.target, true);
+});
+
+document.getElementById("addRowProject").addEventListener("change", syncAddRowTask);
+document.getElementById("addRowSave").addEventListener("click", saveAddRow);
+document.getElementById("addRowCancel").addEventListener("click", () => closeModal("addRowModal"));
+document.getElementById("addRowModal").addEventListener("click", (e) => { if (e.target.id === "addRowModal") closeModal("addRowModal"); });
+document.getElementById("editCancel").addEventListener("click", () => closeModal("editModal"));
+document.getElementById("editSave").addEventListener("click", saveEditor);
+document.getElementById("editDelete").addEventListener("click", () => askDelete(editingId));
+document.getElementById("editModal").addEventListener("click", (e) => { if (e.target.id === "editModal") closeModal("editModal"); });
+document.getElementById("confirmCancel").addEventListener("click", () => { confirmAction = null; closeModal("confirmModal"); });
+document.getElementById("confirmOk").addEventListener("click", () => {
+  const action = confirmAction;
+  confirmAction = null;
+  closeModal("confirmModal");
+  if (action) action();
+});
+document.getElementById("confirmModal").addEventListener("click", (e) => {
+  if (e.target.id === "confirmModal") { confirmAction = null; closeModal("confirmModal"); }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  ["editModal", "confirmModal", "addRowModal", "obDialog"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el || el.hidden) return;
+    if (id === "obDialog" && typeof closeObDialog === "function") closeObDialog();
+    else closeModal(id);
+  });
+});
+
+(function initProfileMenu() {
+  const menu = document.getElementById("profileMenu");
+  const btn = document.getElementById("profileMenuBtn");
+  function setOpen(open) {
+    menu.classList.toggle("is-open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  btn.addEventListener("click", (ev) => { ev.stopPropagation(); setOpen(!menu.classList.contains("is-open")); });
+  document.addEventListener("click", (ev) => { if (!menu.contains(ev.target)) setOpen(false); });
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") setOpen(false); });
+})();
+
+renderAll();
+
+/* Contractor onboarding prototype. Reorder work by editing TASK_DEFS. */
+const STORE_KEY = "be.proto.onboarding.v1";
+const PROFILE = {
+  name: "Gabriel Kouyoumdjian",
+  email: "GabrielK@devworks.com",
+  country: "Uruguay",
+  timezone: "Montevideo (GMT-3)"
+};
+const COUNTRIES = ["Uruguay", "Argentina", "Brazil", "Chile", "Colombia", "Mexico", "Spain", "United States"];
+const ID_TYPES = ["Passport", "National ID", "Driver's license"];
+const PAY_METHODS = [
+  { value: "bank", label: "International bank transfer" },
+  { value: "wise", label: "Wise" },
+  { value: "payoneer", label: "Payoneer" }
+];
+const DOC_CATEGORIES = ["Identification and verification", "Agreements", "Tax and payment", "Resources"];
+const PHASE_DEFS = [
+  { id: "become", title: "Become a Contractor", lead: "Confirm who you are, then review and sign your agreement." },
+  { id: "ready", title: "Get Ready to Work", lead: "Set up the tools and details you need before your first week." }
+];
+const TASK_DEFS = [
+  { id: "identity", phase: "become", name: "Verify your identity", blurb: "Country, nationality, and a photo of your government ID.", icon: "fa-regular fa-id-card" },
+  { id: "info", phase: "become", name: "Complete contractor information", blurb: "Legal name, address, and how you contract.", icon: "fa-regular fa-address-card" },
+  { id: "offer", phase: "become", name: "Review offer letter", blurb: "Read the offer and sign it.", icon: "fa-regular fa-file-lines" },
+  { id: "contract", phase: "become", name: "Review and sign contract", blurb: "Your contractor agreement.", icon: "fa-regular fa-file" },
+  { id: "call", phase: "ready", name: "Schedule the onboarding call", blurb: "Book time with Karla, our onboarding coordinator, on her Google Calendar.", icon: "fa-regular fa-calendar" },
+  { id: "slack", phase: "ready", name: "Set up Slack", blurb: "Join the BetterEngineer workspace.", icon: "fa-regular fa-comments" },
+  { id: "harvest", phase: "ready", name: "Set up Harvest", blurb: "Learn how to track your hours.", icon: "fa-regular fa-clock" },
+  { id: "payment", phase: "ready", name: "Set up payment information", blurb: "Tell us how to pay you.", icon: "fa-regular fa-credit-card" },
+  { id: "handbook", phase: "ready", name: "Review contractor handbook", blurb: "The working agreements we ask every contractor to acknowledge.", icon: "fa-regular fa-book" }
+];
+
+let state = loadState();
+let sessionFiles = { front: "", back: "" };
+let sessionFlow = { offer: 0, contract: 0, harvest: 0, callDay: 0 };
+const PHASE_READY_EXPAND_KEY = "be.proto.phaseReadyExpanded";
+function phaseReadyIsExpanded() {
+  try { return sessionStorage.getItem(PHASE_READY_EXPAND_KEY) === "1"; } catch (err) { return false; }
+}
+function setPhaseReadyExpanded(on) {
+  try {
+    if (on) sessionStorage.setItem(PHASE_READY_EXPAND_KEY, "1");
+    else sessionStorage.removeItem(PHASE_READY_EXPAND_KEY);
+  } catch (err) {}
+}
+let sessionPayment = null;
+let paymentDraft = { holder: "", bank: "", account: "", swift: "", payEmail: "" };
+let adminFilter = { status: "all", phase: "all" };
+let dialogHandlers = [];
+let dialogReturn = null;
+let dialogMode = "";
+let pendingFocus = false;
+let lastRouteKey = "";
+
+function taskById(id) { return TASK_DEFS.find((task) => task.id === id); }
+function blankTasks() {
+  return {
+    identity: { status: "not_started", country: "", nationality: "", idType: "", legalName: "", dob: "", idNumber: "", frontName: "", backName: "", frontSample: false, backSample: false, note: "", submittedAt: "", verifiedAt: "" },
+    info: { status: "not_started", preferredName: "", email: "", address: "", city: "", region: "", postal: "", taxResidency: "", entity: "", businessName: "", businessCountry: "", businessNumber: "", submittedAt: "" },
+    offer: { status: "waiting", sentAt: "", signedAt: "" },
+    contract: { status: "locked", sentAt: "", signedAt: "" },
+    welcome: { status: "not_started", readAt: "" },
+    slack: { status: "waiting", email: "" },
+    harvest: { status: "waiting", confirmed: false },
+    payment: { status: "not_started", country: "", method: "", submittedAt: "" },
+    handbook: { status: "not_started", ack: false, ackAt: "" },
+    call: { status: "not_started", slot: "", timezone: PROFILE.timezone, scheduledAt: "" }
+  };
+}
+function defaultState() {
+  return { scenario: "new", introSeen: false, offerEnabled: true, invited: false, celebrate: false, updatedAt: "", activity: [], tasks: blankTasks() };
+}
+function stripSecrets(obj) {
+  if (!obj || typeof obj !== "object") return;
+  Object.keys(obj).forEach((key) => {
+    const low = key.toLowerCase();
+    if (["accountnumber", "routing", "swift", "iban", "holder", "bankname", "payemail", "filedata", "previewurl", "imagedata", "account", "bank"].indexOf(low) >= 0) {
+      delete obj[key];
+      return;
+    }
+    const value = obj[key];
+    if (typeof value === "string" && value.indexOf("data:image") === 0) obj[key] = "";
+    else if (value && typeof value === "object") stripSecrets(value);
+  });
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return defaultState();
+    const data = JSON.parse(raw);
+    const base = defaultState();
+    if (data && data.tasks) {
+      Object.keys(base.tasks).forEach((key) => { base.tasks[key] = Object.assign(base.tasks[key], data.tasks[key] || {}); });
+    }
+    ["scenario", "introSeen", "offerEnabled", "invited", "celebrate", "updatedAt"].forEach((key) => {
+      if (data && data[key] !== undefined) base[key] = data[key];
+    });
+    if (data && Array.isArray(data.activity)) base.activity = data.activity.slice(0, 40);
+    if (base.tasks.screening) delete base.tasks.screening;
+    stripSecrets(base);
+    return base;
+  } catch (err) { return defaultState(); }
+}
+function saveState() {
+  const copy = JSON.parse(JSON.stringify(state));
+  stripSecrets(copy);
+  localStorage.setItem(STORE_KEY, JSON.stringify(copy));
+}
+function persistEdit() {
+  state.scenario = "custom";
+  state.updatedAt = new Date().toISOString();
+  saveState();
+  markMenus();
+}
+function logActivity(who, text) {
+  state.activity.unshift({ at: new Date().toISOString(), who: who, text: text });
+  if (state.activity.length > 40) state.activity.length = 40;
+  state.scenario = "custom";
+  state.updatedAt = state.activity[0].at;
+  saveState();
+  markMenus();
+}
+function todayStamp() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function formatWhen(iso) {
+  if (!iso) return "";
+  const d = String(iso).length === 10 ? new Date(iso + "T12:00:00") : new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return MONTHS[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+}
+function contractSigned() { return state.tasks.contract.status === "signed"; }
+function legalName() { return state.tasks.identity.legalName || PROFILE.name; }
+function methodLabel(value) {
+  const found = PAY_METHODS.find((item) => item.value === value);
+  return found ? found.label : (value || "Not set");
+}
+function sampleIdentity(status) {
+  return { status: status, country: "Uruguay", nationality: "Uruguay", idType: "National ID", legalName: PROFILE.name, dob: "1984-03-12", idNumber: "4.123.456-7", frontName: "Sample ID front", backName: "Sample ID back", frontSample: true, backSample: true, note: "", submittedAt: "2026-10-18", verifiedAt: status === "verified" ? "2026-10-19" : "" };
+}
+function sampleInfo() {
+  return { status: "completed", preferredName: "Gabriel", email: PROFILE.email, address: "Av. Brasil 2468", city: "Montevideo", region: "Montevideo", postal: "11300", taxResidency: "Uruguay", entity: "individual", businessName: "", businessCountry: "", businessNumber: "", submittedAt: "2026-10-18" };
+}
+function buildScenario(id) {
+  const next = defaultState();
+  next.scenario = id;
+  next.introSeen = id !== "new";
+  if (id === "verifying") {
+    next.tasks.identity = Object.assign(next.tasks.identity, sampleIdentity("under_review"));
+    next.activity = [{ at: "2026-10-19T15:00:00.000Z", who: PROFILE.name, text: "Submitted identity documents." }];
+  } else if (id === "awaiting") {
+    next.tasks.identity = Object.assign(next.tasks.identity, sampleIdentity("verified"));
+    next.tasks.info = Object.assign(next.tasks.info, sampleInfo());
+    next.tasks.offer.status = "signed";
+    next.tasks.offer.sentAt = "2026-10-19";
+    next.tasks.offer.signedAt = "2026-10-19";
+    next.tasks.contract.status = "ready";
+    next.tasks.contract.sentAt = "2026-10-20";
+    next.activity = [
+      { at: "2026-10-20T14:00:00.000Z", who: "Onboarding Team", text: "Sent the contractor agreement." },
+      { at: "2026-10-19T18:00:00.000Z", who: PROFILE.name, text: "Signed the offer letter." }
+    ];
+  } else if (id === "signed" || id === "done") {
+    next.tasks.identity = Object.assign(next.tasks.identity, sampleIdentity("verified"));
+    next.tasks.info = Object.assign(next.tasks.info, sampleInfo());
+    next.tasks.offer.status = "signed";
+    next.tasks.offer.sentAt = "2026-10-18";
+    next.tasks.offer.signedAt = "2026-10-18";
+    next.tasks.contract.status = "signed";
+    next.tasks.contract.sentAt = "2026-10-19";
+    next.tasks.contract.signedAt = "2026-10-19";
+    next.tasks.slack.email = PROFILE.email;
+    next.tasks.slack.status = id === "done" ? "connected" : "invited";
+    if (id === "done") {
+      next.tasks.welcome.status = "completed";
+      next.tasks.welcome.readAt = "2026-10-19";
+      next.tasks.harvest.status = "active";
+      next.tasks.harvest.confirmed = true;
+      next.tasks.payment.status = "completed";
+      next.tasks.payment.country = "Uruguay";
+      next.tasks.payment.method = "wise";
+      next.tasks.payment.submittedAt = "2026-10-19";
+      next.tasks.handbook.status = "completed";
+      next.tasks.handbook.ack = true;
+      next.tasks.handbook.ackAt = "2026-10-19";
+      next.tasks.call.status = "scheduled";
+      next.tasks.call.slot = "Wed, Oct 21, 10:00";
+      next.tasks.call.timezone = PROFILE.timezone;
+      next.tasks.call.scheduledAt = "2026-10-19";
+      next.activity = [{ at: "2026-10-19T20:00:00.000Z", who: PROFILE.name, text: "Scheduled the onboarding call." }];
+    } else {
+      next.activity = [{ at: "2026-10-20T12:00:00.000Z", who: "Onboarding Team", text: "Sent the Slack invitation." }];
+    }
+  }
+  return next;
+}
+function applyScenario(id) {
+  closeObDialog();
+  const key = id === "reset" ? "new" : id;
+  state = buildScenario(key);
+  sessionFiles = { front: "", back: "" };
+  sessionFlow = { offer: 0, contract: 0, harvest: 0, callDay: 0 };
+  setPhaseReadyExpanded(false);
+  sessionPayment = null;
+  paymentDraft = { holder: "", bank: "", account: "", swift: "", payEmail: "" };
+  saveState();
+  applyRoute();
+  if (key === "new" && parseRoute().view === "onboarding" && !parseRoute().step) openIntro();
+  toast(id === "reset" ? "Demo reset." : "Demo scenario updated.");
+}
+function isRequired(def) {
+  if (def.id === "offer") return !!state.offerEnabled;
+  return true;
+}
+function identityHandedOff() {
+  const s = state.tasks.identity.status;
+  return s === "submitted" || s === "under_review" || s === "verified";
+}
+function infoUnlocked() {
+  return state.tasks.identity.status !== "not_started";
+}
+function blocksSequence(id) {
+  if (id === "identity") {
+    const s = state.tasks.identity.status;
+    if (s === "action_required" || s === "not_started") return true;
+    if (identityHandedOff()) return false;
+  }
+  return !isComplete(id);
+}
+function isComplete(id) {
+  const task = state.tasks[id];
+  if (id === "offer" && !state.offerEnabled) return true;
+  if (id === "identity") return task.status === "verified";
+  if (id === "info") return task.status === "completed";
+  if (id === "offer") return task.status === "signed";
+  if (id === "contract") return task.status === "signed";
+  if (id === "slack") return task.status === "connected";
+  if (id === "harvest") return task.status === "active";
+  if (id === "payment") return task.status === "completed";
+  if (id === "handbook") return task.status === "completed";
+  if (id === "call") return task.status === "scheduled";
+  return false;
+}
+function overallStats() {
+  const defs = TASK_DEFS.filter(isRequired);
+  return { done: defs.filter((def) => isComplete(def.id)).length, total: defs.length };
+}
+function doneView(view, detail) {
+  view.label = "Completed";
+  view.tone = "done";
+  view.detail = detail || "Completed.";
+  view.compact = true;
+  view.review = true;
+  view.action = "";
+  return view;
+}
+function readyView(view, label, actionLabel, detail) {
+  view.label = label;
+  view.tone = "ready";
+  view.action = "open";
+  view.actionLabel = actionLabel;
+  view.detail = detail;
+  return view;
+}
+function currentStepId() {
+  const phase = contractSigned() ? "ready" : "become";
+  for (let i = 0; i < TASK_DEFS.length; i++) {
+    const def = TASK_DEFS[i];
+    if (def.phase !== phase) continue;
+    if (def.id === "offer" && !state.offerEnabled) continue;
+    if (blocksSequence(def.id)) return def.id;
+  }
+  return null;
+}
+function applySequence(id, view) {
+  const def = taskById(id);
+  if (!def) return view;
+  if (def.phase === "ready" && !contractSigned()) return view;
+  if (view.compact || view.tone === "done") return view;
+  if (id === "info" && !infoUnlocked()) {
+    view.label = "Up next";
+    view.tone = "later";
+    view.detail = def.blurb;
+    view.action = "";
+    view.actionLabel = "";
+    view.skip = false;
+    view.review = false;
+    return view;
+  }
+  if (id === "identity" && identityHandedOff()) return view;
+  if (currentStepId() === id) return view;
+  if (!isComplete(id)) {
+    view.label = "Up next";
+    view.tone = "later";
+    view.detail = def.blurb;
+    view.action = "";
+    view.actionLabel = "";
+    view.skip = false;
+    view.review = false;
+  }
+  return view;
+}
+function present(id) {
+  const def = taskById(id);
+  const task = state.tasks[id];
+  const view = { id: id, name: def.name, icon: def.icon, blurb: def.blurb, label: "Not started", tone: "later", detail: def.blurb, action: "", actionLabel: "", review: false, compact: false, skip: false };
+  if (def.phase === "ready" && !contractSigned()) {
+    const readyTasks = TASK_DEFS.filter((t) => t.phase === "ready");
+    const index = readyTasks.findIndex((t) => t.id === id);
+    if (index === 0) {
+      view.label = "Up next";
+      view.tone = "later";
+    } else {
+      view.label = "Locked";
+      view.tone = "locked";
+    }
+    view.detail = def.blurb;
+    return view;
+  }
+  if (id === "identity") {
+    if (task.status === "not_started") return readyView(view, "Ready to complete", "Verify identity", def.blurb);
+    if (task.status === "submitted") { view.label = "Submitted"; view.tone = "neutral"; view.detail = "We received your ID. You don't need to do anything until the review starts."; view.review = true; view.icon = "fa-solid fa-arrow-rotate-right"; return view; }
+    if (task.status === "under_review") { view.label = "Under review"; view.tone = "neutral"; view.detail = "We're reviewing your ID. We'll let you know if we need a new photo."; view.review = true; view.icon = "fa-solid fa-arrow-rotate-right"; return view; }
+    if (task.status === "action_required") { view.label = "Action required"; view.tone = "alert"; view.action = "open"; view.actionLabel = "Upload a new ID"; view.detail = task.note || "Please submit your ID again."; return view; }
+    if (task.status === "verified") return doneView(view, "Verified.");
+  }
+  if (id === "info") {
+    if (task.status === "completed") return doneView(view, "Submitted.");
+    if (task.status === "in_progress") return readyView(view, "In progress", "Continue", "Pick up where you left off.");
+    return readyView(view, "Ready to complete", "Complete information", def.blurb);
+  }
+  if (id === "offer") {
+    if (!state.offerEnabled) { view.label = "Not used"; view.tone = "locked"; view.detail = "This engagement does not include a separate offer letter."; return view; }
+    if (task.status === "signed") return doneView(view, "Signed.");
+    if (task.status === "ready") return readyView(view, "Ready to complete", "Review and sign", "Your offer is ready to review.");
+    view.label = "Waiting on BetterEngineer";
+    view.tone = "wait";
+    view.detail = "We're preparing your offer. We'll let you know when it's ready.";
+    return view;
+  }
+  if (id === "contract") {
+    if (task.status === "signed") { view.label = "Contract signed"; view.tone = "done"; view.detail = "Your agreement is complete."; view.compact = true; view.review = true; return view; }
+    if (task.status === "ready") return readyView(view, "Ready to complete", "Review and sign", "Your agreement is ready.");
+    if (state.offerEnabled && state.tasks.offer.status !== "signed") { view.label = "Not started"; view.tone = "locked"; view.detail = "Available after your offer is finalized."; return view; }
+    view.label = "Waiting on BetterEngineer";
+    view.tone = "wait";
+    view.detail = "We'll send your agreement when it's ready.";
+    return view;
+  }
+  if (id === "slack") {
+    if (task.status === "connected") return doneView(view, "Connected" + (task.email ? " as " + task.email + "." : "."));
+    if (task.status === "invited") return readyView(view, "Ready to complete", "Confirm your email", "Invitation sent. Confirm the email you use for Slack.");
+    view.label = "Waiting on BetterEngineer";
+    view.tone = "wait";
+    view.detail = "Waiting for invitation. We'll email you when Slack is ready.";
+    return view;
+  }
+  if (id === "harvest") {
+    if (task.status === "active") return doneView(view, "Harvest is ready.");
+    if (task.status === "invited") return readyView(view, "Ready to complete", "Set up Harvest", "Your Harvest invitation is ready.");
+    view.label = "Waiting on BetterEngineer";
+    view.tone = "wait";
+    view.detail = "We'll invite you to Harvest when your account is ready.";
+    return view;
+  }
+  if (id === "payment") {
+    if (task.status === "completed") return doneView(view, methodLabel(task.method) + ", " + (task.country || "country on file") + ".");
+    return readyView(view, "Ready to complete", "Add payment details", def.blurb);
+  }
+  if (id === "handbook") {
+    if (task.status === "completed") return doneView(view, "Acknowledged.");
+    return readyView(view, "Ready to complete", "Open handbook", def.blurb);
+  }
+  if (id === "call") {
+    if (task.status === "scheduled") return doneView(view, "Scheduled for " + task.slot + " with Karla.");
+    return readyView(view, "Ready to complete", "Book with Karla", def.blurb);
+  }
+  return view;
+}
+function nextCandidateAction() {
+  const current = currentStepId();
+  if (!current) return null;
+  const item = present(current);
+  if (item.tone === "alert" && item.action) return current;
+  if (item.action && (item.tone === "ready" || item.tone === "alert" || item.label === "In progress")) return current;
+  return null;
+}
+function waitingCopy() {
+  if (nextCandidateAction()) return null;
+  const id = currentStepId();
+  if (!id) return null;
+  const item = present(id);
+  if (item.tone !== "wait") return null;
+  return { title: "Waiting on BetterEngineer", body: item.detail };
+}
+function anyWorkStarted() {
+  const identity = state.tasks.identity.status !== "not_started";
+  const info = state.tasks.info.status !== "not_started";
+  const offer = state.tasks.offer.status !== "waiting";
+  const contract = state.tasks.contract.status === "ready" || state.tasks.contract.status === "signed";
+  return identity || info || offer || contract || contractSigned();
+}
+function summary() {
+  const stats = overallStats();
+  const country = state.tasks.identity.country || state.tasks.info.taxResidency || PROFILE.country;
+  const focus = nextCandidateAction();
+  const waiting = waitingCopy();
+  const next = focus ? present(focus).name : (waiting ? waiting.body : "None");
+  const last = state.activity[0];
+  let phaseKey = "become";
+  let phase = "Become a Contractor";
+  let status = "Not started";
+  const alert = TASK_DEFS.some((def) => present(def.id).tone === "alert");
+  if (stats.total && stats.done === stats.total) { phaseKey = "complete"; phase = "Complete"; status = "Fully onboarded"; }
+  else if (contractSigned()) { phaseKey = "ready"; phase = "Get Ready to Work"; status = alert ? "Action required" : "Contract signed"; }
+  else if (alert) status = "Action required";
+  else if (state.tasks.contract.status === "ready") status = "Awaiting signature";
+  else if (state.tasks.identity.status === "submitted" || state.tasks.identity.status === "under_review") status = "Under review";
+  else if (!anyWorkStarted()) status = "Not started";
+  else if (waiting) status = "Waiting on BetterEngineer";
+  else status = "In progress";
+  return { phaseKey: phaseKey, phase: phase, status: status, progress: stats.done + " of " + stats.total, next: next, country: country, last: last ? formatWhen(last.at) + ", " + last.text : "No activity yet" };
+}
+function pill(label, tone) {
+  const cls = tone === "done" ? "done" : tone === "wait" ? "wait" : tone === "neutral" ? "neutral" : tone === "ready" || tone === "alert" ? tone : "";
+  return `<span class="pill ${cls}">${esc(label)}</span>`;
+}
+function pathMarkerClass(item, focus) {
+  if (item.compact || item.tone === "done") return "is-done";
+  if (focus) return "is-active";
+  if (item.tone === "alert") return "is-active";
+  if (item.tone === "wait" || item.tone === "neutral") return "is-progress";
+  if (item.tone === "later" || item.tone === "locked") return "is-muted";
+  if (item.tone === "ready") return "is-active";
+  return "is-muted";
+}
+function pathMarkerIcon(item, focus) {
+  if (item.compact || item.tone === "done") return "fa-solid fa-check";
+  if (focus || item.tone === "ready" || item.tone === "alert") return "fa-solid fa-arrow-rotate-right";
+  if (item.tone === "wait" || item.tone === "neutral") return "fa-solid fa-arrow-rotate-right";
+  if (item.tone === "locked") return "fa-solid fa-lock";
+  return "fa-regular fa-clock";
+}
+function taskSubtimeline(id) {
+  const task = state.tasks[id];
+  if (id === "identity") {
+    if (task.status === "not_started" || task.status === "action_required") return "";
+    const steps = ["Submitted", "Under review", "Verified"];
+    if (task.status === "submitted") return subtimelineHtml(steps, 1, -1);
+    if (task.status === "under_review") return subtimelineHtml(steps, 1, 1);
+    if (task.status === "verified") return subtimelineHtml(steps, 3, -1);
+    return "";
+  }
+  return "";
+}
+function subtimelineHtml(labels, doneCount, activeIndex) {
+  const allDone = doneCount >= labels.length;
+  const items = labels.map((label, i) => {
+    const isDone = allDone || i < doneCount;
+    const isOn = !allDone && i === activeIndex;
+    const dotCls = isDone ? "ob-sub-dot" : isOn ? "ob-sub-dot is-pending" : "ob-sub-dot is-muted";
+    const liCls = isOn ? "is-on" : isDone ? "is-done" : "";
+    return `<li class="${liCls}"><span class="${dotCls}" aria-hidden="true"></span><span>${esc(label)}</span></li>`;
+  });
+  return `<ul class="ob-subtimeline" aria-label="Step progress">${items.join("")}</ul>`;
+}
+function taskCard(item, focusId) {
+  item = applySequence(item.id, item);
+  const focus = item.id === focusId && item.action;
+  const cls = ["ob-path-step", "ob-task"];
+  if (item.compact) cls.push("is-done");
+  else if (item.tone === "alert") cls.push("is-alert");
+  else if (item.tone === "locked") cls.push("is-locked");
+  else if (item.tone === "later") cls.push("is-later");
+  else if (focus) cls.push("is-focus");
+  const markerCls = pathMarkerClass(item, focus);
+  const markerIcon = pathMarkerIcon(item, focus);
+  const sub = item.compact ? "" : taskSubtimeline(item.id);
+  const desc = item.compact ? "" : `<p class="ob-path-desc">${esc(item.detail)}</p>`;
+  let aside = "";
+  let foot = "";
+  if (item.compact && item.review) aside = `<button type="button" class="ob-text-btn" data-act="open" data-task="${item.id}">Review</button>`;
+  else if (item.action && focus) {
+    aside = `<button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="open" data-task="${item.id}">${esc(item.actionLabel)}</button>`;
+  } else if (item.action && !focus) {
+    foot = `<div class="ob-path-foot"><button type="button" class="ts-btn ts-btn-line ob-btn" data-act="open" data-task="${item.id}">${esc(item.actionLabel)}</button></div>`;
+  }
+  if (!item.compact && item.review && !item.action) {
+    const view = `<button type="button" class="ob-text-btn" data-act="open" data-task="${item.id}">View submission</button>`;
+    if (aside) foot = `<div class="ob-path-foot">${view}</div>`;
+    else aside = view;
+  }
+  const asideHtml = aside ? `<div class="ob-path-aside">${aside}</div>` : "";
+  return `<article class="${cls.join(" ")}"><div class="ob-path-main"><div class="ob-path-head"><div class="ob-path-rail" aria-hidden="true"><span class="ob-path-marker ${markerCls}"><i class="${markerIcon}" aria-hidden="true"></i></span></div><div class="ob-path-copy"><div class="ob-task-top"><h3>${esc(item.name)}</h3></div>${desc}${sub}</div>${asideHtml}</div>${foot}</div></article>`;
+}
+function renderPhase(phase, focusId) {
+  const def = PHASE_DEFS.find((item) => item.id === phase);
+  const locked = phase === "ready" && !contractSigned();
+  const cls = ["ob-phase-card"];
+  if (phase === "ready") cls.push("is-ready");
+  if (locked) cls.push("is-locked");
+  const tasks = TASK_DEFS.filter((task) => task.phase === phase && !(task.id === "offer" && !state.offerEnabled));
+  const taskPath = `<div class="ob-task-path ob-tasks" role="list">${tasks.map((task) => taskCard(present(task.id), focusId)).join("")}</div>`;
+  let inner = taskPath;
+  const phaseNum = phase === "become" ? "1" : "2";
+  let head = `<div class="ob-phase-head"><p class="ob-phase-kicker">Phase ${phaseNum}</p><h2>${esc(def.title)}</h2></div>`;
+  if (locked) {
+    const expanded = phaseReadyIsExpanded();
+    cls.push(expanded ? "is-expanded" : "is-collapsed");
+    const toggleLabel = expanded ? "Hide upcoming steps" : "Show upcoming steps";
+    const toggle = `<button type="button" class="ob-phase-expand" data-act="toggle-phase-ready" aria-expanded="${expanded ? "true" : "false"}" aria-controls="phaseReadyTasks" aria-label="${toggleLabel}"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>`;
+    head = `<div class="ob-phase-head"><p class="ob-phase-kicker">Phase ${phaseNum}</p><div class="ob-phase-title-row"><h2>${esc(def.title)}</h2>${toggle}</div><p class="ob-locked-note">These open after your contract is signed.</p></div>`;
+    inner = `<div class="ob-phase-tasks" id="phaseReadyTasks"${expanded ? "" : " hidden"}>${taskPath}</div>`;
+  }
+  return `<section class="${cls.join(" ")}">${head}${inner}</section>`;
+}
+function docsHash() { return contractSigned() ? "#documents" : "#onboarding-docs"; }
+function renderDashboard() {
+  const invite = state.invited && !contractSigned() ? `<p class="ob-help">The Onboarding Team invited you to begin.</p>` : "";
+  const celebrate = state.celebrate ? `<section class="ob-phase-card is-ready"><h2>You're officially a BetterEngineer contractor!</h2><p class="ob-phase-lead">Your agreement is complete. Next, let's get everything set up so you're ready to start working.</p><div class="ob-form-actions"><button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="continue-setup">Continue setup</button></div></section>` : "";
+  const focusId = nextCandidateAction();
+  const afterSign = contractSigned() ? `<p class="ob-tools"><a class="ob-docs-link" href="#ob-welcome">What happens after you sign</a></p>` : "";
+  return `<div class="ob-page"><div class="page-title-band"><h1 class="page-title">Let's get you set up.</h1></div><p class="ob-page-lead">Complete the open step when you're ready. If a step is waiting on BetterEngineer, we'll move it forward.</p>${invite}${afterSign}${celebrate}${renderPhase("become", focusId)}${renderPhase("ready", focusId)}</div>`;
+}
+function backToOnboardingLabel() {
+  return `<i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to onboarding`;
+}
+function stepShell(title, lead, body, formClass) {
+  const formCls = formClass ? "ob-form " + formClass : "ob-form";
+  return `<div class="ob-page"><button type="button" class="ob-text-btn ob-back" data-act="back">${backToOnboardingLabel()}</button><div class="page-title-band"><h1 class="page-title">${esc(title)}</h1></div><p class="ob-page-lead">${esc(lead)}</p><div class="${formCls}">${body}</div></div>`;
+}
+function sumRow(label, value) {
+  if (value === undefined || value === null || value === "") return "";
+  return `<div class="ob-sum-row"><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`;
+}
+function backToOnboardingBtn(line) {
+  const cls = line ? "ts-btn ts-btn-line" : "ts-btn ts-btn-primary";
+  return `<button type="button" class="${cls} ob-btn" data-act="back">${backToOnboardingLabel()}</button>`;
+}
+function backToOnboarding() {
+  return `<div class="ob-form-actions">${backToOnboardingBtn(false)}</div>`;
+}
+function obFormActions(inner) {
+  return `<div class="ob-form-actions">${inner}</div>`;
+}
+function formActionsWithBack(primaryHtml) {
+  return obFormActions(backToOnboardingBtn(true) + primaryHtml);
+}
+function options(list, selected, placeholder) {
+  const html = [`<option value="">${esc(placeholder || "Select")}</option>`];
+  list.forEach((item) => {
+    const value = typeof item === "string" ? item : item.value;
+    const label = typeof item === "string" ? item : item.label;
+    html.push(`<option value="${esc(value)}"${value === selected ? " selected" : ""}>${esc(label)}</option>`);
+  });
+  return html.join("");
+}
+function textField(id, label, value, bind, opts) {
+  opts = opts || {};
+  const type = opts.type || "text";
+  const auto = opts.auto ? ` autocomplete="${esc(opts.auto)}"` : "";
+  const secret = opts.secret ? ` data-secret="${esc(opts.secret)}"` : "";
+  const bound = bind ? ` data-bind="${esc(bind)}"` : "";
+  const place = opts.placeholder ? ` placeholder="${esc(opts.placeholder)}"` : "";
+  const mark = opts.optional ? "" : ` <abbr class="req" title="Required">*</abbr>`;
+  return `<label class="ob-field"><span>${label}${mark}</span><input id="${id}"${bound}${secret} type="${type}" value="${esc(value || "")}"${auto}${place}></label>`;
+}
+function selectField(id, label, bind, selected, list) {
+  return `<label class="ob-field"><span>${label} <abbr class="req" title="Required">*</abbr></span><select id="${id}" data-bind="${esc(bind)}">${options(list, selected, "Select")}</select></label>`;
+}
+function formError() { return `<p class="ob-error" id="formError" hidden></p>`; }
+function sampleSvg(which) {
+  if (which === "front") return '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400"><rect width="640" height="400" rx="28" fill="#eef2fb"/><rect x="36" y="36" width="168" height="210" rx="12" fill="#d5dced"/><circle cx="120" cy="118" r="36" fill="#b7c2df"/><rect x="72" y="172" width="96" height="12" rx="6" fill="#c5cee4"/><rect x="84" y="196" width="72" height="10" rx="5" fill="#c5cee4"/><text x="232" y="78" fill="#4c60b2" font-family="Arial,sans-serif" font-size="18" font-weight="700">IDENTITY CARD</text><text x="232" y="128" fill="#333" font-family="Arial,sans-serif" font-size="22" font-weight="700">GABRIEL</text><text x="232" y="158" fill="#333" font-family="Arial,sans-serif" font-size="22" font-weight="700">KOUYOUMDJIAN</text><text x="232" y="214" fill="#707070" font-family="Arial,sans-serif" font-size="16">ID 4.123.456-7</text><text x="232" y="246" fill="#707070" font-family="Arial,sans-serif" font-size="16">URUGUAY</text></svg>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400"><rect width="640" height="400" rx="28" fill="#f4f5f7"/><rect x="0" y="48" width="640" height="54" fill="#2a2a2a"/><text x="36" y="168" fill="#333" font-family="Arial,sans-serif" font-size="18">IDURY41234567&lt;8KOUYOUMDJIAN&lt;&lt;</text><text x="36" y="198" fill="#333" font-family="Arial,sans-serif" font-size="18">GABRIEL&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</text><text x="36" y="228" fill="#333" font-family="Arial,sans-serif" font-size="18">8401019M3001018URY&lt;&lt;&lt;&lt;&lt;&lt;&lt;08</text><text x="36" y="320" fill="#707070" font-family="Arial,sans-serif" font-size="16">BACK OF ID</text></svg>';
+}
+function sampleIdUrl(which) { return "data:image/svg+xml," + encodeURIComponent(sampleSvg(which)); }
+function idPreview(side) {
+  const task = state.tasks.identity;
+  if (sessionFiles[side]) return `<img alt="" src="${esc(sessionFiles[side])}"><em>${esc(task[side + "Name"])}</em>`;
+  if (task[side + "Sample"]) return `<img alt="Sample ${side} of ID" src="${sampleIdUrl(side)}"><em>${esc(task[side + "Name"] || "Sample image")}</em>`;
+  if (task[side + "Name"]) return `<em>${esc(task[side + "Name"])}</em><em>Preview ended after refresh. Images are not kept.</em>`;
+  return `<i class="fa-regular fa-id-card" aria-hidden="true"></i><em>JPG or PNG</em>`;
+}
+function uploadSlot(side, title, inputId, opts) {
+  opts = opts || {};
+  const actions = opts.readonly ? "" : `<div class="id-actions"><button type="button" class="ob-text-btn" data-pick="${inputId}">Upload</button><span>or</span><button type="button" class="ob-text-btn" data-sample="${side}">Use sample image</button></div>`;
+  const file = opts.readonly ? "" : `<input class="ob-file" type="file" id="${inputId}" data-file="${side}" accept="image/*" aria-label="${esc(title)} file">`;
+  return `<div class="id-slot${opts.readonly ? " is-readonly" : ""}">${idPreview(side)}<strong>${esc(title)}</strong>${actions}</div>${file}`;
+}
+function renderIdentity() {
+  const task = state.tasks.identity;
+  if (task.status === "submitted" || task.status === "under_review" || task.status === "verified") {
+    const label = task.status === "verified" ? "Verified" : task.status === "under_review" ? "Under review" : "Submitted";
+    const tone = task.status === "verified" ? "done" : "";
+    const note = task.status === "verified" ? "Your identity is verified." : "Submitted. The Onboarding Team will review this and email you if a clearer photo is needed.";
+    const images = `<section class="ob-sum-group"><h2>ID images</h2><div class="ob-upload-grid">${uploadSlot("front", "Front of ID", "fileFront", { readonly: true })}${uploadSlot("back", "Back of ID", "fileBack", { readonly: true })}</div></section>`;
+    const identityRows = `${sumRow("Legal name", task.legalName)}${sumRow("Date of birth", task.dob)}${sumRow("ID number", task.idNumber)}${sumRow("ID type", task.idType)}`;
+    const locationRows = `${sumRow("Country of residence", task.country)}${sumRow("Nationality", task.nationality)}`;
+    const details = `<section class="ob-sum-group"><h2>Submitted details</h2><h3>Identity</h3><dl>${identityRows}</dl><h3>Location</h3><dl>${locationRows}</dl></section>`;
+    const body = `<div class="ob-sum-status">${pill(label, tone)}</div><div class="ob-summary ob-identity-summary">${images}${details}</div><p class="ob-note is-ok">${note}</p>${backToOnboarding()}`;
+    return stepShell("Verify your identity", "We use this to match your agreement to a government ID.", body, "is-summary");
+  }
+  const note = task.status === "action_required" ? `<p class="ob-note is-alert">${esc(task.note || "Please submit a clearer photo of the front and back.")}</p>` : "";
+  return stepShell("Verify your identity", "We verify your identity before we send an agreement, so the name on the contract matches a government ID.", `<form data-form="identity" novalidate>${note}<div class="ob-section"><h2>Where you live</h2><p class="ob-help">Country of residence is filled from your profile. Change it if you live somewhere else.</p><div class="ob-row">${selectField("idCountry", "Country of residence", "identity.country", task.country || PROFILE.country, COUNTRIES)}${selectField("idNationality", "Nationality", "identity.nationality", task.nationality, COUNTRIES)}</div>${selectField("idType", "ID type", "identity.idType", task.idType, ID_TYPES)}</div><div class="ob-section"><h2>ID images</h2><div class="ob-upload-grid">${uploadSlot("front", "Front of ID", "fileFront")}${uploadSlot("back", "Back of ID", "fileBack")}</div></div><div class="ob-section"><h2>Legal identity</h2><div class="ob-row">${textField("idLegal", "Legal name", task.legalName || PROFILE.name, "identity.legalName", { auto: "name" })}${textField("idDob", "Date of birth", task.dob, "identity.dob", { type: "date" })}</div>${textField("idNumber", "ID number", task.idNumber, "identity.idNumber", { placeholder: "As it appears on the document" })}</div>${formError()}${formActionsWithBack(`<button class="ts-btn ts-btn-primary ob-btn" type="submit">${task.status === "action_required" ? "Submit again" : "Submit identity"}</button>`)}</form>`);
+}
+function renderInfo() {
+  const info = state.tasks.info;
+  const country = state.tasks.identity.country || PROFILE.country;
+  if (info.status === "completed") {
+    const business = info.entity === "business";
+    const badge = business ? "Registered business" : "Contracting as an individual";
+    const businessRows = business ? `${sumRow("Business name", info.businessName)}${sumRow("Registration country", info.businessCountry)}${sumRow("Registration number", info.businessNumber)}` : "";
+    const body = `<div class="ob-summary"><section class="ob-sum-group"><h2>Identity</h2><dl>${sumRow("Legal name", legalName())}${sumRow("Preferred name", info.preferredName || "Same as legal name")}${sumRow("Email", info.email)}</dl></section><section class="ob-sum-group"><h2>Address</h2><dl>${sumRow("Street address", info.address)}${sumRow("City", info.city)}${sumRow("Province or state", info.region)}${sumRow("Postal code", info.postal)}${sumRow("Country", country)}</dl></section><section class="ob-sum-group"><h2>Tax</h2><dl>${sumRow("Tax residency", info.taxResidency)}</dl><p class="ob-sum-badge">${esc(badge)}</p>${businessRows ? `<dl>${businessRows}</dl>` : ""}</section></div>${obFormActions(`<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="edit-info">Edit information</button>${backToOnboardingBtn(false)}`)}`;
+    return stepShell("Complete contractor information", "These details go on your agreement and payment records.", body, "is-summary");
+  }
+  const businessHidden = info.entity === "business" ? "" : " hidden";
+  return stepShell("Complete contractor information", "We only ask for details that are not already on your identity step.", `<form data-form="info" novalidate><div class="ob-section"><h2>Name</h2><div class="ob-readonly"><span>Legal name</span><b>${esc(state.tasks.identity.legalName || "You'll add this with your identity, or below if you haven't yet.")}</b></div>${state.tasks.identity.legalName ? "" : textField("idLegal", "Legal name", PROFILE.name, "identity.legalName", { auto: "name" })}<p class="ob-help">Preferred name is optional.</p>${textField("infoPreferred", "Preferred name", info.preferredName, "info.preferredName", { optional: true, placeholder: "What should we call you?" })}</div><div class="ob-section"><h2>Contact</h2>${textField("infoEmail", "Email", info.email || PROFILE.email, "info.email", { type: "email", auto: "email" })}</div><div class="ob-section"><h2>Address</h2>${textField("infoAddress", "Street address", info.address, "info.address", { auto: "address-line1" })}<div class="ob-row">${textField("infoCity", "City", info.city || "Montevideo", "info.city", { auto: "address-level2" })}${textField("infoRegion", "Province or state", info.region || "Montevideo", "info.region", { auto: "address-level1" })}</div><div class="ob-row">${textField("infoPostal", "Postal code", info.postal, "info.postal", { auto: "postal-code" })}${selectField("infoCountry", "Country", "identity.country", country, COUNTRIES)}</div></div><div class="ob-section"><h2>Tax</h2>${selectField("infoTax", "Tax residency", "info.taxResidency", info.taxResidency || country, COUNTRIES)}<p class="ob-help">How should we list you on documents you sign?</p><div class="choice"><label><input type="radio" name="entity" data-bind="info.entity" value="individual"${info.entity !== "business" ? " checked" : ""}> Individual</label><label><input type="radio" name="entity" data-bind="info.entity" value="business"${info.entity === "business" ? " checked" : ""}> Registered business</label></div><div id="businessFields"${businessHidden}><div class="ob-row">${textField("infoBusiness", "Business name", info.businessName, "info.businessName", { auto: "organization" })}${selectField("infoBusinessCountry", "Registration country", "info.businessCountry", info.businessCountry || country, COUNTRIES)}</div>${textField("infoBusinessNumber", "Registration number", info.businessNumber, "info.businessNumber")}</div></div>${formError()}${formActionsWithBack(`<button class="ts-btn ts-btn-primary ob-btn" type="submit">Save information</button>`)}</form>`);
+}
+function offerPaper() {
+  return `<article class="ob-paper"><h2>Offer of engagement</h2><p>BetterEngineer</p><p>Role: Senior Android Engineer</p><p>Rate: $75 per hour</p><p>Location: Remote, ${esc(state.tasks.identity.country || PROFILE.country)}</p><p>Type: Independent contractor</p><p>Start: To be agreed after the contract is signed</p><p>Prepared by the BetterEngineer Team</p><p>This is a contractor engagement, not employment. Hours are recorded in Harvest. Payment follows the details you provide later. Either party can end the engagement with notice, as the contract describes.</p></article>`;
+}
+function contractPaper() {
+  return `<article class="ob-paper"><h2>Contractor agreement</h2><p>Between BetterEngineer and ${esc(legalName())}.</p><ul><li>Role: Senior Android Engineer</li><li>Rate: $75 per hour</li><li>Place of work: Remote</li><li>Term: Ongoing, until either party ends it with written notice</li><li>Confidentiality: client and company information stays private</li><li>Relationship: independent contractor</li></ul><p>Questions about this agreement go to the Onboarding Team.</p></article>`;
+}
+function renderOffer() {
+  if (!state.offerEnabled) return stepShell("Review offer letter", "This engagement does not include a separate offer letter.", `<p>Your contract is the agreement you'll sign.</p>${backToOnboarding()}`);
+  const task = state.tasks.offer;
+  if (task.status === "waiting") return stepShell("Review offer letter", "We're preparing your offer.", `<p class="ob-note">We're preparing your offer. We'll let you know when it's ready.</p>${backToOnboarding()}`);
+  if (task.status === "signed") return stepShell("Review offer letter", "Your signed offer is in Documents.", `${pill("Signed", "done")}${offerPaper()}${obFormActions(`<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="download-offer">Download signed copy</button>${backToOnboardingBtn(false)}`)}`);
+  const step = sessionFlow.offer;
+  if (step <= 0) return stepShell("Review offer letter", "Read the offer, then sign it in a short simulated flow.", `${offerPaper()}<p class="ob-help">In production this document is sent through Dropbox Sign. This preview stays inside BetterEngineer.</p>${formActionsWithBack(`<button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="offer-next">Review and sign</button>`)}`);
+  if (step === 1) return stepShell("Review offer letter", "Step 2 of 3. Confirm the details we will place on the signature.", `<p>Legal name: ${esc(legalName())}</p><p>Email: ${esc(state.tasks.info.email || PROFILE.email)}</p>${offerPaper()}${obFormActions(`${backToOnboardingBtn(true)}<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="offer-back">Back</button><button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="offer-next">Continue</button>`)}`);
+  return stepShell("Review offer letter", "Step 3 of 3. Type your legal name to adopt a signature.", `<label class="ob-field"><span>Legal name <abbr class="req" title="Required">*</abbr></span><input id="signName" data-sign="name" autocomplete="name" value=""></label><p class="ob-script" id="signPreview" aria-hidden="true">Your signature</p><p class="ob-help">Nothing is sent to Dropbox Sign from this prototype.</p>${formError()}${obFormActions(`${backToOnboardingBtn(true)}<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="offer-back">Back</button><button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="offer-sign">Sign offer</button>`)}`);
+}
+function renderContract() {
+  const task = state.tasks.contract;
+  if (task.status === "signed" && state.celebrate) return stepShell("You're officially a BetterEngineer contractor!", "Your agreement is complete. Next, let's get everything set up so you're ready to start working.", `<p>${pill("Contract signed", "done")}</p>${contractPaper()}${formActionsWithBack(`<button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="continue-setup">Continue setup</button>`)}`);
+  if (task.status === "signed") return stepShell("Review and sign contract", "Your signed agreement is in Documents.", `${pill("Contract signed", "done")}${contractPaper()}${obFormActions(`<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="download-contract">Download signed copy</button>${backToOnboardingBtn(false)}`)}`);
+  if (task.status !== "ready") {
+    const detail = state.offerEnabled && state.tasks.offer.status !== "signed" ? "Available after your offer is finalized." : "We'll send your agreement when it's ready.";
+    return stepShell("Review and sign contract", detail, `<p class="ob-note">${esc(detail)}</p>${backToOnboarding()}`);
+  }
+  if (sessionFlow.contract <= 0) return stepShell("Review and sign contract", "Open the agreement, check the key details, then sign.", `<h2>Key details</h2><ul class="ob-steps"><li>Parties: BetterEngineer and ${esc(legalName())}</li><li>Role: Senior Android Engineer</li><li>Rate: $75 per hour</li><li>Term: ongoing, with written notice to end</li></ul>${contractPaper()}<p class="ob-help">Signing here is simulated. In production the agreement is sent through Dropbox Sign.</p>${formActionsWithBack(`<button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="contract-next">Continue to sign</button>`)}`);
+  return stepShell("Review and sign contract", "Type your legal name to sign.", `<label class="ob-field"><span>Legal name <abbr class="req" title="Required">*</abbr></span><input id="contractSignName" data-sign="name" autocomplete="name"></label><p class="ob-script" id="signPreview" aria-hidden="true">Your signature</p>${formError()}${obFormActions(`${backToOnboardingBtn(true)}<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="contract-back">Back</button><button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="contract-sign">Sign contract</button>`)}`);
+}
+function renderWelcome() {
+  const done = state.tasks.welcome.status === "completed";
+  const footer = done
+    ? `<p class="ob-note is-ok">You've read this note.</p>${backToOnboarding()}`
+    : formActionsWithBack(`<button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="welcome-done">Done reading</button>`);
+  return stepShell("What happens after you sign", "A short overview you can read any time. It does not block your setup steps.", `<p>You can come back to this note any time.</p><ul class="ob-steps"><li class="is-on">Book your onboarding call with Karla on Google Calendar.</li><li>The Onboarding Team invites you to Slack and Harvest.</li><li>You add payment details and review the contractor handbook.</li><li>The call covers Harvest, payment, support contacts, and working procedures.</li><li>Questions go to the Onboarding Team.</li></ul>${footer}`);
+}
+function renderSlack() {
+  const task = state.tasks.slack;
+  if (task.status === "connected") return stepShell("Set up Slack", "You're connected to the BetterEngineer workspace.", `<p>${pill("Connected", "done")}</p><p>Email: ${esc(task.email || PROFILE.email)}</p><p>You can reach the Onboarding Team in Slack.</p>${backToOnboarding()}`);
+  if (task.status !== "invited") return stepShell("Set up Slack", "We'll invite you when the workspace is ready.", `<p class="ob-note">Waiting for invitation. You don't need to do anything yet.</p>${backToOnboarding()}`);
+  return stepShell("Set up Slack", "Invitation sent. Confirm the email, then join from that inbox.", `<form data-form="slack" novalidate>${textField("slackEmail", "Email for Slack", task.email || state.tasks.info.email || PROFILE.email, "slack.email", { type: "email", auto: "email" })}<p class="ob-help">Use the inbox where you want the Slack invitation.</p>${formError()}${formActionsWithBack(`<button class="ts-btn ts-btn-primary ob-btn" type="submit">Confirm email</button>`)}</form>`);
+}
+function renderHarvest() {
+  const task = state.tasks.harvest;
+  const link = contractSigned() ? `<p><a class="ob-docs-link" href="#active">Open Timesheets</a></p>` : "";
+  if (task.status === "waiting") return stepShell("Set up Harvest", "Harvest is where you record hours for BetterEngineer.", `<p>Your timesheet in this portal follows the same week. We'll invite you when the account is ready.</p><p class="ob-note">Waiting for invitation.</p>${backToOnboarding()}${link}`);
+  if (task.status === "active") return stepShell("Set up Harvest", "You're ready to track hours.", `<p class="ob-note is-ok">Harvest setup is confirmed.</p>${link}${backToOnboarding()}`);
+  const steps = ["Open the current week.", "Enter hours on the day you worked.", "Add a note when the work needs context.", "Save the week. Billed days stay locked."];
+  const step = Math.min(sessionFlow.harvest, steps.length - 1);
+  const next = step < steps.length - 1 ? `<button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="harvest-next">Next</button>` : `<button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="harvest-done">I know how to track my hours</button>`;
+  return stepShell("Set up Harvest", "Your invitation is ready. Here is the short version of tracking time.", `<p>Activate your Harvest account from the invitation email, then log time the same way you will in Timesheets.</p><table class="ob-mini"><thead><tr><th>Project</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr></thead><tbody><tr><td>Platform rebuild</td><td>6.00</td><td>6.00</td><td>4.00</td><td>0.00</td><td>2.00</td></tr></tbody></table><ol class="ob-steps">${steps.map((text, index) => `<li class="${index === step ? "is-on" : ""}">${esc(text)}</li>`).join("")}</ol>${obFormActions(backToOnboardingBtn(true) + next)}${link}`);
+}
+function renderPayment() {
+  const task = state.tasks.payment;
+  if (task.status === "completed") {
+    const extra = sessionPayment && sessionPayment.last4 ? ` Account ending ${esc(sessionPayment.last4)}.` : " Account numbers are not kept in this prototype.";
+    return stepShell("Set up payment information", "We have a payment method on file.", `<p class="ob-note is-ok">Payment details received for ${esc(methodLabel(task.method))} in ${esc(task.country)}.${extra}</p>${backToOnboarding()}`);
+  }
+  const method = task.method || "";
+  return stepShell("Set up payment information", "Tell us how to pay you. Use made-up numbers. This prototype never stores an account number.", `<form data-form="payment" novalidate>${selectField("payCountry", "Country", "payment.country", task.country || state.tasks.identity.country || PROFILE.country, COUNTRIES)}${selectField("payMethod", "Payment method", "payment.method", method, PAY_METHODS)}<div data-pay-panel="bank"${method === "bank" ? "" : " hidden"}>${textField("payHolder", "Account holder", "", "", { secret: "holder" })}${textField("payBank", "Bank name", "", "", { secret: "bank" })}${textField("payAccount", "Account number", "", "", { secret: "account", placeholder: "Use a fake number, such as 000123456789" })}${textField("paySwift", "SWIFT or BIC", "", "", { secret: "swift", placeholder: "Use a fake code" })}</div><div data-pay-panel="wise"${method === "wise" ? "" : " hidden"}>${textField("payWise", "Email for Wise", "", "", { secret: "payEmail", type: "email" })}</div><div data-pay-panel="payoneer"${method === "payoneer" ? "" : " hidden"}>${textField("payPayoneer", "Email for Payoneer", "", "", { secret: "payEmail", type: "email" })}</div>${formError()}${formActionsWithBack(`<button class="ts-btn ts-btn-primary ob-btn" type="submit">Save payment details</button>`)}</form>`);
+}
+function handbookBody() {
+  return `<article class="ob-paper"><h2>Contractor handbook</h2><h3>Overview</h3><p>You work with BetterEngineer as an independent contractor. The Onboarding Team is your first stop for setup questions.</p><h3>Hours and availability</h3><p>Record time in Harvest for the week you worked. The Timesheets page in this portal shows the same kind of week. Billed time can lock.</p><h3>Communication</h3><p>Use Slack for day to day messages once you are connected. Email the Onboarding Team if you are blocked before Slack is ready.</p><h3>Confidentiality</h3><p>Client work, rates, and internal notes stay private. Do not share them outside the engagement.</p><h3>Getting help</h3><p>Write to the Onboarding Team. An Onboarding Coordinator hosts your setup call and can walk through Harvest, payment, and working procedures.</p></article>`;
+}
+function renderHandbook() {
+  const done = state.tasks.handbook.status === "completed";
+  return stepShell("Review contractor handbook", "A short handbook. Acknowledge it when you have read the policies.", `${handbookBody()}<p class="ob-help"><a class="ob-docs-link" href="#ob-welcome">What happens after you sign</a></p>${done ? `<p class="ob-note is-ok">Acknowledged. The handbook is in Documents.</p><p><a class="ob-docs-link" href="${docsHash()}">Open Documents</a></p>${backToOnboarding()}` : `<form data-form="handbook" novalidate><label class="ob-check"><input id="handbookAck" type="checkbox"> I have reviewed the contractor handbook.</label>${formError()}${formActionsWithBack(`<button class="ts-btn ts-btn-primary ob-btn" type="submit">Acknowledge handbook</button>`)}</form>`}`);
+}
+function callCalendarDays() {
+  const start = new Date();
+  start.setHours(12, 0, 0, 0);
+  const days = [];
+  for (let i = 0; i < 5; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + 1 + i);
+    days.push({ dow: DAYS[d.getDay()], num: d.getDate(), month: MONTHS[d.getMonth()] });
+  }
+  return days;
+}
+function callSlotsForDay(dayIndex) {
+  const times = ["10:00 AM", "11:30 AM", "2:00 PM", "4:30 PM"];
+  const days = callCalendarDays();
+  const day = days[dayIndex] || days[0];
+  const label = day.dow + ", " + day.month + " " + day.num;
+  return times.map((time) => label + " · " + time);
+}
+function renderCall() {
+  const task = state.tasks.call;
+  const welcomeLink = `<p class="ob-help"><a class="ob-docs-link" href="#ob-welcome">What happens after you sign</a></p>`;
+  if (task.status === "scheduled") {
+    return stepShell("Schedule the onboarding call", "You're booked with Karla.", `<p class="ob-note is-ok">Scheduled for ${esc(task.slot)} (${esc(task.timezone || PROFILE.timezone)}).</p><p>Karla will host your onboarding call. You'll cover Harvest, payment, support contacts, and working procedures.</p>${welcomeLink}${obFormActions(`<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="reschedule">Choose a different time</button>${backToOnboardingBtn(false)}`)}`);
+  }
+  const dayIndex = Math.min(Math.max(sessionFlow.callDay || 0, 0), callCalendarDays().length - 1);
+  const days = callCalendarDays();
+  const slots = callSlotsForDay(dayIndex);
+  const tz = task.timezone || PROFILE.timezone;
+  const dayStrip = days.map((day, index) => {
+    const cls = index === dayIndex ? "ob-gcal-day is-on" : "ob-gcal-day";
+    return `<button type="button" class="${cls}" data-act="call-day" data-day="${index}" aria-pressed="${index === dayIndex}"><span>${esc(day.dow)}</span><b>${esc(String(day.num))}</b></button>`;
+  }).join("");
+  const slotList = slots.map((slot, index) => `<label class="ob-gcal-slot"><input type="radio" name="slot" value="${esc(slot)}"${index === 0 ? " checked" : ""}><span>${esc(slot)}</span></label>`).join("");
+  const gcal = `<div class="ob-gcal" role="region" aria-label="Book with Karla on Google Calendar"><div class="ob-gcal-head"><span class="ob-gcal-mark" aria-hidden="true">31</span><div><h2>Onboarding call with Karla</h2><p>30 min · Video call · BetterEngineer onboarding</p></div><span class="ob-gcal-badge">Prototype</span></div><div class="ob-gcal-body"><div class="ob-gcal-tz"><i class="fa-regular fa-clock" aria-hidden="true"></i><span>Times shown in ${esc(tz)}</span></div><div class="ob-gcal-days" role="group" aria-label="Choose a date">${dayStrip}</div><fieldset class="ob-section" style="margin:0;border:0;padding:0"><legend class="ob-help">Available times</legend><div class="ob-gcal-slots">${slotList}</div></fieldset><div class="ob-gcal-foot"><p class="ob-help">This is a sample booking flow, not a live Google Calendar connection.</p><div class="ob-form-actions" style="width:100%;margin-top:12px">${backToOnboardingBtn(true)}<button class="ts-btn ts-btn-primary ob-btn" type="submit">Confirm booking</button></div></div></div></div>`;
+  return stepShell("Schedule the onboarding call", "Choose a time on Karla's Google Calendar. This is a mock booking flow.", `${welcomeLink}<form data-form="call" novalidate><input type="hidden" data-bind="call.timezone" value="${esc(tz)}">${gcal}${formError()}</form>`);
+}
+function renderStep(id) {
+  if (id === "welcome") return renderWelcome();
+  const def = taskById(id);
+  if (!def) return stepShell("Onboarding", "That step is not available.", `<button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="back">${backToOnboardingLabel()}</button>`);
+  if (def.phase === "ready" && !contractSigned()) return stepShell(def.name, "This opens after your contract is signed.", `<p>Finish phase 1, including the contract, and this step will unlock.</p>${backToOnboarding()}`);
+  if (id === "identity") return renderIdentity();
+  if (id === "info") return renderInfo();
+  if (id === "offer") return renderOffer();
+  if (id === "contract") return renderContract();
+  if (id === "slack") return renderSlack();
+  if (id === "harvest") return renderHarvest();
+  if (id === "payment") return renderPayment();
+  if (id === "handbook") return renderHandbook();
+  if (id === "call") return renderCall();
+  return stepShell(def.name, def.blurb, backToOnboarding());
+}
+function renderOnboarding() {
+  const app = document.getElementById("obApp");
+  if (!app) return;
+  const route = parseRoute();
+  app.innerHTML = route.step ? renderStep(route.step) : renderDashboard();
+  if (pendingFocus) {
+    pendingFocus = false;
+    const heading = app.querySelector("h1");
+    if (heading) { heading.setAttribute("tabindex", "-1"); heading.focus(); }
+  }
+}
+function buildDocuments() {
+  const docs = [];
+  const identity = state.tasks.identity;
+  const idStatus = identity.status === "verified" ? "Approved" : identity.status === "under_review" ? "Under review" : identity.status === "submitted" ? "Submitted" : "Required";
+  docs.push({ id: "gov-id", category: DOC_CATEGORIES[0], name: "Government ID", date: identity.verifiedAt || identity.submittedAt || "", status: idStatus, upload: identity.status === "not_started" || identity.status === "action_required", download: !!(identity.frontSample || sessionFiles.front) });
+  if (state.offerEnabled && (state.tasks.offer.status === "ready" || state.tasks.offer.status === "signed")) docs.push({ id: "offer", category: DOC_CATEGORIES[1], name: "Offer letter", date: state.tasks.offer.signedAt || state.tasks.offer.sentAt || "", status: state.tasks.offer.status === "signed" ? "Signed" : "Required", upload: false, download: true });
+  if (state.tasks.contract.status === "ready" || state.tasks.contract.status === "signed") docs.push({ id: "contract", category: DOC_CATEGORIES[1], name: "Contractor agreement", date: state.tasks.contract.signedAt || state.tasks.contract.sentAt || "", status: state.tasks.contract.status === "signed" ? "Signed" : "Required", upload: false, download: state.tasks.contract.status === "signed" });
+  if (state.tasks.payment.status === "completed") docs.push({ id: "payment", category: DOC_CATEGORIES[2], name: "Payment details", date: state.tasks.payment.submittedAt || "", status: "Submitted", upload: false, download: false });
+  if (contractSigned() || state.tasks.handbook.status === "completed") docs.push({ id: "handbook", category: DOC_CATEGORIES[3], name: "Contractor handbook", date: state.tasks.handbook.ackAt || "", status: state.tasks.handbook.status === "completed" ? "Approved" : "Required", upload: false, download: true });
+  if (state.tasks.welcome.status === "completed") docs.push({ id: "welcome-doc", category: DOC_CATEGORIES[3], name: "Onboarding instructions", date: state.tasks.welcome.readAt || "", status: "Approved", upload: false, download: true });
+  return docs;
+}
+function docPill(status) {
+  const tone = status === "Approved" || status === "Signed" ? "done" : status === "Submitted" ? "ready" : "wait";
+  return pill(status, tone);
+}
+function docRow(doc) {
+  const uploadLabel = state.tasks.identity.status === "action_required" ? "Replace" : "Upload";
+  const actions = [`<button type="button" class="ob-text-btn" data-doc-act="preview" data-doc="${doc.id}">Preview</button>`];
+  if (doc.download) actions.push(`<button type="button" class="ob-text-btn" data-doc-act="download" data-doc="${doc.id}">Download</button>`);
+  if (doc.upload) actions.push(`<button type="button" class="ob-text-btn" data-doc-act="upload" data-doc="${doc.id}">${uploadLabel}</button>`);
+  return `<div class="doc-row"><div><b>${esc(doc.name)}</b><span class="meta-line">${doc.date ? esc(formatWhen(doc.date)) : "No date yet"}</span></div><div class="doc-actions">${docPill(doc.status)}${actions.join("")}</div></div>`;
+}
+function renderDocuments() {
+  const root = document.getElementById("docApp");
+  if (!root) return;
+  const docs = buildDocuments();
+  const groups = DOC_CATEGORIES.map((category) => {
+    const items = docs.filter((doc) => doc.category === category);
+    const rows = items.length ? items.map(docRow).join("") : `<p class="ob-help">Nothing here yet.</p>`;
+    return `<section class="doc-group"><h2>${esc(category)}</h2>${rows}</section>`;
+  }).join("");
+  root.innerHTML = `<p class="doc-lead">Identification, agreements, payment, and resources from onboarding. The status here matches the onboarding step.</p><article class="card doc-card">${groups}</article><p class="ob-tools"><a class="ob-docs-link" href="#onboarding">Back to onboarding</a></p>`;
+}
+function docBody(id) {
+  if (id === "gov-id") return `<div class="ob-upload-grid"><div class="id-slot">${idPreview("front")}<strong>Front of ID</strong></div><div class="id-slot">${idPreview("back")}<strong>Back of ID</strong></div></div><p class="ob-help">ID images are not stored after you refresh.</p>`;
+  if (id === "offer") return offerPaper();
+  if (id === "contract") return contractPaper();
+  if (id === "payment") return `<p>Payment method: ${esc(methodLabel(state.tasks.payment.method))}. Country: ${esc(state.tasks.payment.country)}. Account numbers are not stored in this prototype.</p>`;
+  if (id === "handbook") return handbookBody();
+  if (id === "welcome-doc") return `<p>After you sign, book your onboarding call with Karla, then the Onboarding Team invites you to Slack and Harvest. You add payment details and review the handbook.</p>`;
+  return "";
+}
+function docText(id) {
+  const doc = buildDocuments().find((item) => item.id === id);
+  const title = doc ? doc.name : "Document";
+  if (id === "offer") return "BetterEngineer offer of engagement\nSenior Android Engineer\n$75 per hour\nIndependent contractor\nSigned copy for " + legalName();
+  if (id === "contract") return "BetterEngineer contractor agreement\nParties: BetterEngineer and " + legalName() + "\nRate: $75 per hour\nStatus: signed";
+  if (id === "handbook") return "BetterEngineer contractor handbook\nOverview, hours, communication, confidentiality, and how to get help from the Onboarding Team.";
+  if (id === "welcome-doc") return "Onboarding instructions\nSchedule with Karla, then Slack, Harvest, payment, and the handbook.";
+  return title;
+}
+function previewDoc(id) {
+  const doc = buildDocuments().find((item) => item.id === id);
+  if (!doc) return;
+  openObDialog({ mode: "doc", wide: true, kicker: doc.category, title: doc.name, body: `<p class="lead">${docPill(doc.status)}${doc.date ? " " + esc(formatWhen(doc.date)) : ""}</p>${docBody(id)}`, actions: [{ label: "Close", kind: "primary", on: closeObDialog }] });
+}
+function downloadBlob(filename, content, type) {
+  const blob = new Blob([content], { type: type || "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+function downloadDoc(id) {
+  if (id === "gov-id") {
+    if (sessionFiles.front) {
+      const link = document.createElement("a");
+      link.href = sessionFiles.front;
+      link.download = state.tasks.identity.frontName || "id-front";
+      link.click();
+      return;
+    }
+    if (state.tasks.identity.frontSample) { downloadBlob("government-id-sample.svg", sampleSvg("front"), "image/svg+xml"); return; }
+    toast("That image is not available. This prototype does not keep ID files.");
+    return;
+  }
+  const names = { offer: "offer-letter.txt", contract: "contractor-agreement.txt", handbook: "contractor-handbook.txt", "welcome-doc": "onboarding-instructions.txt" };
+  downloadBlob(names[id] || "document.txt", docText(id), "text/plain");
+}
+function rowMatches() {
+  const row = summary();
+  if (adminFilter.status !== "all" && adminFilter.status !== row.status) return false;
+  if (adminFilter.phase !== "all" && adminFilter.phase !== row.phaseKey) return false;
+  return true;
+}
+function adminButton(action, label, disabled, task) {
+  return `<button type="button" class="ts-btn ts-btn-line ob-btn" data-admin="${action}"${task ? ` data-task="${esc(task)}"` : ""}${disabled ? " disabled" : ""}>${esc(label)}</button>`;
+}
+function renderAdmin() {
+  const root = document.getElementById("adminApp");
+  if (!root) return;
+  const row = summary();
+  const show = rowMatches();
+  const statuses = ["All statuses", "Not started", "In progress", "Under review", "Awaiting signature", "Action required", "Waiting on BetterEngineer", "Contract signed", "Fully onboarded"];
+  const statusOptions = statuses.map((label) => {
+    const value = label === "All statuses" ? "all" : label;
+    return `<option value="${esc(value)}"${adminFilter.status === value ? " selected" : ""}>${esc(label)}</option>`;
+  }).join("");
+  const phases = [["all", "All phases"], ["become", "Become a Contractor"], ["ready", "Get Ready to Work"], ["complete", "Complete"]];
+  const phaseOptions = phases.map((item) => `<option value="${item[0]}"${adminFilter.phase === item[0] ? " selected" : ""}>${esc(item[1])}</option>`).join("");
+  const identity = state.tasks.identity.status;
+  const taskLines = TASK_DEFS.filter((def) => !(def.id === "offer" && !state.offerEnabled)).map((def) => {
+    const item = present(def.id);
+    return `<p><b>${esc(def.name)}</b> ${pill(item.label, item.tone)}</p>`;
+  }).join("");
+  const docLines = buildDocuments().map((doc) => `<p>${esc(doc.name)}: ${esc(doc.status)}</p>`).join("") || `<p>No documents yet.</p>`;
+  const log = state.activity.length ? state.activity.map((item) => `<li><span>${esc(formatWhen(item.at))} · ${esc(item.who)}</span>${esc(item.text)}</li>`).join("") : `<li>No activity yet.</li>`;
+  const offerBlocked = !state.offerEnabled || state.tasks.offer.status === "signed";
+  const contractBlocked = state.tasks.contract.status === "signed" || (state.offerEnabled && state.tasks.offer.status !== "signed");
+  root.innerHTML = `<div class="adm-page"><div class="adm-banner">Prototype only. This staff view is not part of the candidate portal. Actions update the candidate onboarding immediately. <a class="ob-docs-link" href="#onboarding">Open candidate onboarding</a></div><div class="page-title-band"><h1 class="page-title">Onboarding admin</h1></div><div class="adm-filters"><label class="ob-field"><span>Status</span><select id="admStatus">${statusOptions}</select></label><label class="ob-field"><span>Phase</span><select id="admPhase">${phaseOptions}</select></label></div><article class="card" style="padding:8px 8px 4px"><div class="adm-scroll"><table class="adm-table"><thead><tr><th>Candidate</th><th>Country</th><th>Phase</th><th>Progress</th><th>Status</th><th>Next required action</th><th>Last activity</th></tr></thead><tbody><tr id="admRow"${show ? "" : " hidden"}><td>${esc(PROFILE.name)}</td><td>${esc(row.country)}</td><td>${esc(row.phase)}</td><td>${esc(row.progress)}</td><td>${esc(row.status)}</td><td>${esc(row.next)}</td><td>${esc(row.last)}</td></tr></tbody></table></div><p id="admEmpty" class="ob-help"${show ? " hidden" : ""}>No candidates match these filters.</p></article><article class="card" id="admDetail" style="padding:22px;margin-top:16px"${show ? "" : " hidden"}><h2>Gabriel Kouyoumdjian</h2><p class="ob-help">${esc(row.phase)} · ${esc(row.status)} · ${esc(row.progress)}</p><div class="ob-section"><h2>Phase 1 and phase 2</h2>${taskLines}</div><div class="ob-section"><h2>Staff actions</h2><div class="adm-actions">${adminButton("invite", "Send onboarding invitation", false)}${adminButton("id-review", "Mark identity under review", !(identity === "submitted" || identity === "action_required"))}${adminButton("id-approve", "Approve identity", identity === "verified" || identity === "not_started")}${adminButton("id-reject", "Request revised ID", !(identity === "submitted" || identity === "under_review"))}</div><p class="ob-help">Prototype only. No request is sent to Emptor.</p><label class="ob-check"><input id="admOffer" type="checkbox"${state.offerEnabled ? " checked" : ""}> This engagement has a separate offer letter</label><div class="adm-actions">${adminButton("offer-send", "Send offer", offerBlocked)}${adminButton("offer-signed", "Mark offer signed", !state.offerEnabled || state.tasks.offer.status !== "ready")}${adminButton("contract-send", "Send contract", contractBlocked)}</div><p class="ob-help">Signing status: ${esc(state.tasks.contract.status === "signed" ? "Signed " + formatWhen(state.tasks.contract.signedAt) : state.tasks.contract.status === "ready" ? "Sent, waiting for the candidate" : "Not sent")}</p><div class="adm-actions">${adminButton("slack-send", "Send Slack invite", !contractSigned() || state.tasks.slack.status === "connected")}${adminButton("harvest-send", "Send Harvest invite", !contractSigned() || state.tasks.harvest.status === "active")}${adminButton("complete", "Mark contractor information complete", isComplete("info"), "info")}${adminButton("complete", "Mark welcome read", isComplete("welcome") || !contractSigned(), "welcome")}${adminButton("complete", "Mark Slack connected", isComplete("slack") || !contractSigned(), "slack")}${adminButton("complete", "Mark Harvest complete", isComplete("harvest") || !contractSigned(), "harvest")}${adminButton("complete", "Mark payment complete", isComplete("payment") || !contractSigned(), "payment")}${adminButton("complete", "Mark handbook acknowledged", isComplete("handbook") || !contractSigned(), "handbook")}${adminButton("complete", "Mark call scheduled", isComplete("call") || !contractSigned(), "call")}</div></div><div class="ob-section"><h2>Document statuses</h2>${docLines}</div><div class="ob-section"><h2>Activity</h2><ul class="adm-log">${log}</ul></div></article></div>`;
+}
+function showFormError(form, message, ids) {
+  const err = form.querySelector(".ob-error");
+  if (err) { err.hidden = !message; err.textContent = message || ""; }
+  (ids || []).forEach((id) => { const el = document.getElementById(id); if (el) el.classList.add("is-bad"); });
+}
+function readForm(form) {
+  form.querySelectorAll("[data-bind]").forEach((el) => {
+    if (el.type === "radio") { if (el.checked) setBind(el.dataset.bind, el.value); }
+    else if (el.type === "checkbox") setBind(el.dataset.bind, el.checked);
+    else setBind(el.dataset.bind, el.value.trim());
+  });
+  form.querySelectorAll("[data-secret]").forEach((el) => { paymentDraft[el.dataset.secret] = el.value; });
+}
+function setBind(path, value) {
+  const parts = path.split(".");
+  if (!state.tasks[parts[0]]) return;
+  if (parts[0] === "payment" && parts[1] !== "country" && parts[1] !== "method") return;
+  state.tasks[parts[0]][parts[1]] = value;
+}
+function useSample(side) {
+  if (sessionFiles[side]) { URL.revokeObjectURL(sessionFiles[side]); sessionFiles[side] = ""; }
+  state.tasks.identity[side + "Name"] = side === "front" ? "Sample ID front" : "Sample ID back";
+  state.tasks.identity[side + "Sample"] = true;
+  persistEdit();
+  renderOnboarding();
+}
+function setUpload(side, file) {
+  if (sessionFiles[side]) URL.revokeObjectURL(sessionFiles[side]);
+  sessionFiles[side] = file && file.type.indexOf("image/") === 0 ? URL.createObjectURL(file) : "";
+  state.tasks.identity[side + "Name"] = file.name;
+  state.tasks.identity[side + "Sample"] = false;
+  persistEdit();
+  renderOnboarding();
+}
+function submitIdentity(form) {
+  readForm(form);
+  const task = state.tasks.identity;
+  const bad = [];
+  if (!task.country) bad.push("idCountry");
+  if (!task.nationality) bad.push("idNationality");
+  if (!task.idType) bad.push("idType");
+  if (!task.legalName) bad.push("idLegal");
+  if (!task.dob) bad.push("idDob");
+  if (!task.idNumber) bad.push("idNumber");
+  if (!task.frontName || !task.backName) bad.push("fileFront");
+  if (bad.length) { persistEdit(); showFormError(form, "Add your country, nationality, ID type, legal name, date of birth, ID number, and both sides of the ID.", bad); return; }
+  task.status = "submitted";
+  task.submittedAt = todayStamp();
+  task.note = "";
+  logActivity(PROFILE.name, "Submitted identity documents.");
+  renderOnboarding();
+  toast("Identity submitted.");
+}
+function submitInfo(form) {
+  readForm(form);
+  const info = state.tasks.info;
+  const bad = [];
+  if (!state.tasks.identity.legalName) bad.push("idLegal");
+  if (!info.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(info.email)) bad.push("infoEmail");
+  if (!info.address) bad.push("infoAddress");
+  if (!info.city) bad.push("infoCity");
+  if (!info.region) bad.push("infoRegion");
+  if (!info.postal) bad.push("infoPostal");
+  if (!state.tasks.identity.country) bad.push("infoCountry");
+  if (!info.taxResidency) bad.push("infoTax");
+  if (!info.entity) info.entity = "individual";
+  if (info.entity === "business") {
+    if (!info.businessName) bad.push("infoBusiness");
+    if (!info.businessCountry) bad.push("infoBusinessCountry");
+    if (!info.businessNumber) bad.push("infoBusinessNumber");
+  }
+  if (bad.length) { persistEdit(); showFormError(form, info.entity === "business" ? "Add the business name, registration country, and registration number." : "Add the missing contact, address, and tax fields.", bad); return; }
+  info.status = "completed";
+  info.submittedAt = todayStamp();
+  logActivity(PROFILE.name, "Submitted contractor information.");
+  renderOnboarding();
+  toast("Contractor information saved.");
+}
+function submitSlack(form) {
+  readForm(form);
+  const email = state.tasks.slack.email;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "")) { showFormError(form, "Enter the email that should receive Slack.", ["slackEmail"]); return; }
+  state.tasks.slack.status = "connected";
+  logActivity(PROFILE.name, "Confirmed the Slack email.");
+  renderOnboarding();
+  toast("Slack email confirmed.");
+}
+function submitPayment(form) {
+  readForm(form);
+  const task = state.tasks.payment;
+  const bad = [];
+  if (!task.country) bad.push("payCountry");
+  if (!task.method) bad.push("payMethod");
+  if (task.method === "bank" && !paymentDraft.account) bad.push("payAccount");
+  if ((task.method === "wise" || task.method === "payoneer") && !paymentDraft.payEmail) bad.push(task.method === "wise" ? "payWise" : "payPayoneer");
+  if (bad.length) { showFormError(form, "Choose a country and payment method, then complete the fields for that method. Use a made-up account number.", bad); return; }
+  const digits = String(paymentDraft.account || "").replace(/\D/g, "");
+  sessionPayment = { method: methodLabel(task.method), country: task.country, last4: digits ? digits.slice(-4) : "" };
+  paymentDraft = { holder: "", bank: "", account: "", swift: "", payEmail: "" };
+  task.status = "completed";
+  task.submittedAt = todayStamp();
+  logActivity(PROFILE.name, "Submitted payment details.");
+  renderOnboarding();
+  toast("Payment details received.");
+}
+function submitHandbook(form) {
+  const box = document.getElementById("handbookAck");
+  if (!box || !box.checked) { showFormError(form, "Acknowledge the handbook to finish this step.", ["handbookAck"]); return; }
+  state.tasks.handbook.status = "completed";
+  state.tasks.handbook.ack = true;
+  state.tasks.handbook.ackAt = todayStamp();
+  logActivity(PROFILE.name, "Acknowledged the contractor handbook.");
+  renderOnboarding();
+  toast("Handbook acknowledged.");
+}
+function submitCall(form) {
+  readForm(form);
+  const selected = form.querySelector('input[name="slot"]:checked');
+  if (!selected) { showFormError(form, "Choose a time to book the call."); return; }
+  state.tasks.call.status = "scheduled";
+  state.tasks.call.slot = selected.value;
+  state.tasks.call.scheduledAt = todayStamp();
+  logActivity(PROFILE.name, "Scheduled the onboarding call.");
+  renderOnboarding();
+  toast("Onboarding call booked with Karla.");
+}
+function namesMatch(typed) { return typed.trim().toLowerCase() === legalName().trim().toLowerCase(); }
+function signOffer() {
+  const typed = (document.getElementById("signName") || {}).value || "";
+  if (!namesMatch(typed)) { const err = document.getElementById("formError"); if (err) { err.hidden = false; err.textContent = "Type your legal name to adopt a signature."; } return; }
+  state.tasks.offer.status = "signed";
+  state.tasks.offer.signedAt = todayStamp();
+  if (state.tasks.contract.status === "locked") state.tasks.contract.status = "waiting";
+  sessionFlow.offer = 0;
+  logActivity(PROFILE.name, "Signed the offer letter.");
+  renderOnboarding();
+  toast("Offer signed.");
+}
+function signContract() {
+  const typed = (document.getElementById("contractSignName") || {}).value || "";
+  if (!namesMatch(typed)) { const err = document.getElementById("formError"); if (err) { err.hidden = false; err.textContent = "Type your legal name to adopt a signature."; } return; }
+  state.tasks.contract.status = "signed";
+  state.tasks.contract.signedAt = todayStamp();
+  state.celebrate = true;
+  sessionFlow.contract = 0;
+  logActivity(PROFILE.name, "Signed the contractor agreement.");
+  applyRoute();
+}
+function continueSetup() {
+  state.celebrate = false;
+  saveState();
+  go("#onboarding", true);
+}
+function adminComplete(id) {
+  if (!contractSigned() && taskById(id).phase === "ready") { toast("Phase 2 opens after the contract is signed."); return; }
+  if (id === "info") {
+    const info = state.tasks.info;
+    info.preferredName = info.preferredName || "Gabriel";
+    info.email = info.email || PROFILE.email;
+    info.address = info.address || "Av. Brasil 2468";
+    info.city = info.city || "Montevideo";
+    info.region = info.region || "Montevideo";
+    info.postal = info.postal || "11300";
+    info.taxResidency = info.taxResidency || "Uruguay";
+    info.entity = info.entity || "individual";
+    if (!state.tasks.identity.country) state.tasks.identity.country = PROFILE.country;
+    if (!state.tasks.identity.legalName) state.tasks.identity.legalName = PROFILE.name;
+    info.status = "completed";
+    info.submittedAt = todayStamp();
+  } else if (id === "welcome") { state.tasks.welcome.status = "completed"; state.tasks.welcome.readAt = todayStamp(); }
+  else if (id === "slack") { state.tasks.slack.status = "connected"; state.tasks.slack.email = state.tasks.slack.email || PROFILE.email; }
+  else if (id === "harvest") { state.tasks.harvest.status = "active"; state.tasks.harvest.confirmed = true; }
+  else if (id === "payment") { state.tasks.payment.status = "completed"; state.tasks.payment.country = state.tasks.payment.country || PROFILE.country; state.tasks.payment.method = state.tasks.payment.method || "wise"; state.tasks.payment.submittedAt = todayStamp(); }
+  else if (id === "handbook") { state.tasks.handbook.status = "completed"; state.tasks.handbook.ack = true; state.tasks.handbook.ackAt = todayStamp(); }
+  else if (id === "call") { state.tasks.call.status = "scheduled"; state.tasks.call.slot = state.tasks.call.slot || "Scheduled with the Onboarding Team"; state.tasks.call.timezone = state.tasks.call.timezone || PROFILE.timezone; state.tasks.call.scheduledAt = todayStamp(); }
+  logActivity("Onboarding Team", "Marked " + taskById(id).name.toLowerCase() + " complete.");
+  renderAdmin();
+}
+function adminAct(action, taskId) {
+  if (action === "invite") { state.invited = true; logActivity("Onboarding Team", "Sent the onboarding invitation."); }
+  else if (action === "id-review") { state.tasks.identity.status = "under_review"; logActivity("Onboarding Team", "Started reviewing identity."); }
+  else if (action === "id-approve") { state.tasks.identity.status = "verified"; state.tasks.identity.verifiedAt = todayStamp(); state.tasks.identity.note = ""; logActivity("Onboarding Team", "Verified identity."); }
+  else if (action === "id-reject") {
+    openObDialog({ mode: "reject", kicker: "Identity", title: "Request a new ID", body: `<label class="ob-field"><span>Note to the candidate</span><textarea id="rejectNote" rows="4">The photo was too dark to read the name. Please upload a clearer front and back.</textarea></label>`, actions: [{ label: "Cancel", on: closeObDialog }, { label: "Send request", kind: "primary", on: function () { const note = (document.getElementById("rejectNote") || {}).value || "Please upload a clearer front and back."; state.tasks.identity.status = "action_required"; state.tasks.identity.note = note.trim(); logActivity("Onboarding Team", "Asked for a new photo of the ID."); closeObDialog(); renderAdmin(); } }] });
+    return;
+  } else if (action === "offer-send") {
+    if (!state.offerEnabled) { toast("Turn on the offer letter first."); return; }
+    state.tasks.offer.status = "ready";
+    state.tasks.offer.sentAt = todayStamp();
+    logActivity("Onboarding Team", "Sent the offer letter.");
+  } else if (action === "offer-signed") {
+    if (state.tasks.offer.status !== "ready") { toast("Send the offer first."); return; }
+    state.tasks.offer.status = "signed";
+    state.tasks.offer.signedAt = todayStamp();
+    if (state.tasks.contract.status === "locked") state.tasks.contract.status = "waiting";
+    logActivity("Onboarding Team", "Marked the offer letter signed.");
+  } else if (action === "contract-send") {
+    if (state.offerEnabled && state.tasks.offer.status !== "signed") { toast("The offer needs to be signed before you send the contract."); return; }
+    state.tasks.contract.status = "ready";
+    state.tasks.contract.sentAt = todayStamp();
+    logActivity("Onboarding Team", "Sent the contractor agreement.");
+  } else if (action === "slack-send") {
+    if (!contractSigned()) { toast("The contract has to be signed first."); return; }
+    state.tasks.slack.status = "invited";
+    if (!state.tasks.slack.email) state.tasks.slack.email = PROFILE.email;
+    logActivity("Onboarding Team", "Sent the Slack invitation.");
+  } else if (action === "harvest-send") {
+    if (!contractSigned()) { toast("The contract has to be signed first."); return; }
+    state.tasks.harvest.status = "invited";
+    logActivity("Onboarding Team", "Sent the Harvest invitation.");
+  } else if (action === "complete") { adminComplete(taskId); return; }
+  renderAdmin();
+}
+function openObDialog(opts) {
+  dialogMode = opts.mode || "";
+  dialogReturn = document.activeElement;
+  const modal = document.querySelector("#obDialog .modal");
+  if (modal) modal.classList.toggle("is-wide", !!opts.wide);
+  document.getElementById("obDialogKicker").textContent = opts.kicker || "";
+  document.getElementById("obDialogKicker").hidden = !opts.kicker;
+  document.getElementById("obDialogTitle").textContent = opts.title || "";
+  document.getElementById("obDialogBody").innerHTML = opts.body || "";
+  dialogHandlers = opts.actions || [];
+  document.getElementById("obDialogActions").innerHTML = dialogHandlers.map((action, index) => `<button type="button" class="ts-btn ${action.kind === "primary" ? "ts-btn-primary" : "ts-btn-line"} ob-btn" data-dialog-act="${index}">${esc(action.label)}</button>`).join("");
+  document.getElementById("obDialog").hidden = false;
+  const focusEl = document.querySelector("#obDialogBody textarea, #obDialogBody input, #obDialogActions button");
+  if (focusEl) focusEl.focus();
+}
+function closeObDialog() {
+  const dlg = document.getElementById("obDialog");
+  if (!dlg || dlg.hidden) return;
+  if (dialogMode === "intro" && !state.introSeen) { state.introSeen = true; saveState(); }
+  dialogMode = "";
+  dialogHandlers = [];
+  dlg.hidden = true;
+  const back = dialogReturn;
+  dialogReturn = null;
+  if (back && typeof back.focus === "function") back.focus();
+}
+function openIntro() {
+  if (dialogMode === "intro" && !document.getElementById("obDialog").hidden) return;
+  openObDialog({ mode: "intro", kicker: "Onboarding", title: "Welcome", body: "<p class=\"lead\">We'll walk you through becoming a BetterEngineer contractor. You can leave and come back, and we'll keep your place.</p>", actions: [{ label: "Not now", on: dismissIntro }, { label: "Continue", kind: "primary", on: dismissIntro }] });
+}
+function dismissIntro() { state.introSeen = true; saveState(); closeObDialog(); }
+function go(hash, focus) {
+  pendingFocus = !!focus;
+  if ((location.hash || "").toLowerCase() === hash.toLowerCase()) applyRoute();
+  else location.hash = hash;
+}
+function parseRoute() {
+  const hash = (location.hash || "").replace(/^#/, "").toLowerCase();
+  if (hash === "ob-screening") return { stage: contractSigned() ? "active" : "onboarding", view: "onboarding", step: "__redirect_onboarding__" };
+  const signed = contractSigned();
+  const obStage = signed ? "active" : "onboarding";
+  if (hash === "admin") return { stage: "admin", view: "admin", step: "" };
+  if (hash === "onboarding") return { stage: obStage, view: "onboarding", step: "" };
+  if (hash.indexOf("ob-") === 0) return { stage: obStage, view: "onboarding", step: hash.slice(3) };
+  if (hash === "onboarding-profile") return { stage: "onboarding", view: "profile", step: "" };
+  if (hash === "onboarding-docs") return { stage: obStage, view: "documents", step: "" };
+  if (hash === "active" || hash === "hours") return { stage: "active", view: "hours", step: "" };
+  if (hash === "documents") return { stage: "active", view: "documents", step: "" };
+  if (hash === "active-profile") return { stage: "active", view: "profile", step: "" };
+  return { stage: "signup", view: "profile", step: "" };
+}
+function markMenus() {
+  document.querySelectorAll("[data-scenario]").forEach((btn) => btn.classList.toggle("is-current", btn.dataset.scenario === state.scenario));
+}
+function applyRoute() {
+  const route = parseRoute();
+  if (route.step === "__redirect_onboarding__") {
+    location.replace("#onboarding");
+    return;
+  }
+  const prevView = lastRouteKey.split("|")[1] || "";
+  const enteredDash = route.view === "onboarding" && !route.step && prevView !== "onboarding";
+  lastRouteKey = route.stage + "|" + route.view + "|" + route.step;
+  document.documentElement.dataset.stage = route.stage;
+  document.documentElement.dataset.view = route.view;
+  const showOb = route.view === "onboarding" || route.stage === "onboarding" || (contractSigned() && route.stage === "active");
+  if (showOb) document.documentElement.dataset.showOnboarding = "1";
+  else delete document.documentElement.dataset.showOnboarding;
+  const profileHref = route.stage === "active" ? "#active-profile" : route.stage === "onboarding" ? "#onboarding-profile" : "#signup";
+  const profileLink = document.getElementById("navProfile");
+  if (profileLink) profileLink.setAttribute("href", profileHref);
+  ["navProfile", "navOnboarding", "navDocsOb", "navHours", "navDocs"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const on = (id === "navProfile" && route.view === "profile") || (id === "navOnboarding" && route.view === "onboarding") || (id === "navDocsOb" && route.view === "documents") || (id === "navHours" && route.view === "hours") || (id === "navDocs" && route.view === "documents");
+    el.classList.toggle("is-on", on);
+    if (on) el.setAttribute("aria-current", "page");
+    else el.removeAttribute("aria-current");
+  });
+  let preview = "signup";
+  if (route.view === "admin") preview = "admin";
+  else if (route.view === "onboarding" || route.stage === "onboarding") preview = "onboarding";
+  else if (route.stage === "active") preview = "active";
+  document.querySelectorAll("[data-preview]").forEach((link) => {
+    const on = link.dataset.preview === preview;
+    link.classList.toggle("is-current", on);
+    if (on) link.setAttribute("aria-current", "true");
+    else link.removeAttribute("aria-current");
+  });
+  markMenus();
+  const titles = { profile: "Profile", hours: "Timesheets", documents: "Documents", onboarding: "Onboarding", admin: "Onboarding admin" };
+  document.title = "BetterEngineer · " + (titles[route.view] || "Profile");
+  if (route.view !== "onboarding" && route.view !== "admin") closeObDialog();
+  if (route.view === "hours") renderAll();
+  if (route.view === "onboarding") renderOnboarding();
+  else pendingFocus = false;
+  if (route.view === "documents") renderDocuments();
+  if (route.view === "admin") renderAdmin();
+  if (enteredDash && !state.introSeen) openIntro();
+}
+function onObClick(e) {
+  const sample = e.target.closest("[data-sample]");
+  if (sample) { useSample(sample.dataset.sample); return; }
+  const pick = e.target.closest("[data-pick]");
+  if (pick) { const input = document.getElementById(pick.dataset.pick); if (input) input.click(); return; }
+  const actEl = e.target.closest("[data-act]");
+  if (!actEl || !document.getElementById("obApp").contains(actEl)) return;
+  const act = actEl.dataset.act;
+  const task = actEl.dataset.task || "";
+  if (act === "open") go("#ob-" + task, true);
+  else if (act === "back") go("#onboarding", true);
+  else if (act === "continue-setup") continueSetup();
+  else if (act === "toggle-phase-ready") { setPhaseReadyExpanded(!phaseReadyIsExpanded()); renderOnboarding(); }
+  else if (act === "offer-next") { sessionFlow.offer += 1; renderOnboarding(); }
+  else if (act === "offer-back") { sessionFlow.offer = Math.max(0, sessionFlow.offer - 1); renderOnboarding(); }
+  else if (act === "offer-sign") signOffer();
+  else if (act === "contract-next") { sessionFlow.contract = 1; renderOnboarding(); }
+  else if (act === "contract-back") { sessionFlow.contract = 0; renderOnboarding(); }
+  else if (act === "contract-sign") signContract();
+  else if (act === "harvest-next") { sessionFlow.harvest += 1; renderOnboarding(); }
+  else if (act === "harvest-done") { state.tasks.harvest.status = "active"; state.tasks.harvest.confirmed = true; logActivity(PROFILE.name, "Confirmed Harvest setup."); renderOnboarding(); toast("Harvest setup confirmed."); }
+  else if (act === "welcome-done") { state.tasks.welcome.status = "completed"; state.tasks.welcome.readAt = todayStamp(); logActivity(PROFILE.name, "Read the welcome note."); renderOnboarding(); }
+  else if (act === "edit-info") { state.tasks.info.status = "in_progress"; persistEdit(); renderOnboarding(); }
+  else if (act === "call-day") { sessionFlow.callDay = Number(actEl.dataset.day) || 0; renderOnboarding(); }
+  else if (act === "reschedule") { state.tasks.call.status = "not_started"; sessionFlow.callDay = 0; persistEdit(); renderOnboarding(); }
+  else if (act === "download-offer") downloadDoc("offer");
+  else if (act === "download-contract") downloadDoc("contract");
+}
+function syncBusiness() {
+  const box = document.getElementById("businessFields");
+  if (!box) return;
+  const selected = document.querySelector('#obApp input[name="entity"]:checked');
+  box.hidden = !selected || selected.value !== "business";
+}
+function syncPay() {
+  const method = (document.getElementById("payMethod") || {}).value || state.tasks.payment.method || "";
+  document.querySelectorAll("[data-pay-panel]").forEach((el) => { el.hidden = el.dataset.payPanel !== method; });
+}
+
+document.getElementById("obApp").addEventListener("click", onObClick);
+document.getElementById("obApp").addEventListener("input", (e) => {
+  const el = e.target;
+  if (el.classList) el.classList.remove("is-bad");
+  if (el.dataset && el.dataset.bind && el.type !== "radio") { setBind(el.dataset.bind, el.type === "checkbox" ? el.checked : el.value.trim()); persistEdit(); }
+  if (el.dataset && el.dataset.bind && el.type === "radio" && el.checked) { setBind(el.dataset.bind, el.value); persistEdit(); }
+  if (el.dataset && el.dataset.sign === "name") { const preview = document.getElementById("signPreview"); if (preview) preview.textContent = el.value || "Your signature"; }
+});
+document.getElementById("obApp").addEventListener("change", (e) => {
+  const el = e.target;
+  if (el.dataset && el.dataset.file) { const file = el.files && el.files[0]; if (file) setUpload(el.dataset.file, file); return; }
+  if (el.dataset && el.dataset.bind === "info.entity") syncBusiness();
+  if (el.id === "payMethod") syncPay();
+});
+document.getElementById("obApp").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const name = e.target.dataset.form;
+  if (name === "identity") submitIdentity(e.target);
+  else if (name === "info") submitInfo(e.target);
+  else if (name === "slack") submitSlack(e.target);
+  else if (name === "payment") submitPayment(e.target);
+  else if (name === "handbook") submitHandbook(e.target);
+  else if (name === "call") submitCall(e.target);
+});
+document.getElementById("docApp").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-doc-act]");
+  if (!btn) return;
+  if (btn.dataset.docAct === "preview") previewDoc(btn.dataset.doc);
+  else if (btn.dataset.docAct === "download") downloadDoc(btn.dataset.doc);
+  else if (btn.dataset.docAct === "upload") go("#ob-identity", true);
+});
+document.getElementById("adminApp").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-admin]");
+  if (!btn || btn.disabled) return;
+  adminAct(btn.dataset.admin, btn.dataset.task || "");
+});
+document.getElementById("adminApp").addEventListener("change", (e) => {
+  if (e.target.id === "admStatus") adminFilter.status = e.target.value;
+  if (e.target.id === "admPhase") adminFilter.phase = e.target.value;
+  if (e.target.id === "admStatus" || e.target.id === "admPhase") {
+    const show = rowMatches();
+    const row = document.getElementById("admRow");
+    const empty = document.getElementById("admEmpty");
+    const detail = document.getElementById("admDetail");
+    if (row) row.hidden = !show;
+    if (empty) empty.hidden = show;
+    if (detail) detail.hidden = !show;
+    return;
+  }
+  if (e.target.id === "admOffer") {
+    state.offerEnabled = e.target.checked;
+    if (!state.offerEnabled && state.tasks.contract.status === "locked") state.tasks.contract.status = "waiting";
+    logActivity("Onboarding Team", state.offerEnabled ? "Included a separate offer letter." : "Turned off the separate offer letter.");
+    renderAdmin();
+  }
+});
+document.getElementById("obDialogActions").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-dialog-act]");
+  if (!btn) return;
+  const handler = dialogHandlers[Number(btn.dataset.dialogAct)];
+  if (handler && handler.on) handler.on();
+});
+document.getElementById("obDialogClose").addEventListener("click", closeObDialog);
+document.getElementById("obDialog").addEventListener("click", (e) => { if (e.target.id === "obDialog") closeObDialog(); });
+document.getElementById("profileDropdown").addEventListener("click", (e) => {
+  const scenario = e.target.closest("[data-scenario]");
+  if (!scenario) return;
+  applyScenario(scenario.dataset.scenario);
+  document.getElementById("profileMenu").classList.remove("is-open");
+  document.getElementById("profileMenuBtn").setAttribute("aria-expanded", "false");
+});
+
+applyRoute();
+window.addEventListener("hashchange", applyRoute);
+</script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BetterEngineer · Prototype navigation</title>
+<link rel="stylesheet" href="https://use.typekit.net/lhs7vwi.css">
+<style>
+:root {
+  --page: #f6f6f6;
+  --text: #333333;
+  --secondary: #707070;
+  --line: #e5e5e5;
+  --card-line: #dddddd;
+  --blue: #4c60b2;
+  --font: "runda", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px rgba(16, 24, 40, 0.06);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: var(--font);
+  font-weight: 400;
+  color: var(--text);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.45;
+}
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap { max-width: 920px; margin: 0 auto; padding: 32px 20px 56px; }
+.hero { margin-bottom: 28px; }
+.hero h1 { margin: 0 0 8px; font-size: 28px; font-weight: 500; letter-spacing: -0.02em; }
+.hero p { margin: 0; max-width: 640px; font-size: 15px; color: var(--secondary); }
+.badge {
+  display: inline-block; margin-bottom: 12px;
+  padding: 4px 10px; border-radius: 4px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  background: #eef2fb; color: var(--blue);
+}
+section { margin-top: 28px; }
+section h2 {
+  margin: 0 0 12px; font-size: 13px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--secondary);
+}
+.card {
+  background: #fff; border: 1px solid var(--card-line); border-radius: 8px;
+  box-shadow: var(--shadow); overflow: visible;
+}
+.row {
+  position: relative;
+  z-index: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px; align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+.row:has(.split.is-open) { z-index: 100; }
+.row:last-child { border-bottom: 0; }
+.row-title { margin: 0; font-size: 16px; font-weight: 500; }
+.row-desc { margin: 4px 0 0; font-size: 14px; color: var(--secondary); max-width: 52ch; }
+.row-note { margin: 6px 0 0; font-size: 12px; color: #999; }
+
+.split { display: inline-flex; position: relative; vertical-align: middle; }
+.split-main, .split-toggle {
+  height: 36px; border: 1px solid var(--blue); background: var(--blue); color: #fff;
+  font: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+  transition: background .15s var(--ease), border-color .15s var(--ease);
+}
+.split-main {
+  border-radius: 4px 0 0 4px; padding: 0 14px; text-decoration: none;
+  display: inline-flex; align-items: center;
+}
+.split-toggle {
+  width: 36px; padding: 0; border-left: 1px solid rgba(255,255,255,.25);
+  border-radius: 0 4px 4px 0; display: grid; place-items: center;
+}
+.split-main:hover, .split-toggle:hover { background: #4054a5; border-color: #4054a5; }
+.split-main:focus-visible, .split-toggle:focus-visible {
+  outline: 2px solid #c5cee9; outline-offset: 2px;
+}
+.split-chev {
+  width: 0; height: 0;
+  border-left: 5px solid transparent; border-right: 5px solid transparent;
+  border-top: 6px solid #fff;
+  transition: transform .15s var(--ease);
+}
+.split.is-open .split-chev { transform: rotate(180deg); }
+
+.split-menu {
+  position: absolute; top: calc(100% + 6px); right: 0; min-width: 220px;
+  max-height: min(70vh, 480px); overflow-y: auto;
+  background: #fff; border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(17, 17, 17, 0.12);
+  padding: 6px 0; z-index: 200; display: none; margin: 0; list-style: none;
+}
+.split.is-open .split-menu { display: block; }
+.split-menu a, .split-menu button {
+  display: block; width: 100%; margin: 0; padding: 10px 14px;
+  border: 0; background: transparent; text-align: left;
+  font: inherit; font-size: 14px; color: var(--text); cursor: pointer;
+  text-decoration: none;
+}
+.split-menu a:hover, .split-menu button:hover,
+.split-menu a:focus-visible, .split-menu button:focus-visible {
+  background: #f6f7fb; outline: none;
+}
+.split-menu .menu-label {
+  padding: 8px 14px 4px; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--secondary);
+}
+.split-menu .menu-hint {
+  display: block; padding: 0 14px 8px; font-size: 12px; color: #999; line-height: 1.35;
+}
+
+.foot { margin-top: 32px; font-size: 13px; color: var(--secondary); }
+@media (max-width: 640px) {
+  .row { grid-template-columns: 1fr; }
+  .split { width: 100%; }
+  .split-main { flex: 1; justify-content: center; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <span class="badge">Internal prototype</span>
+    <h1>Prototype navigation</h1>
+    <p>Bookmark this page to jump between static HTML mocks. Main button opens the default view; the menu lists hash routes and demo presets that need <code>localStorage</code> or <code>sessionStorage</code>.</p>
+  </header>
+
+  <section aria-labelledby="sec-my">
+    <h2 id="sec-my">Candidate / contractor (my portal)</h2>
+    <div class="card" id="rows-my"></div>
+  </section>
+
+  <section aria-labelledby="sec-staff">
+    <h2 id="sec-staff">Staff · contractor profile</h2>
+    <div class="card" id="rows-staff"></div>
+  </section>
+
+  <section aria-labelledby="sec-recruit">
+    <h2 id="sec-recruit">Recruiting · candidate pipeline</h2>
+    <div class="card" id="rows-recruit"></div>
+  </section>
+
+  <section aria-labelledby="sec-client">
+    <h2 id="sec-client">Client</h2>
+    <div class="card" id="rows-client"></div>
+  </section>
+
+  <section aria-labelledby="sec-admin">
+    <h2 id="sec-admin">Admin / demo / tools</h2>
+    <div class="card" id="rows-admin"></div>
+  </section>
+
+  <p class="foot">Demo data for onboarding lives in <code>localStorage</code> key <code>be.proto.onboarding.v1</code>. Phase 2 expanded UI uses <code>sessionStorage</code> key <code>be.proto.phaseReadyExpanded</code>.</p>
+</div>
+
+<script>
+(function () {
+  const STORE_KEY = "be.proto.onboarding.v1";
+  const PHASE_KEY = "be.proto.phaseReadyExpanded";
+  const PROFILE = {
+    name: "Gabriel Kouyoumdjian",
+    email: "GabrielK@devworks.com",
+    timezone: "Montevideo (GMT-3)"
+  };
+
+  function blankTasks() {
+    return {
+      identity: { status: "not_started", country: "", nationality: "", idType: "", legalName: "", dob: "", idNumber: "", frontName: "", backName: "", frontSample: false, backSample: false, note: "", submittedAt: "", verifiedAt: "" },
+      info: { status: "not_started", preferredName: "", email: "", address: "", city: "", region: "", postal: "", taxResidency: "", entity: "", businessName: "", businessCountry: "", businessNumber: "", submittedAt: "" },
+      offer: { status: "waiting", sentAt: "", signedAt: "" },
+      contract: { status: "locked", sentAt: "", signedAt: "" },
+      welcome: { status: "not_started", readAt: "" },
+      slack: { status: "waiting", email: "" },
+      harvest: { status: "waiting", confirmed: false },
+      payment: { status: "not_started", country: "", method: "", submittedAt: "" },
+      handbook: { status: "not_started", ack: false, ackAt: "" },
+      call: { status: "not_started", slot: "", timezone: PROFILE.timezone, scheduledAt: "" }
+    };
+  }
+  function defaultState() {
+    return { scenario: "new", introSeen: false, offerEnabled: true, invited: false, celebrate: false, updatedAt: "", activity: [], tasks: blankTasks() };
+  }
+  function sampleIdentity(status) {
+    return { status: status, country: "Uruguay", nationality: "Uruguay", idType: "National ID", legalName: PROFILE.name, dob: "1984-03-12", idNumber: "4.123.456-7", frontName: "Sample ID front", backName: "Sample ID back", frontSample: true, backSample: true, note: "", submittedAt: "2026-10-18", verifiedAt: status === "verified" ? "2026-10-19" : "" };
+  }
+  function sampleInfo() {
+    return { status: "completed", preferredName: "Gabriel", email: PROFILE.email, address: "Av. Brasil 2468", city: "Montevideo", region: "Montevideo", postal: "11300", taxResidency: "Uruguay", entity: "individual", businessName: "", businessCountry: "", businessNumber: "", submittedAt: "2026-10-18" };
+  }
+  function buildScenario(id) {
+    const next = defaultState();
+    next.scenario = id;
+    next.introSeen = id !== "new";
+    if (id === "verifying") {
+      next.tasks.identity = Object.assign(next.tasks.identity, sampleIdentity("under_review"));
+      next.activity = [{ at: "2026-10-19T15:00:00.000Z", who: PROFILE.name, text: "Submitted identity documents." }];
+    } else if (id === "awaiting") {
+      next.tasks.identity = Object.assign(next.tasks.identity, sampleIdentity("verified"));
+      next.tasks.info = Object.assign(next.tasks.info, sampleInfo());
+      next.tasks.offer.status = "signed";
+      next.tasks.offer.sentAt = "2026-10-19";
+      next.tasks.offer.signedAt = "2026-10-19";
+      next.tasks.contract.status = "ready";
+      next.tasks.contract.sentAt = "2026-10-20";
+    } else if (id === "signed" || id === "done") {
+      next.tasks.identity = Object.assign(next.tasks.identity, sampleIdentity("verified"));
+      next.tasks.info = Object.assign(next.tasks.info, sampleInfo());
+      next.tasks.offer.status = "signed";
+      next.tasks.offer.sentAt = "2026-10-18";
+      next.tasks.offer.signedAt = "2026-10-18";
+      next.tasks.contract.status = "signed";
+      next.tasks.contract.sentAt = "2026-10-19";
+      next.tasks.contract.signedAt = "2026-10-19";
+      next.tasks.slack.email = PROFILE.email;
+      next.tasks.slack.status = id === "done" ? "connected" : "invited";
+      if (id === "done") {
+        next.tasks.welcome.status = "completed";
+        next.tasks.harvest.status = "active";
+        next.tasks.harvest.confirmed = true;
+        next.tasks.payment.status = "completed";
+        next.tasks.payment.country = "Uruguay";
+        next.tasks.payment.method = "wise";
+        next.tasks.handbook.status = "completed";
+        next.tasks.handbook.ack = true;
+        next.tasks.call.status = "scheduled";
+        next.tasks.call.slot = "Wed, Oct 21, 10:00";
+      }
+    }
+    return next;
+  }
+  function saveScenario(id) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(buildScenario(id))); } catch (e) {}
+  }
+  function goPreset(scenario, hash, phaseExpanded) {
+    saveScenario(scenario);
+    try {
+      if (phaseExpanded) sessionStorage.setItem(PHASE_KEY, "1");
+      else sessionStorage.removeItem(PHASE_KEY);
+    } catch (e) {}
+    location.href = "my/profile.html" + (hash || "#onboarding");
+  }
+
+  const pages = [
+    {
+      section: "rows-my",
+      title: "My profile (portal shell)",
+      desc: "Contractor-facing portal with signup, onboarding, timesheets, and documents.",
+      default: { href: "my/profile.html#signup", label: "Open signup" },
+      menu: [
+        { label: "Signup profile", href: "my/profile.html#signup" },
+        { label: "Onboarding dashboard", href: "my/profile.html#onboarding" },
+        { label: "Onboarding profile", href: "my/profile.html#onboarding-profile" },
+        { label: "Active timesheets", href: "my/profile.html#active" },
+        { label: "Active profile", href: "my/profile.html#active-profile" },
+        { label: "Documents (active)", href: "my/profile.html#documents" },
+        { label: "Documents (onboarding)", href: "my/profile.html#onboarding-docs" },
+        { label: "Onboarding admin (in portal)", href: "my/profile.html#admin" }
+      ]
+    },
+    {
+      section: "rows-my",
+      title: "Onboarding dashboard",
+      desc: "Contractor filling out onboarding. Step list and phase cards.",
+      note: "Use demo presets below if steps look wrong for your saved state.",
+      default: { href: "my/profile.html#onboarding", label: "Open dashboard" },
+      menu: [
+        { label: "Verify identity", href: "my/profile.html#ob-identity" },
+        { label: "Contractor information", href: "my/profile.html#ob-info" },
+        { label: "Offer letter", href: "my/profile.html#ob-offer" },
+        { label: "Contract", href: "my/profile.html#ob-contract" },
+        { label: "Onboarding call", href: "my/profile.html#ob-call" },
+        { label: "Slack setup", href: "my/profile.html#ob-slack" },
+        { label: "Harvest setup", href: "my/profile.html#ob-harvest" },
+        { label: "Payment information", href: "my/profile.html#ob-payment" },
+        { label: "Handbook", href: "my/profile.html#ob-handbook" },
+        { label: "After sign welcome", href: "my/profile.html#ob-welcome" },
+        { label: "Onboarding documents", href: "my/profile.html#onboarding-docs" },
+        { type: "label", label: "Demo presets (sets storage)" },
+        { type: "action", label: "New candidate", action: () => goPreset("new", "#onboarding") },
+        { type: "action", label: "Verification in progress", action: () => goPreset("verifying", "#onboarding") },
+        { type: "action", label: "Awaiting signature", action: () => goPreset("awaiting", "#onboarding") },
+        { type: "action", label: "Contract signed (phase 2)", action: () => goPreset("signed", "#onboarding") },
+        { type: "action", label: "Phase 2 expanded", action: () => goPreset("signed", "#onboarding", true),
+          hint: "Signed contract plus session flag for expanded Get Ready to Work." },
+        { type: "action", label: "Fully onboarded", action: () => goPreset("done", "#active") },
+        { type: "action", label: "Reset demo", action: () => goPreset("new", "#signup") }
+      ]
+    },
+    {
+      section: "rows-my",
+      title: "Timesheets redirect",
+      desc: "Legacy entry that forwards to active timesheets on my profile.",
+      default: { href: "my/hours.html", label: "Open hours" },
+      menu: [{ label: "Timesheets on profile", href: "my/profile.html#active" }]
+    },
+    {
+      section: "rows-staff",
+      title: "Contractor profile (staff)",
+      desc: "Internal view of a contractor. Requires #profile hash.",
+      default: { href: "contractor-profile.html#profile", label: "Open profile" },
+      menu: [
+        { label: "Staff contractor profile", href: "contractor-profile.html#profile" },
+        { label: "Onboarding admin link", href: "my/profile.html#admin" }
+      ]
+    },
+    {
+      section: "rows-recruit",
+      title: "Candidate profile (staff)",
+      desc: "Recruiter candidate record shell.",
+      default: { href: "profile.html", label: "Open profile" },
+      menu: [{ label: "Staff profile", href: "profile.html" }]
+    },
+    {
+      section: "rows-recruit",
+      title: "Vetting workspace",
+      desc: "Report, interview feedback, and screening question flows.",
+      default: { href: "vetting.html", label: "Open vetting" },
+      menu: [
+        { label: "Interview report", href: "vetting.html#report" },
+        { label: "Interview feedback", href: "vetting.html#interview" },
+        { label: "Screening questions", href: "vetting.html#screening" },
+        { label: "General questions block", href: "vetting.html#general-q" }
+      ]
+    },
+    {
+      section: "rows-recruit",
+      title: "Messages",
+      desc: "Candidate messages with links into vetting steps.",
+      default: { href: "messages.html", label: "Open messages" },
+      menu: [
+        { label: "Messages home", href: "messages.html" },
+        { label: "Vetting screening", href: "vetting.html#screening" },
+        { label: "Vetting interview", href: "vetting.html#interview" }
+      ]
+    },
+    {
+      section: "rows-recruit",
+      title: "Feedback",
+      desc: "Standalone feedback page (shared vetting scripts).",
+      default: { href: "feedback.html", label: "Open feedback" },
+      menu: [{ label: "Feedback page", href: "feedback.html" }]
+    },
+    {
+      section: "rows-recruit",
+      title: "Schedule",
+      desc: "Interview scheduling mock.",
+      default: { href: "schedule.html", label: "Open schedule" },
+      menu: [{ label: "Schedule", href: "schedule.html" }]
+    },
+    {
+      section: "rows-recruit",
+      title: "Interview",
+      desc: "Client-style interview experience.",
+      default: { href: "interview.html", label: "Open interview" },
+      menu: [{ label: "Interview", href: "interview.html" }]
+    },
+    {
+      section: "rows-client",
+      title: "Client view",
+      desc: "Client-facing candidate presentation.",
+      default: { href: "client.html", label: "Open client view" },
+      menu: [{ label: "Client view", href: "client.html" }]
+    },
+    {
+      section: "rows-client",
+      title: "Client profile",
+      desc: "Staff client record with profile and vetting tab.",
+      default: { href: "client-profile.html", label: "Open client profile" },
+      menu: [
+        { label: "Client profile", href: "client-profile.html" },
+        { label: "Vetting tab", href: "client-profile.html#vetting" }
+      ]
+    },
+    {
+      section: "rows-admin",
+      title: "Hiring workspace",
+      desc: "AI hiring workspace and job split demo.",
+      default: { href: "index.html", label: "Open workspace" },
+      menu: [{ label: "Hiring workspace", href: "index.html" }]
+    },
+    {
+      section: "rows-admin",
+      title: "Linear dashboard",
+      desc: "Local Linear issues board (run npm run dashboard).",
+      default: { href: "dashboard.html", label: "Open dashboard" },
+      menu: [{ label: "My Linear", href: "dashboard.html" }]
+    }
+  ];
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  }
+
+  function renderRow(item) {
+    const id = "split-" + Math.random().toString(36).slice(2, 9);
+    const menuItems = (item.menu || []).map((entry) => {
+      if (entry.type === "label") return `<li class="menu-label">${esc(entry.label)}</li>`;
+      if (entry.type === "action") {
+        const hint = entry.hint ? `<span class="menu-hint">${esc(entry.hint)}</span>` : "";
+        return `<li><button type="button" data-action-id="${esc(entry.label)}">${esc(entry.label)}</button>${hint}</li>`;
+      }
+      return `<li><a href="${esc(entry.href)}">${esc(entry.label)}</a></li>`;
+    }).join("");
+    const note = item.note ? `<p class="row-note">${esc(item.note)}</p>` : "";
+    return `<article class="row">
+      <div>
+        <h3 class="row-title">${esc(item.title)}</h3>
+        <p class="row-desc">${esc(item.desc)}</p>${note}
+      </div>
+      <div class="split" id="${id}" data-split>
+        <a class="split-main" href="${esc(item.default.href)}">${esc(item.default.label)}</a>
+        <button type="button" class="split-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="${id}-menu" title="More links">
+          <span class="split-chev" aria-hidden="true"></span>
+        </button>
+        <ul class="split-menu" id="${id}-menu" role="menu">${menuItems}</ul>
+      </div>
+    </article>`;
+  }
+
+  const actionMap = new Map();
+  pages.forEach((item) => {
+    (item.menu || []).forEach((entry) => {
+      if (entry.type === "action") actionMap.set(entry.label, entry.action);
+    });
+    const host = document.getElementById(item.section);
+    if (host) host.insertAdjacentHTML("beforeend", renderRow(item));
+  });
+
+  let openSplit = null;
+
+  function closeSplits() {
+    document.querySelectorAll("[data-split].is-open").forEach((el) => {
+      el.classList.remove("is-open");
+      const btn = el.querySelector(".split-toggle");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    });
+    openSplit = null;
+  }
+
+  document.addEventListener("click", (e) => {
+    const toggle = e.target.closest(".split-toggle");
+    if (toggle) {
+      e.preventDefault();
+      const split = toggle.closest("[data-split]");
+      const open = split.classList.contains("is-open");
+      closeSplits();
+      if (!open) {
+        split.classList.add("is-open");
+        toggle.setAttribute("aria-expanded", "true");
+        openSplit = split;
+      }
+      return;
+    }
+    const actionBtn = e.target.closest("[data-action-id]");
+    if (actionBtn) {
+      e.preventDefault();
+      const fn = actionMap.get(actionBtn.getAttribute("data-action-id"));
+      closeSplits();
+      if (typeof fn === "function") fn();
+      return;
+    }
+    if (!e.target.closest("[data-split]")) closeSplits();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSplits();
+  });
+})();
+</script>
+</body>
+</html>
