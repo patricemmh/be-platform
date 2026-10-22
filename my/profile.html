@@ -1858,7 +1858,7 @@ function taskById(id) { return TASK_DEFS.find((task) => task.id === id); }
 function blankTasks() {
   return {
     identity: { status: "not_started", country: "", nationality: "", idType: "", legalName: "", dob: "", idNumber: "", frontName: "", backName: "", frontSample: false, backSample: false, note: "", submittedAt: "", verifiedAt: "" },
-    info: { status: "not_started", preferredName: "", email: "", address: "", city: "", region: "", postal: "", taxResidency: "", entity: "", businessName: "", businessCountry: "", businessNumber: "", submittedAt: "" },
+    info: { status: "not_started", address: "", apt: "", city: "", region: "", postal: "", taxId: "", entity: "", businessName: "", submittedAt: "" },
     offer: { status: "waiting", sentAt: "", signedAt: "" },
     contract: { status: "locked", sentAt: "", signedAt: "" },
     welcome: { status: "not_started", readAt: "" },
@@ -1942,7 +1942,7 @@ function sampleIdentity(status) {
   return { status: status, country: "Uruguay", nationality: "Uruguay", idType: "National ID", legalName: PROFILE.name, dob: "1984-03-12", idNumber: "4.123.456-7", frontName: "Sample ID front", backName: "Sample ID back", frontSample: true, backSample: true, note: "", submittedAt: "2026-10-18", verifiedAt: status === "verified" ? "2026-10-19" : "" };
 }
 function sampleInfo() {
-  return { status: "completed", preferredName: "Gabriel", email: PROFILE.email, address: "Av. Brasil 2468", city: "Montevideo", region: "Montevideo", postal: "11300", taxResidency: "Uruguay", entity: "individual", businessName: "", businessCountry: "", businessNumber: "", submittedAt: "2026-10-18" };
+  return { status: "completed", address: "Av. Brasil 2468", apt: "", city: "Montevideo", region: "Montevideo", postal: "11300", taxId: "4.123.456-7", entity: "individual", businessName: "", submittedAt: "2026-10-18" };
 }
 function buildScenario(id) {
   const next = defaultState();
@@ -2205,7 +2205,7 @@ function anyWorkStarted() {
 }
 function summary() {
   const stats = overallStats();
-  const country = state.tasks.identity.country || state.tasks.info.taxResidency || PROFILE.country;
+  const country = state.tasks.identity.country || PROFILE.country;
   const focus = nextCandidateAction();
   const waiting = waitingCopy();
   const next = focus ? present(focus).name : (waiting ? waiting.body : "None");
@@ -2406,18 +2406,28 @@ function renderIdentity() {
   const note = task.status === "action_required" ? `<p class="ob-note is-alert">${esc(task.note || "Please submit a clearer photo of the front and back.")}</p>` : "";
   return stepShell("Verify your identity", "We verify your identity before we send an agreement, so the name on the contract matches a government ID.", `<form data-form="identity" novalidate>${note}<div class="ob-section"><h2>Where you live</h2><p class="ob-help">Country of residence is filled from your profile. Change it if you live somewhere else.</p><div class="ob-row">${selectField("idCountry", "Country of residence", "identity.country", task.country || PROFILE.country, COUNTRIES)}${selectField("idNationality", "Nationality", "identity.nationality", task.nationality, COUNTRIES)}</div>${selectField("idType", "ID type", "identity.idType", task.idType, ID_TYPES)}</div><div class="ob-section"><h2>ID images</h2><div class="ob-upload-grid">${uploadSlot("front", "Front of ID", "fileFront")}${uploadSlot("back", "Back of ID", "fileBack")}</div></div><div class="ob-section"><h2>Legal identity</h2><div class="ob-row">${textField("idLegal", "Legal name", task.legalName || PROFILE.name, "identity.legalName", { auto: "name" })}${textField("idDob", "Date of birth", task.dob, "identity.dob", { type: "date" })}</div>${textField("idNumber", "ID number", task.idNumber, "identity.idNumber", { placeholder: "As it appears on the document" })}</div>${formError()}${formActionsWithBack(`<button class="ts-btn ts-btn-primary ob-btn" type="submit">${task.status === "action_required" ? "Submit again" : "Submit identity"}</button>`)}</form>`);
 }
+const TAX_ID_NAMES = {
+  Argentina: ["CDI", "CUIT"],
+  Brazil: ["CPF", "CNPJ"],
+  Chile: ["RUT", "RUT"],
+  Colombia: ["NIT", "NIT"],
+  Mexico: ["RFC", "RFC"],
+  Uruguay: ["CI", "RUT"]
+};
+function taxIdLabel(country, business) {
+  const names = TAX_ID_NAMES[country];
+  return names ? `Local tax ID (${names[business ? 1 : 0]})` : "Local tax ID";
+}
 function renderInfo() {
   const info = state.tasks.info;
   const country = state.tasks.identity.country || PROFILE.country;
   if (info.status === "completed") {
     const business = info.entity === "business";
-    const badge = business ? "Registered business" : "Contracting as an individual";
-    const businessRows = business ? `${sumRow("Business name", info.businessName)}${sumRow("Registration country", info.businessCountry)}${sumRow("Registration number", info.businessNumber)}` : "";
-    const body = `<div class="ob-summary"><section class="ob-sum-group"><h2>Identity</h2><dl>${sumRow("Legal name", legalName())}${sumRow("Preferred name", info.preferredName || "Same as legal name")}${sumRow("Email", info.email)}</dl></section><section class="ob-sum-group"><h2>Address</h2><dl>${sumRow("Street address", info.address)}${sumRow("City", info.city)}${sumRow("Province or state", info.region)}${sumRow("Postal code", info.postal)}${sumRow("Country", country)}</dl></section><section class="ob-sum-group"><h2>Tax</h2><dl>${sumRow("Tax residency", info.taxResidency)}</dl><p class="ob-sum-badge">${esc(badge)}</p>${businessRows ? `<dl>${businessRows}</dl>` : ""}</section></div>${obFormActions(`<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="edit-info">Edit information</button>${backToOnboardingBtn(false)}`)}`;
+    const body = `<div class="ob-summary"><section class="ob-sum-group"><h2>Name</h2><dl>${sumRow("Legal name", legalName())}${sumRow("Signing as", business ? "Registered business" : "Individual")}${business ? sumRow("Company name", info.businessName) : ""}</dl></section><section class="ob-sum-group"><h2>Address</h2><dl>${sumRow("Street address", info.address)}${sumRow("Apt or suite", info.apt)}${sumRow("City", info.city)}${sumRow("Province or state", info.region)}${sumRow("Postal code", info.postal)}${sumRow("Country", country)}</dl></section><section class="ob-sum-group"><h2>Tax</h2><dl>${sumRow(taxIdLabel(country, business), info.taxId)}</dl></section></div>${obFormActions(`<button type="button" class="ts-btn ts-btn-line ob-btn" data-act="edit-info">Edit information</button>${backToOnboardingBtn(false)}`)}`;
     return stepShell("Complete contractor information", "These details go on your agreement and payment records.", body, "is-summary");
   }
   const businessHidden = info.entity === "business" ? "" : " hidden";
-  return stepShell("Complete contractor information", "We only ask for details that are not already on your identity step.", `<form data-form="info" novalidate><div class="ob-section"><h2>Name</h2><div class="ob-readonly"><span>Legal name</span><b>${esc(state.tasks.identity.legalName || "You'll add this with your identity, or below if you haven't yet.")}</b></div>${state.tasks.identity.legalName ? "" : textField("idLegal", "Legal name", PROFILE.name, "identity.legalName", { auto: "name" })}<p class="ob-help">Preferred name is optional.</p>${textField("infoPreferred", "Preferred name", info.preferredName, "info.preferredName", { optional: true, placeholder: "What should we call you?" })}</div><div class="ob-section"><h2>Contact</h2>${textField("infoEmail", "Email", info.email || PROFILE.email, "info.email", { type: "email", auto: "email" })}</div><div class="ob-section"><h2>Address</h2>${textField("infoAddress", "Street address", info.address, "info.address", { auto: "address-line1" })}<div class="ob-row">${textField("infoCity", "City", info.city || "Montevideo", "info.city", { auto: "address-level2" })}${textField("infoRegion", "Province or state", info.region || "Montevideo", "info.region", { auto: "address-level1" })}</div><div class="ob-row">${textField("infoPostal", "Postal code", info.postal, "info.postal", { auto: "postal-code" })}${selectField("infoCountry", "Country", "identity.country", country, COUNTRIES)}</div></div><div class="ob-section"><h2>Tax</h2>${selectField("infoTax", "Tax residency", "info.taxResidency", info.taxResidency || country, COUNTRIES)}<p class="ob-help">How should we list you on documents you sign?</p><div class="choice"><label><input type="radio" name="entity" data-bind="info.entity" value="individual"${info.entity !== "business" ? " checked" : ""}> Individual</label><label><input type="radio" name="entity" data-bind="info.entity" value="business"${info.entity === "business" ? " checked" : ""}> Registered business</label></div><div id="businessFields"${businessHidden}><div class="ob-row">${textField("infoBusiness", "Business name", info.businessName, "info.businessName", { auto: "organization" })}${selectField("infoBusinessCountry", "Registration country", "info.businessCountry", info.businessCountry || country, COUNTRIES)}</div>${textField("infoBusinessNumber", "Registration number", info.businessNumber, "info.businessNumber")}</div></div>${formError()}${formActionsWithBack(`<button class="ts-btn ts-btn-primary ob-btn" type="submit">Save information</button>`)}</form>`);
+  return stepShell("Complete contractor information", "We only ask for details that are not already on your identity step.", `<form data-form="info" novalidate><div class="ob-section"><h2>Name</h2>${state.tasks.identity.legalName ? `<div class="ob-readonly"><span>Legal name (as on your ID)</span><b>${esc(state.tasks.identity.legalName)}</b></div>` : textField("idLegal", "Legal name (as on your ID)", PROFILE.name, "identity.legalName", { auto: "name" })}</div><div class="ob-section"><h2>Signing as</h2><p class="ob-help">How should we list you on documents you sign?</p><div class="choice"><label><input type="radio" name="entity" data-bind="info.entity" value="individual"${info.entity !== "business" ? " checked" : ""}> Individual</label><label><input type="radio" name="entity" data-bind="info.entity" value="business"${info.entity === "business" ? " checked" : ""}> Registered business</label></div><div id="businessFields"${businessHidden}>${textField("infoBusiness", "Company name", info.businessName, "info.businessName", { auto: "organization" })}</div></div><div class="ob-section"><h2>Address</h2><div class="ob-row">${textField("infoAddress", "Street address", info.address, "info.address", { auto: "address-line1" })}${textField("infoApt", "Apt or suite", info.apt, "info.apt", { optional: true, auto: "address-line2" })}</div><div class="ob-row">${textField("infoCity", "City", info.city || "Montevideo", "info.city", { auto: "address-level2" })}${textField("infoRegion", "Province or state", info.region || "Montevideo", "info.region", { auto: "address-level1" })}</div><div class="ob-row">${selectField("infoCountry", "Country", "identity.country", country, COUNTRIES)}${textField("infoPostal", "Postal code", info.postal, "info.postal", { auto: "postal-code" })}</div></div><div class="ob-section"><h2>Tax</h2><label class="ob-field"><span id="infoTaxLabel">${esc(taxIdLabel(country, info.entity === "business"))} <abbr class="req" title="Required">*</abbr></span><input id="infoTax" data-bind="info.taxId" type="text" value="${esc(info.taxId || "")}" autocomplete="off"></label></div>${formError()}${formActionsWithBack(`<button class="ts-btn ts-btn-primary ob-btn" type="submit">Save information</button>`)}</form>`);
 }
 function offerPaper() {
   return `<article class="ob-paper"><h2>Offer of engagement</h2><p>BetterEngineer</p><p>Role: Senior Android Engineer</p><p>Rate: $75 per hour</p><p>Location: Remote, ${esc(state.tasks.identity.country || PROFILE.country)}</p><p>Type: Independent contractor</p><p>Start: To be agreed after the contract is signed</p><p>Prepared by the BetterEngineer Team</p><p>This is a contractor engagement, not employment. Hours are recorded in Harvest. Payment follows the details you provide later. Either party can end the engagement with notice, as the contract describes.</p></article>`;
@@ -2722,20 +2732,15 @@ function submitInfo(form) {
   const info = state.tasks.info;
   const bad = [];
   if (!state.tasks.identity.legalName) bad.push("idLegal");
-  if (!info.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(info.email)) bad.push("infoEmail");
   if (!info.address) bad.push("infoAddress");
   if (!info.city) bad.push("infoCity");
   if (!info.region) bad.push("infoRegion");
   if (!info.postal) bad.push("infoPostal");
   if (!state.tasks.identity.country) bad.push("infoCountry");
-  if (!info.taxResidency) bad.push("infoTax");
+  if (!info.taxId) bad.push("infoTax");
   if (!info.entity) info.entity = "individual";
-  if (info.entity === "business") {
-    if (!info.businessName) bad.push("infoBusiness");
-    if (!info.businessCountry) bad.push("infoBusinessCountry");
-    if (!info.businessNumber) bad.push("infoBusinessNumber");
-  }
-  if (bad.length) { persistEdit(); showFormError(form, info.entity === "business" ? "Add the business name, registration country, and registration number." : "Add the missing contact, address, and tax fields.", bad); return; }
+  if (info.entity === "business" && !info.businessName) bad.push("infoBusiness");
+  if (bad.length) { persistEdit(); showFormError(form, info.entity === "business" ? "Add the company name, address, and local tax ID." : "Add the missing address and local tax ID fields.", bad); return; }
   info.status = "completed";
   info.submittedAt = todayStamp();
   logActivity(PROFILE.name, "Submitted contractor information.");
@@ -2821,13 +2826,11 @@ function adminComplete(id) {
   if (!contractSigned() && taskById(id).phase === "ready") { toast("Phase 2 opens after the contract is signed."); return; }
   if (id === "info") {
     const info = state.tasks.info;
-    info.preferredName = info.preferredName || "Gabriel";
-    info.email = info.email || PROFILE.email;
     info.address = info.address || "Av. Brasil 2468";
     info.city = info.city || "Montevideo";
     info.region = info.region || "Montevideo";
     info.postal = info.postal || "11300";
-    info.taxResidency = info.taxResidency || "Uruguay";
+    info.taxId = info.taxId || "4.123.456-7";
     info.entity = info.entity || "individual";
     if (!state.tasks.identity.country) state.tasks.identity.country = PROFILE.country;
     if (!state.tasks.identity.legalName) state.tasks.identity.legalName = PROFILE.name;
@@ -3010,6 +3013,14 @@ function syncBusiness() {
   if (!box) return;
   const selected = document.querySelector('#obApp input[name="entity"]:checked');
   box.hidden = !selected || selected.value !== "business";
+  syncTaxLabel();
+}
+function syncTaxLabel() {
+  const label = document.getElementById("infoTaxLabel");
+  if (!label) return;
+  const selected = document.querySelector('#obApp input[name="entity"]:checked');
+  const country = (document.getElementById("infoCountry") || {}).value || state.tasks.identity.country || PROFILE.country;
+  label.innerHTML = esc(taxIdLabel(country, !!selected && selected.value === "business")) + ' <abbr class="req" title="Required">*</abbr>';
 }
 function syncPay() {
   const method = (document.getElementById("payMethod") || {}).value || state.tasks.payment.method || "";
@@ -3028,6 +3039,7 @@ document.getElementById("obApp").addEventListener("change", (e) => {
   const el = e.target;
   if (el.dataset && el.dataset.file) { const file = el.files && el.files[0]; if (file) setUpload(el.dataset.file, file); return; }
   if (el.dataset && el.dataset.bind === "info.entity") syncBusiness();
+  if (el.id === "infoCountry") syncTaxLabel();
   if (el.id === "payMethod") syncPay();
 });
 document.getElementById("obApp").addEventListener("submit", (e) => {
