@@ -428,6 +428,7 @@ html[data-view="admin"] .side { display: none; }
 
 .ob-page { max-width: 800px; margin-inline: auto; }
 .ob-page .page-title-band { margin-bottom: 12px; }
+#viewOnboarding .ob-page > .page-title-band:first-child { margin-top: 20px; }
 .ob-page-lead { margin: 0 0 24px; max-width: 640px; font-size: 15px; line-height: 22px; color: #707070; }
 .ob-count { margin: 0 0 22px; font-size: 13px; color: #707070; font-variant-numeric: tabular-nums; }
 .ob-list { display: flex; flex-direction: column; gap: 12px; }
@@ -1816,16 +1817,16 @@ const PAY_METHODS = [
 ];
 const DOC_CATEGORIES = ["Identification and verification", "Agreements", "Tax and payment", "Resources"];
 const PHASE_DEFS = [
-  { id: "become", title: "Become a Contractor", lead: "Confirm who you are, then review and sign your agreement." },
-  { id: "ready", title: "Get Ready to Work", lead: "Set up the tools and details you need before your first week." }
+  { id: "become", title: "Confirm your details and agreements", lead: "Confirm who you are, then review and sign your agreement." },
+  { id: "ready", title: "Get Set Up for Your First Day", lead: "Set up the tools and details you need before your first week." }
 ];
 const TASK_DEFS = [
   { id: "identity", phase: "become", name: "Verify your identity", blurb: "Country, nationality, and a photo of your government ID.", icon: "fa-regular fa-id-card" },
   { id: "info", phase: "become", name: "Complete contractor information", blurb: "Legal name, address, and how you contract.", icon: "fa-regular fa-address-card" },
   { id: "offer", phase: "become", name: "Review offer letter", blurb: "Read the offer and sign it.", icon: "fa-regular fa-file-lines" },
   { id: "contract", phase: "become", name: "Review and sign contract", blurb: "Your contractor agreement.", icon: "fa-regular fa-file" },
-  { id: "call", phase: "ready", name: "Schedule the onboarding call", blurb: "Book time with Karla, our onboarding coordinator, on her Google Calendar.", icon: "fa-regular fa-calendar" },
   { id: "slack", phase: "ready", name: "Set up Slack", blurb: "Join the BetterEngineer workspace.", icon: "fa-regular fa-comments" },
+  { id: "call", phase: "ready", name: "Schedule the onboarding call", blurb: "Book time with Karla, our onboarding coordinator, on her Google Calendar.", icon: "fa-regular fa-calendar" },
   { id: "harvest", phase: "ready", name: "Set up Harvest", blurb: "Learn how to track your hours.", icon: "fa-regular fa-clock" },
   { id: "payment", phase: "ready", name: "Set up payment information", blurb: "Tell us how to pay you.", icon: "fa-regular fa-credit-card" },
   { id: "handbook", phase: "ready", name: "Review contractor handbook", blurb: "The working agreements we ask every contractor to acknowledge.", icon: "fa-regular fa-book" }
@@ -2214,7 +2215,7 @@ function summary() {
   let status = "Not started";
   const alert = TASK_DEFS.some((def) => present(def.id).tone === "alert");
   if (stats.total && stats.done === stats.total) { phaseKey = "complete"; phase = "Complete"; status = "Fully onboarded"; }
-  else if (contractSigned()) { phaseKey = "ready"; phase = "Get Ready to Work"; status = alert ? "Action required" : "Contract signed"; }
+  else if (contractSigned()) { phaseKey = "ready"; phase = "Get Set Up for Your First Day"; status = alert ? "Action required" : "Contract signed"; }
   else if (alert) status = "Action required";
   else if (state.tasks.contract.status === "ready") status = "Awaiting signature";
   else if (state.tasks.identity.status === "submitted" || state.tasks.identity.status === "under_review") status = "Under review";
@@ -2322,7 +2323,7 @@ function renderDashboard() {
   const celebrate = state.celebrate ? `<section class="ob-phase-card is-ready"><h2>You're officially a BetterEngineer contractor!</h2><p class="ob-phase-lead">Your agreement is complete. Next, let's get everything set up so you're ready to start working.</p><div class="ob-form-actions"><button type="button" class="ts-btn ts-btn-primary ob-btn" data-act="continue-setup">Continue setup</button></div></section>` : "";
   const focusId = nextCandidateAction();
   const afterSign = contractSigned() ? `<p class="ob-tools"><a class="ob-docs-link" href="#ob-welcome">What happens after you sign</a></p>` : "";
-  return `<div class="ob-page"><div class="page-title-band"><h1 class="page-title">Let's get you set up.</h1></div><p class="ob-page-lead">Complete the open step when you're ready. If a step is waiting on BetterEngineer, we'll move it forward.</p>${invite}${afterSign}${celebrate}${renderPhase("become", focusId)}${renderPhase("ready", focusId)}</div>`;
+  return `<div class="ob-page"><div class="page-title-band"><h1 class="page-title">Welcome to BetterEngineer!</h1></div><p class="ob-page-lead">We're excited to take the next steps with you. There are just a few things to complete before we can start working together. We'll guide you through each step.</p>${invite}${afterSign}${celebrate}${renderPhase("become", focusId)}${renderPhase("ready", focusId)}</div>`;
 }
 function backToOnboardingLabel() {
   return `<i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to onboarding`;
@@ -2650,7 +2651,7 @@ function renderAdmin() {
     const value = label === "All statuses" ? "all" : label;
     return `<option value="${esc(value)}"${adminFilter.status === value ? " selected" : ""}>${esc(label)}</option>`;
   }).join("");
-  const phases = [["all", "All phases"], ["become", "Become a Contractor"], ["ready", "Get Ready to Work"], ["complete", "Complete"]];
+  const phases = [["all", "All phases"], ["become", "Become a Contractor"], ["ready", "Get Set Up for Your First Day"], ["complete", "Complete"]];
   const phaseOptions = phases.map((item) => `<option value="${item[0]}"${adminFilter.phase === item[0] ? " selected" : ""}>${esc(item[1])}</option>`).join("");
   const identity = state.tasks.identity.status;
   const taskLines = TASK_DEFS.filter((def) => !(def.id === "offer" && !state.offerEnabled)).map((def) => {
