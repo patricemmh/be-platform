@@ -1802,6 +1802,9 @@ renderAll();
 
 /* Contractor onboarding prototype. Reorder work by editing TASK_DEFS. */
 const STORE_KEY = "be.proto.onboarding.v1";
+/** Required markers stay in the UI; set false to enforce validation on submit. */
+const PROTO_SKIP_VALIDATION = true;
+function protoValidationBlocks(condition) { return !PROTO_SKIP_VALIDATION && condition; }
 const PROFILE = {
   name: "Gabriel Kouyoumdjian",
   email: "GabrielK@devworks.com",
@@ -2719,7 +2722,7 @@ function submitIdentity(form) {
   if (!task.dob) bad.push("idDob");
   if (!task.idNumber) bad.push("idNumber");
   if (!task.frontName || !task.backName) bad.push("fileFront");
-  if (bad.length) { persistEdit(); showFormError(form, "Add your country, nationality, ID type, legal name, date of birth, ID number, and both sides of the ID.", bad); return; }
+  if (protoValidationBlocks(bad.length)) { persistEdit(); showFormError(form, "Add your country, nationality, ID type, legal name, date of birth, ID number, and both sides of the ID.", bad); return; }
   task.status = "submitted";
   task.submittedAt = todayStamp();
   task.note = "";
@@ -2740,7 +2743,7 @@ function submitInfo(form) {
   if (!info.taxId) bad.push("infoTax");
   if (!info.entity) info.entity = "individual";
   if (info.entity === "business" && !info.businessName) bad.push("infoBusiness");
-  if (bad.length) { persistEdit(); showFormError(form, info.entity === "business" ? "Add the company name, address, and local tax ID." : "Add the missing address and local tax ID fields.", bad); return; }
+  if (protoValidationBlocks(bad.length)) { persistEdit(); showFormError(form, info.entity === "business" ? "Add the company name, address, and local tax ID." : "Add the missing address and local tax ID fields.", bad); return; }
   info.status = "completed";
   info.submittedAt = todayStamp();
   logActivity(PROFILE.name, "Submitted contractor information.");
@@ -2750,7 +2753,7 @@ function submitInfo(form) {
 function submitSlack(form) {
   readForm(form);
   const email = state.tasks.slack.email;
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "")) { showFormError(form, "Enter the email that should receive Slack.", ["slackEmail"]); return; }
+  if (protoValidationBlocks(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || ""))) { showFormError(form, "Enter the email that should receive Slack.", ["slackEmail"]); return; }
   state.tasks.slack.status = "connected";
   logActivity(PROFILE.name, "Confirmed the Slack email.");
   renderOnboarding();
@@ -2764,7 +2767,7 @@ function submitPayment(form) {
   if (!task.method) bad.push("payMethod");
   if (task.method === "bank" && !paymentDraft.account) bad.push("payAccount");
   if ((task.method === "wise" || task.method === "payoneer") && !paymentDraft.payEmail) bad.push(task.method === "wise" ? "payWise" : "payPayoneer");
-  if (bad.length) { showFormError(form, "Choose a country and payment method, then complete the fields for that method. Use a made-up account number.", bad); return; }
+  if (protoValidationBlocks(bad.length)) { showFormError(form, "Choose a country and payment method, then complete the fields for that method. Use a made-up account number.", bad); return; }
   const digits = String(paymentDraft.account || "").replace(/\D/g, "");
   sessionPayment = { method: methodLabel(task.method), country: task.country, last4: digits ? digits.slice(-4) : "" };
   paymentDraft = { holder: "", bank: "", account: "", swift: "", payEmail: "" };
@@ -2776,7 +2779,7 @@ function submitPayment(form) {
 }
 function submitHandbook(form) {
   const box = document.getElementById("handbookAck");
-  if (!box || !box.checked) { showFormError(form, "Acknowledge the handbook to finish this step.", ["handbookAck"]); return; }
+  if (protoValidationBlocks(!box || !box.checked)) { showFormError(form, "Acknowledge the handbook to finish this step.", ["handbookAck"]); return; }
   state.tasks.handbook.status = "completed";
   state.tasks.handbook.ack = true;
   state.tasks.handbook.ackAt = todayStamp();
@@ -2787,9 +2790,9 @@ function submitHandbook(form) {
 function submitCall(form) {
   readForm(form);
   const selected = form.querySelector('input[name="slot"]:checked');
-  if (!selected) { showFormError(form, "Choose a time to book the call."); return; }
+  if (protoValidationBlocks(!selected)) { showFormError(form, "Choose a time to book the call."); return; }
   state.tasks.call.status = "scheduled";
-  state.tasks.call.slot = selected.value;
+  state.tasks.call.slot = selected ? selected.value : (callSlotsForDay(sessionFlow.callDay || 0)[0] || "TBD");
   state.tasks.call.scheduledAt = todayStamp();
   logActivity(PROFILE.name, "Scheduled the onboarding call.");
   renderOnboarding();
@@ -2798,7 +2801,7 @@ function submitCall(form) {
 function namesMatch(typed) { return typed.trim().toLowerCase() === legalName().trim().toLowerCase(); }
 function signOffer() {
   const typed = (document.getElementById("signName") || {}).value || "";
-  if (!namesMatch(typed)) { const err = document.getElementById("formError"); if (err) { err.hidden = false; err.textContent = "Type your legal name to adopt a signature."; } return; }
+  if (protoValidationBlocks(!namesMatch(typed))) { const err = document.getElementById("formError"); if (err) { err.hidden = false; err.textContent = "Type your legal name to adopt a signature."; } return; }
   state.tasks.offer.status = "signed";
   state.tasks.offer.signedAt = todayStamp();
   if (state.tasks.contract.status === "locked") state.tasks.contract.status = "waiting";
@@ -2809,7 +2812,7 @@ function signOffer() {
 }
 function signContract() {
   const typed = (document.getElementById("contractSignName") || {}).value || "";
-  if (!namesMatch(typed)) { const err = document.getElementById("formError"); if (err) { err.hidden = false; err.textContent = "Type your legal name to adopt a signature."; } return; }
+  if (protoValidationBlocks(!namesMatch(typed))) { const err = document.getElementById("formError"); if (err) { err.hidden = false; err.textContent = "Type your legal name to adopt a signature."; } return; }
   state.tasks.contract.status = "signed";
   state.tasks.contract.signedAt = todayStamp();
   state.celebrate = true;
